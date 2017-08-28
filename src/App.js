@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import logo from './logo.png';
+import FactomUtil from './factomjsutil';
 import './App.css';
 
 class App extends Component {
