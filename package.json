@@ -7,7 +7,8 @@
     "gh-pages": "^1.0.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "react-scripts": "1.0.11"
+    "react-scripts": "1.0.11",
+    "semantic-ui-react": "^0.72.0"
   },
   "scripts": {
     "predeploy": "npm run build",
