@@ -8,7 +8,8 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-scripts": "1.0.11",
-    "semantic-ui-react": "^0.72.0"
+    "semantic-ui-react": "^0.72.0",
+    "styled-components": "^2.1.2"
   },
   "scripts": {
     "predeploy": "npm run build",
