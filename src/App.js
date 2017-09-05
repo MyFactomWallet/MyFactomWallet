@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import logo from './logo.png';
-import FactomUtil from './factomjsutil';
 import styled from 'styled-components';
 
 const Header = styled.div`
