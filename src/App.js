@@ -3,19 +3,19 @@ import logo from './logo.png';
 import styled from 'styled-components';
 
 //---------------------------Pull from NODE_MODULES----------------------------------------------
-//1. Uncomment the next line and run "npm start".  This will work.
+//1. Uncomment the next line and run "npm start".  This will work and does not use the precompiled version.
 import factomUtil from 'factomjs-util'; //OR var factomUtil = require('factomjs-util');
 //The above example fails when running "npm run build" because of a failure to minify
-//Note it's possible to import the function directly with => import {isValidAddress} from 'factomjs-util';
+//Side Note: It's possible to import the function directly with => import {isValidAddress} from 'factomjs-util';
 
-//2. Instead, uncomment the next line and run "npm start" to use the pre-compiled version.
+//2. Uncomment the next line and run "npm start" to use the pre-compiled version.
 //import factomUtil from 'factomjs-util/dist/factomjs-util'; //OR var factomUtil = require('factomjs-util/dist/factomjs-util');
 //This compiles but errors when calling "isValidAddress" saying it is not a function.
-//Why can't we call functions from the pre-compiled version??
 //---------------------------Pull from NODE_MODULES----------------------------------------------
 
+
 //---------------------------Pull from /src------------------------------------------------------
-//3. This is a precompiled version (with compile errors fixed) and results in the same error as #2
+//3. The next line uses a precompiled version (with compile errors fixed) and results in the same error as #2
 //import factomUtil from './sourcefactomjs-util';
 //---------------------------Pull from /src------------------------------------------------------
 
