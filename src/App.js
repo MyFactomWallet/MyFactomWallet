@@ -4,70 +4,87 @@ import styled from 'styled-components';
 
 import factomUtil from 'factomjs-util/dist/factomjs-util';
 
+class Wallets extends Component {
+  constructor(){
+    super();
+    this.state = {ID: 1};
+  }
 
-const validAddress = ('Fs2S5Ut7ZZhsgFuko2BNsGDMmFaNsX46cVnsE5Y2AmgQ2C31e9DX');
-const isValid = factomUtil.isValidAddress(validAddress);
-
-const Header = styled.div`
-  padding-left:82.9px;
-  width: 284.6px;
-  height: 24px;
-  font-family: Montserrat;
-  font-size: 20px;
-  font-weight: bold;
-  text-align: left;
-  color: #ffffff;
-`;
-
-const HeaderLogo = styled.img`
-  width: 39.1px;
-  height: 31.4px;
-  margin-top:30px;
-  margin-right:13px;
-  float:left;
-`;
-
-const Outer = styled.div`
-  width: 1440px;
-  height: 90px;
-  background-color: #001830;
-`;
-
-const Main = styled.div`
-  width: 1440px;
-  height: 939px;
-  transform: rotate(-180deg);
-  background-image: linear-gradient(to bottom, #001830, #002347);
-`;
-
-const Title = styled.div`
-  padding-top:35px;
-`;
-
-const POC = styled.div`
-  transform: rotate(180deg);
-  color: orange;
-  position: fixed;
-  bottom: 1px;
-  right: 1px;
-`;
+  render(){
+    return (
+      <div>
+        <WalletSmall>
+             My Wallet #{this.state.ID}
+        </WalletSmall>
+        <WalletSmall>
+             My Wallet #{this.state.ID + 1}
+        </WalletSmall>
+      </div>
+    );
+  }
+}
 
 class App extends Component {
   render() {
     return (
       <span>
-      <Outer>
         <Header>
-          <HeaderLogo src={logo} alt="logo"/>
-           <Title>MyFactomWallet</Title>
+          <Logo src={logo} alt="logo"/>
+           <Title>My Factom Wallet</Title>
         </Header>
-      </Outer>
-      <Main>
-        <POC>{validAddress} = <b>{isValid ? 'true' : 'false'}</b></POC>
-      </Main>
+        <MainBody>
+          <Wallets></Wallets>
+        </MainBody>
     </span>
     );
   }
 }
+
+const Header = styled.div`
+  text-align: left;
+  padding-left:81px;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: Montserrat;
+  color: #ffffff;
+  background-color: #001830;
+  width: 1440px;
+  height: 90px;
+`;
+
+const MainBody = styled.div`
+  background-image: linear-gradient(to bottom, #002347, #001830);
+  width: 1440px;
+  height: 939px;
+  overflow: auto;
+`;
+
+const WalletSmall = styled.div`
+              width: 343px;
+              height: 150px;
+              border-radius: 6px;
+              background-image: linear-gradient(to bottom, #06c7ff, #0372ff);
+              box-shadow: 0 0 10px 0 #007eff;
+              margin-left:81px;
+              color: #ffffff;
+              padding-left: 19px;
+              padding-top: 17px;
+              font-size: 16px;
+              text-align: left;
+              position: relative;
+              margin-Top: 43px;
+`;
+
+const Logo = styled.img`
+  float: left;
+  margin-top: 30px;
+  margin-right: 13px;
+  width: 39.1px;
+  height: 31.4px;
+`;
+
+const Title = styled.div`
+  padding-top:35px;
+`;
 
 export default App;
