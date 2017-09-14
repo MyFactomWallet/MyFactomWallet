@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "factomdjs": "^0.2.3",
     "factomjs-util": "^0.1.5",
     "gh-pages": "^1.0.0",
     "react": "^15.6.1",

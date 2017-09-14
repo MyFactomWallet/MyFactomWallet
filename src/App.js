@@ -3,6 +3,7 @@ import logo from './headerLogo.png';
 import styled from 'styled-components';
 
 import factomUtil from 'factomjs-util/dist/factomjs-util';
+import factomD from 'factomdjs/dist/factomd';
 
 class Wallets extends Component {
   constructor(){
