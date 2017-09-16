@@ -1,66 +1,125 @@
-import React, { Component } from 'react';
-import logo from './headerLogo.png';
-import styled from 'styled-components';
+import React, { Component } from "react";
+import logo from "./headerLogo.png";
+import styled from "styled-components";
 
-import factomUtil from 'factomjs-util/dist/factomjs-util';
-import factomD from 'factomdjs/dist/factomd';
+import factomUtil from "factomjs-util/dist/factomjs-util";
+import factomD from "factomdjs/dist/factomd";
 
-class Wallets extends Component {
-  constructor(){
-    super();
-    this.state = {ID: 1};
+//alert(factomD.entryCreditRate(0));
+
+class Wallet extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      amount: 25,
+    };
   }
 
-  render(){
+  render() {
+    const amount = this.state.amount;
     return (
-      <div>
-        <WalletSmall>
-             My Wallet #{this.state.ID}
-        </WalletSmall>
-        <WalletSmall>
-             My Wallet #{this.state.ID + 1}
-        </WalletSmall>
+      <div className={this.props.className}>
+        My Wallet #{this.props.id} <br/>
+        Amount: {amount}
       </div>
     );
   }
 }
 
+function Sidebar(props){
+    return (
+      <SidebarContainer>
+        {props.children}
+      </SidebarContainer>
+    );
+}
+
+const SidebarContainer = styled.div`
+    float: left;
+    position:fixed;
+`;
+
+const MainSendHeader = styled.div`
+  width: 730px;
+  height: 626px;
+  border-radius: 6px;
+  box-shadow: 0 2px 13px 0 rgba(0, 16, 53, 0.5);
+  margin-top:44px;
+  margin-left:500px;
+  background-color: #eef1f4;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1.4px;
+  padding-top:10px;
+`;
+
+function Send(props){
+  return (
+    <div>
+      <MainSendHeader>
+          Send Factoid
+      </MainSendHeader>
+      <SendButton onClick={() => alert('Sent!')}>Send Funds</SendButton>
+    </div>
+  );
+}
+
+const SendButton = styled.button`
+  color: #ffffff;
+  width: 730px;
+  height: 60px;
+  border-radius: 6px;
+  background-image: linear-gradient(to bottom, #ffa539, #ff8600);
+  margin-left:500px;
+  margin-top:16px;
+  font-size: 20px;
+  font-weight: bold;
+`;
+
 class App extends Component {
   render() {
     return (
-      <span>
+      <div>
         <Header>
-          <Logo src={logo} alt="logo"/>
-           <Title>My Factom Wallet</Title>
+          <Logo src={logo} alt="logo" />
+          <Title>My Factom Wallet</Title>
+          <Help href="#">
+            Help
+          </Help>
         </Header>
         <MainBody>
-          <Wallets></Wallets>
+          <Sidebar>
+            <WalletSmall id={1}/>
+            <WalletSmall id={2}/>
+          </Sidebar>
+          <Send/>
         </MainBody>
-    </span>
+      </div>
     );
   }
 }
 
+
+
 const Header = styled.div`
   text-align: left;
-  padding-left:81px;
+  padding-left: 81px;
   font-size: 20px;
   font-weight: bold;
-  font-family: Montserrat;
   color: #ffffff;
   background-color: #001830;
-  width: 1440px;
   height: 90px;
+  position:relative;
 `;
 
 const MainBody = styled.div`
   background-image: linear-gradient(to bottom, #002347, #001830);
-  width: 1440px;
   height: 939px;
   overflow: auto;
 `;
 
-const WalletSmall = styled.div`
+const WalletSmall = styled(Wallet)`
               width: 343px;
               height: 150px;
               border-radius: 6px;
@@ -85,7 +144,18 @@ const Logo = styled.img`
 `;
 
 const Title = styled.div`
-  padding-top:35px;
+  padding-top: 35px;
+  margin-right:1px;
+`;
+
+const Help = styled.a`
+  position: absolute;
+  right: 51px;
+  bottom: 30px;
+  font-size: 18px;
+  text-align: left;
+  color: #ffffff;
+  text-decoration: none;
 `;
 
 export default App;
