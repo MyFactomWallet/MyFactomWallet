@@ -9,9 +9,6 @@ import {
 import factomUtil from "factomjs-util/dist/factomjs-util";
 import factomD from "factomdjs/dist/factomd";
 
-//Anywhere that you want to only render something if it matches the
-//location’s pathname, you should create a <Route> element.
-
 class Wallet extends Component {
   constructor(props) {
     super(props);
@@ -22,24 +19,22 @@ class Wallet extends Component {
 
   render() {
     const amount = this.state.amount;
+    const amountStyle = {
+      fontSize:'35px'
+    };
     return (
       <div className={this.props.className}>
-        My Wallet #{this.props.id} <br/>
-        Amount: {amount}
+        My Wallet #{this.props.id}
+        <br/><br/>
+        <span style={amountStyle}>${amount}</span>
+        <br/><br/>
+        1,000,000,000 FCT
       </div>
     );
   }
 }
 
-function Sidebar(props){
-    return (
-      <SidebarContainer>
-        {props.children}
-      </SidebarContainer>
-    );
-}
-
-function Send(props){
+function SendPage(props){
   return (
     <div>
       <MainSendHeader>
@@ -50,39 +45,52 @@ function Send(props){
   );
 }
 
+function Header(props){
+  return(
+    <div className={props.className}>
+      <Logo src={logo} alt="logo" />
+      <Title>My Factom Wallet</Title>
+      <Help href="#">
+        Help
+      </Help>
+    </div>
+  );
+}
+
+function SidebarWallets(props) {
+  const listWallets = props.wallets.map((id) =>
+    <Link  to={"/wallet/send/" + id}><WalletSmall id={id}/></Link>
+  );
+
+  return (
+  <span className={props.className}>
+    {listWallets}
+  </span>
+  )
+}
+
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {wallets: [1, 2]}
+  }
+
   render() {
     return (
       <Router>
         <div>
-          <Header>
-            <Logo src={logo} alt="logo" />
-            <Title>My Factom Wallet</Title>
-            <Help href="#">
-              Help
-            </Help>
-          </Header>
+          <StyledHeader/>
           <MainBody>
-            <Sidebar>
-              <Link to="/wallet/1">
-                <WalletSmall id={1}/>
-              </Link>
-              <Link to="/wallet/2">
-                <WalletSmall id={2}/>
-              </Link>
-            </Sidebar>
-            <Route path="/wallet/:walletID" component={Send}/>
+            <StyledSidebarWallets wallets={this.state.wallets}/>
+            <Route exact path="/wallet/send/:walletID" component={SendPage}/>
           </MainBody>
-
         </div>
       </Router>
     );
   }
 }
 
-
-
-const Header = styled.div`
+const StyledHeader = styled(Header)`
   text-align: left;
   padding-left: 81px;
   font-size: 20px;
@@ -99,16 +107,9 @@ const MainBody = styled.div`
   overflow: auto;
 `;
 
-const SendButton = styled.button`
-  color: #ffffff;
-  width: 730px;
-  height: 60px;
-  border-radius: 6px;
-  background-image: linear-gradient(to bottom, #ffa539, #ff8600);
-  margin-left:500px;
-  margin-top:16px;
-  font-size: 20px;
-  font-weight: bold;
+const StyledSidebarWallets = styled(SidebarWallets)`
+    float: left;
+    position:fixed;
 `;
 
 const WalletSmall = styled(Wallet)`
@@ -125,9 +126,18 @@ const WalletSmall = styled(Wallet)`
     text-align: left;
     position: relative;
     margin-Top: 43px;
-    text-decoration: none!important;
-    -webkit-box-shadow: none!important;
-    box-shadow: none!important;
+`;
+
+const SendButton = styled.button`
+  color: #ffffff;
+  width: 730px;
+  height: 60px;
+  border-radius: 6px;
+  background-image: linear-gradient(to bottom, #ffa539, #ff8600);
+  margin-left:500px;
+  margin-top:16px;
+  font-size: 20px;
+  font-weight: bold;
 `;
 
 const Logo = styled.img`
@@ -151,11 +161,6 @@ const Help = styled.a`
   text-align: left;
   color: #ffffff;
   text-decoration: none;
-`;
-
-const SidebarContainer = styled.div`
-    float: left;
-    position:fixed;
 `;
 
 const MainSendHeader = styled.div`
