@@ -7,12 +7,12 @@
     "factomdjs": "^0.2.4",
     "factomjs-util": "^0.1.5",
     "gh-pages": "^1.0.0",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "^1.0.13",
-    "semantic-ui-react": "^0.73.0",
-    "styled-components": "^2.1.2"
+    "react-scripts": "^1.0.14",
+    "semantic-ui-react": "^0.74.2",
+    "styled-components": "^2.2.1"
   },
   "scripts": {
     "predeploy": "npm run build",
