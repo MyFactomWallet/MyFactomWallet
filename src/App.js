@@ -4,7 +4,8 @@ import styled from "styled-components";
 import {
   HashRouter as Router,
   Route,
-  Link
+  Link,
+  Switch
 } from 'react-router-dom'
 import factomUtil from "factomjs-util/dist/factomjs-util";
 import factomD from "factomdjs/dist/factomd";
@@ -14,6 +15,7 @@ class Wallet extends Component {
     super(props);
     this.state = {
       amount: 25,
+      active: false,
     };
   }
 
@@ -23,7 +25,7 @@ class Wallet extends Component {
       fontSize:'35px'
     };
     return (
-      <div className={this.props.className}>
+      <div className={this.props.className} onClick={this.props.onClick}>
         My Wallet #{this.props.id}
         <br/><br/>
         <span style={amountStyle}>${amount}</span>
@@ -35,15 +37,34 @@ class Wallet extends Component {
 }
 
 function SendPage(props){
+
+  function handleSendClick() {
+    console.log('Send Handled');
+  }
+
+  function handleReceiveClick() {
+    console.log('Receive Handled');
+  }
+
+  function handleBackupClick() {
+    console.log('Backup Handled');
+  }
+
+  const walletID = props.match.params.walletID;
   return (
     <div>
       <MainSendHeader>
-          Send Factoid from {props.match.params.walletID}
+        <input onClick={handleSendClick} type="button" value="Send Factoid"/>
+        <input onClick={handleReceiveClick} type="button" value="Receive Factoid" />
+        <input onClick={handleBackupClick} type="button" value="Backup Wallet" />
+
       </MainSendHeader>
       <SendButton onClick={() => alert('Sent!')}>Send Funds</SendButton>
     </div>
   );
 }
+
+
 
 function Header(props){
   return(
@@ -57,16 +78,36 @@ function Header(props){
   );
 }
 
-function SidebarWallets(props) {
-  const listWallets = props.wallets.map((id) =>
-    <Link  to={"/wallet/send/" + id}><WalletSmall id={id}/></Link>
-  );
+class SidebarWallets extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeWallet: 0,
+    };
+  }
 
-  return (
-  <span className={props.className}>
-    {listWallets}
-  </span>
-  )
+  render() {
+    const activeWallet = this.state.activeWallet;
+    const sideBarO = this;
+    const listWallets = this.props.wallets.map(function(item, index){
+    if (activeWallet === index){
+      return <Link key={index} to={"/wallet/send/" + item}><WalletSmall onClick={() => {sideBarO.handleClick(index)}} active id={item}/></Link>
+    } else{
+      return <Link key={index} to={"/wallet/send/" + item}><WalletSmall onClick={() => {sideBarO.handleClick(index)}} id={item}/></Link>
+    }
+    });
+    return (
+      <span className={this.props.className}>
+        {listWallets}
+      </span>
+    );
+  }
+
+  handleClick = (index) => {
+    this.setState({
+      activeWallet: index,
+    });
+  }
 }
 
 class App extends Component {
@@ -82,7 +123,10 @@ class App extends Component {
           <StyledHeader/>
           <MainBody>
             <StyledSidebarWallets wallets={this.state.wallets}/>
-            <Route exact path="/wallet/send/:walletID" component={SendPage}/>
+            <Switch>
+              <Route exact path="/" component={SendPage}/>
+              <Route exact path="/wallet/send/:walletID" component={SendPage}/>
+            </Switch>
           </MainBody>
         </div>
       </Router>
@@ -108,16 +152,15 @@ const MainBody = styled.div`
 `;
 
 const StyledSidebarWallets = styled(SidebarWallets)`
-    float: left;
-    position:fixed;
+    float:left;
 `;
 
 const WalletSmall = styled(Wallet)`
     width: 343px;
     height: 150px;
     border-radius: 6px;
-    background-image: linear-gradient(to bottom, #06c7ff, #0372ff);
-    box-shadow: 0 0 10px 0 #007eff;
+    background-color: #103151;
+    box-shadow: 0 2px 13px 0 rgba(0, 9, 28, 0.5);
     margin-left:81px;
     color: #ffffff;
     padding-left: 19px;
@@ -126,6 +169,10 @@ const WalletSmall = styled(Wallet)`
     text-align: left;
     position: relative;
     margin-Top: 43px;
+
+    ${props => props.active ?
+      'background-image: linear-gradient(to bottom, #06c7ff, #0372ff); box-shadow: 0 0 10px 0 #007eff;' :
+      ''};
 `;
 
 const SendButton = styled.button`
@@ -141,7 +188,6 @@ const SendButton = styled.button`
 `;
 
 const Logo = styled.img`
-  float: left;
   margin-top: 30px;
   margin-right: 13px;
   width: 39.1px;
@@ -149,6 +195,7 @@ const Logo = styled.img`
 `;
 
 const Title = styled.div`
+  display: inline-block;
   padding-top: 35px;
   margin-right:1px;
 `;
