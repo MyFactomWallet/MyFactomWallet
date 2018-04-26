@@ -21,6 +21,8 @@ class SendPage extends Component{
           <div>Wallet {walletID}</div>
         </WalletActionHeader>
         <SendButton onClick={() => alert('Sent!')}>Send Funds</SendButton>
+        <br/>
+        <SendWarning>Please verify all details are correct before hitting send.<br/>We can not reverse mistaken transactions.</SendWarning>
       </div>
     );
   }
@@ -44,10 +46,23 @@ const SendButton = styled.button`
   height: 60px;
   border-radius: 6px;
   background-image: linear-gradient(to bottom, #ffa539, #ff8600);
-  margin-left:500px;
   margin-top:16px;
   font-size: 20px;
   font-weight: bold;
+  float: right;
+`;
+
+const SendWarning = styled.div`
+  width: 730px;
+  height: 44px;
+  opacity: 0.75;
+  font-family: OpenSans;
+  font-size: 14px;
+  line-height: 1.57;
+  color: #ffffff;
+  margin-top:16px;
+  text-align: center;
+  float: right;
 `;
 
 const WalletActionHeader = styled.div`
@@ -56,7 +71,7 @@ const WalletActionHeader = styled.div`
   border-radius: 6px;
   box-shadow: 0 2px 13px 0 rgba(0, 16, 53, 0.5);
   margin-top:44px;
-  margin-left:500px;
+  margin-left: 500px;
   background-color: #eef1f4;
   text-align: center;
   font-size: 14px;
@@ -67,6 +82,7 @@ const WalletActionHeader = styled.div`
 
 const StyledSidebarWallets = styled(Sidebar)`
     float:left;
+    margin-left:81px;
 `;
 
 export default SendPage;

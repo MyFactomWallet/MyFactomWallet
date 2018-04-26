@@ -19,23 +19,30 @@ class App extends Component {
       <Router>
         <div>
           <Header/>
-          <MainBody>
+          <MainBackground>
             <Switch>
-              <Route exact path="/" component={Intro}/>
-              <Route exact path="/wallet/send/:walletID" component={SendPage}/>
-              <Route exact path="/createwallet" component={CreatePage}/>
+              <CenterContent>
+                <Route exact path="/" component={Intro}/>
+                <Route exact path="/wallet/send/:walletID" component={SendPage}/>
+                <Route exact path="/createwallet" component={CreatePage}/>
+              </CenterContent>
             </Switch>
-          </MainBody>
+          </MainBackground>
         </div>
       </Router>
     );
   }
 }
 
-const MainBody = styled.div`
+const MainBackground = styled.div`
   background-image: linear-gradient(to bottom, #002347, #001830);
   height: 939px;
   overflow: auto;
+`;
+
+const CenterContent = styled.div`
+  width: fit-content;
+  margin: 0 auto;
 `;
 
 export default App;

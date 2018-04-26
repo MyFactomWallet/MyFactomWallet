@@ -38,12 +38,12 @@ class Wallet extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      amount: 25,
+      amount: 1203022.02,
     };
   }
 
   render() {
-    const amount = this.state.amount;
+    const amount = '$' + this.state.amount.toLocaleString();
     const amountStyle = {
       fontSize:'35px'
     };
@@ -51,9 +51,9 @@ class Wallet extends Component {
       <div className={this.props.className} onClick={this.props.onClick}>
         My Wallet #{this.props.id}
         <br/><br/>
-        <span style={amountStyle}>${amount}</span>
+        <span style={amountStyle}>{amount}</span>
         <br/><br/>
-        1,000,000 FCT
+        503.2024920 FCT
       </div>
     );
   }
@@ -65,7 +65,6 @@ const WalletSmall = styled(Wallet)`
     border-radius: 6px;
     background-color: #103151;
     box-shadow: 0 2px 13px 0 rgba(0, 9, 28, 0.5);
-    margin-left:81px;
     color: #ffffff;
     padding-left: 19px;
     padding-top: 17px;
@@ -80,13 +79,12 @@ const WalletSmall = styled(Wallet)`
 `;
 
 const AddWallet = styled.div`
-  width: 150px;
   font-family: Montserrat;
   font-size: 20px;
   line-height: 1.25;
   color: #007eff;
-  padding-left: 188px;
   margin-top: 9px;
+  text-align: center;
 `;
 
 export default Sidebar;
