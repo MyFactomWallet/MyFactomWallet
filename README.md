@@ -12,5 +12,5 @@ Many thanks to [MyEtherWallet](https://github.com/MyEtherWallet/) for inspiratio
 
 ## Tools
 [factomjs-util](https://github.com/Emyrk/factomjs-util) A collection of utility functions for factom.  
-[styled-components](https://www.styled-components.com/) Visual primitives for the component age.
+[styled-components](https://www.styled-components.com/) Visual primitives for the component age.  
 [Semantic UI React](https://react.semantic-ui.com/introduction) The official Semantic-UI-React integration.
