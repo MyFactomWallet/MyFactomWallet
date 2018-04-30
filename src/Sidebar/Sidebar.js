@@ -14,9 +14,9 @@ class Sidebar extends Component {
     const sideBar_o = this;
     const listWallets = this.props.wallets.map(function(item, index){
     if (activeWalletID === item){
-      return <Link key={index} to={"/wallet/send/" + item}><WalletSmall onClick={() => {sideBar_o.handleClick(item)}} active id={item}/></Link>
+      return <Link key={index} to={"/wallet/manage/" + item}><WalletSmall onClick={() => {sideBar_o.handleClick(item)}} active id={item}/></Link>
     } else{
-      return <Link key={index} to={"/wallet/send/" + item}><WalletSmall onClick={() => {sideBar_o.handleClick(item)}} id={item}/></Link>
+      return <Link key={index} to={"/wallet/manage/" + item}><WalletSmall onClick={() => {sideBar_o.handleClick(item)}} id={item}/></Link>
     }
     });
     return (
@@ -64,17 +64,16 @@ const WalletSmall = styled(Wallet)`
     height: 150px;
     border-radius: 6px;
     background-color: #103151;
-    box-shadow: 0 2px 13px 0 rgba(0, 9, 28, 0.5);
     color: #ffffff;
     padding-left: 19px;
     padding-top: 17px;
-    font-size: 16px;
-    text-align: left;
     position: relative;
     margin-Top: 43px;
-
+    font-family: Roboto;
+    font-weight: 300;
+    letter-spacing: 0.4px;
     ${props => props.active ?
-      'background-image: linear-gradient(to bottom, #06c7ff, #0372ff); box-shadow: 0 0 10px 0 #007eff;' :
+      'background-image: linear-gradient(to bottom, #06c7ff, #0372ff); box-shadow: 0 0 10px 0 #007eff; font-weight:400' :
       ''};
 `;
 

@@ -13,7 +13,7 @@ class Intro extends Component {
           Choose from the options below to get started
         </IntroSubtext1>
           <Link to={"/createwallet"}><IntroButton>Create New Wallet</IntroButton></Link>
-          <Link to={"/wallet/send/1"}><IntroButton>Import</IntroButton></Link>
+          <Link to={"/wallet/manage/1"}><IntroButton>Import</IntroButton></Link>
         <IntroSubtext2>
           If you aren't sure which option to pick, please consult our <a href="#Help">help guide.</a>
         </IntroSubtext2>

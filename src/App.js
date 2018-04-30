@@ -23,7 +23,7 @@ class App extends Component {
             <Switch>
               <CenterContent>
                 <Route exact path="/" component={Intro}/>
-                <Route exact path="/wallet/send/:walletID" component={SendPage}/>
+                <Route exact path="/wallet/manage/:walletID" component={SendPage}/>
                 <Route exact path="/createwallet" component={CreatePage}/>
               </CenterContent>
             </Switch>
