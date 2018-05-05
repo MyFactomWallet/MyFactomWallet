@@ -3,10 +3,7 @@ import styled from "styled-components";
 import Sidebar from "../Sidebar/Sidebar.js";
 
 class SendPage extends Component{
-  constructor(props) {
-    super(props);
-    this.state = {wallets: [1, 2]}
-  }
+  state = {wallets: [1,2]}
 
   render(){
     const walletID = this.props.match.params.walletID;

@@ -2,12 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import {Link} from 'react-router-dom'
 class Sidebar extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeWalletID: 1
-    };
-  }
+  state = {activeWalletID: 1}
 
   render() {
     const activeWalletID = this.state.activeWalletID;
@@ -35,12 +30,7 @@ class Sidebar extends Component {
 }
 
 class Wallet extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      amount: 1203022.02,
-    };
-  }
+  state = {amount: 1203022.02}
 
   render() {
     const amount = '$' + this.state.amount.toLocaleString();
