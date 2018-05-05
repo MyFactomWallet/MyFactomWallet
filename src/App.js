@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import Intro from "./Intro/Intro.js";
 import Header from "./Header/Header.js";
-import SendPage from "./SendPage/SendPage.js";
+import WalletManager from "./WalletManager/WalletManager.js";
 import CreatePage from "./CreatePage/CreatePage.js";
 import {
   HashRouter as Router,
@@ -23,7 +23,7 @@ class App extends Component {
             <Switch>
               <CenterContent>
                 <Route exact path="/" component={Intro}/>
-                <Route exact path="/wallet/manage/:walletID" component={SendPage}/>
+                <Route path="/wallet/manage/:walletID" component={WalletManager}/>
                 <Route exact path="/createwallet" component={CreatePage}/>
               </CenterContent>
             </Switch>

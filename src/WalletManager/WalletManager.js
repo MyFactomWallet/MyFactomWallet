@@ -1,21 +1,59 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import Sidebar from "../Sidebar/Sidebar.js";
+import {
+  Link,
+  Route,
+  Switch
+} from 'react-router-dom'
 
-class SendPage extends Component{
-  state = {wallets: [1,2]}
+class WalletManager extends Component{
+  state = {wallets: [1,2,3]}
 
   render(){
+    const match = this.props.match;
     const walletID = this.props.match.params.walletID;
-
     return (
       <div>
         <StyledSidebarWallets wallets={this.state.wallets}/>
-        <WalletActionHeader>
-          <input onClick={this.handleSendClick} type="button" value="Send Factoid"/>
-          <input onClick={this.handleReceiveClick} type="button" value="Receive Factoid" />
-          <input onClick={this.handleBackupClick} type="button" value="Backup Wallet" />
-          <br/><br/><br/><br/>
+        <WalletContainer>
+          <WalletContainerTabs>
+            <StyledLink to={`${match.url}/send`}>Send Factoid</StyledLink>
+            <StyledLink to={`${match.url}/receive`}>Receive Factoid</StyledLink>
+            <StyledLink to={`${match.url}/backup`}>Backup Wallet</StyledLink>
+          </WalletContainerTabs>
+          <Route path={`${match.url}/send`} component={WalletSend}/>
+          <Route path={`${match.url}/send`} component={TransactionPreview}/>
+        </WalletContainer>
+        <Route path={`${match.url}/send`} component={SendButton}/>
+      </div>
+    );
+  }
+}
+
+const SendButton = (props) => {
+  return(
+    <div>
+      <Submit onClick={() => alert('Sent!')}>Send Funds</Submit>
+      <br/>
+      <SendWarning>Please verify all details are correct before hitting send.<br/>We can not reverse mistaken transactions.</SendWarning>
+    </div>
+  );
+}
+
+const TransactionPreview = (props) => {
+  return(
+    <StyledTransactionPreview>
+        Transaction Preview
+    </StyledTransactionPreview>
+  );
+}
+
+class WalletSend extends Component {
+
+  render (){
+      return(
+        <div>
           <FormItem>
             <Label htmlFor="recipientInput">Recipient</Label>
             <HelpText>Send to one of my wallets</HelpText>
@@ -29,24 +67,8 @@ class SendPage extends Component{
             <br/>
             <SendInput type="text" name="amountInput" placeholder="Enter Amount ($)"/>
           </FormItem>
-        </WalletActionHeader>
-        <Submit onClick={() => alert('Sent!')}>Send Funds</Submit>
-        <br/>
-        <SendWarning>Please verify all details are correct before hitting send.<br/>We can not reverse mistaken transactions.</SendWarning>
-      </div>
-    );
-  }
-
-  handleSendClick() {
-    console.log('Send Handled');
-  }
-
-  handleReceiveClick() {
-    console.log('Receive Handled');
-  }
-
-  handleBackupClick() {
-    console.log('Backup Handled');
+        </div>
+      );
   }
 }
 
@@ -112,7 +134,7 @@ const SendWarning = styled.div`
   float: right;
 `;
 
-const WalletActionHeader = styled.div`
+const WalletContainer = styled.div`
   width: 730px;
   height: 626px;
   border-radius: 6px;
@@ -127,9 +149,40 @@ const WalletActionHeader = styled.div`
   padding-top:10px;
 `;
 
+const WalletContainerTabs = styled.div`
+  margin-bottom: 50px;
+  background-color: #103152;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  margin-top: -10px;
+  text-align: center;
+  padding-top: 35px;
+  padding-bottom:35px;
+`;
+
+const StyledLink = styled(Link)`
+  color: #ffffff;
+  height: 77px;
+  padding: 28px;
+  &:hover{
+         border-bottom-width: 7px;
+         border-bottom-color: white;
+         border-bottom-style: solid;
+         }
+`;
+
+const StyledTransactionPreview = styled.div`
+  padding-top: 23px;
+  margin-top: 39px;
+  height: 250px;
+  border-radius: 6px;
+  background-color: #eef1f4;
+  font-weight: bold;
+`;
+
 const StyledSidebarWallets = styled(Sidebar)`
     float:left;
     margin-left:81px;
 `;
 
-export default SendPage;
+export default WalletManager;

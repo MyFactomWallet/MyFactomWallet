@@ -9,9 +9,9 @@ class Sidebar extends Component {
     const sideBar_o = this;
     const listWallets = this.props.wallets.map(function(item, index){
     if (activeWalletID === item){
-      return <Link key={index} to={"/wallet/manage/" + item}><WalletSmall onClick={() => {sideBar_o.handleClick(item)}} active id={item}/></Link>
+      return <Link key={index} to={"/wallet/manage/" + item + "/send"}><WalletSmall onClick={() => {sideBar_o.handleClick(item)}} active id={item}/></Link>
     } else{
-      return <Link key={index} to={"/wallet/manage/" + item}><WalletSmall onClick={() => {sideBar_o.handleClick(item)}} id={item}/></Link>
+      return <Link key={index} to={"/wallet/manage/" + item + "/send"}><WalletSmall onClick={() => {sideBar_o.handleClick(item)}} id={item}/></Link>
     }
     });
     return (
@@ -58,7 +58,7 @@ const WalletSmall = styled(Wallet)`
     padding-left: 19px;
     padding-top: 17px;
     position: relative;
-    margin-Top: 43px;
+    margin-bottom: 40px;
     font-family: Roboto;
     font-weight: 300;
     letter-spacing: 0.4px;
