@@ -15,7 +15,8 @@ class WalletManager extends Component{
     const walletID = this.props.match.params.walletID;
     return (
       <div>
-        <StyledSidebarWallets selectWallet={this.selectWallet}
+        <StyledSidebarWallets addWallet={this.addWallet}
+                              selectWallet={this.selectWallet}
                               wallets={this.state.wallets}
                               activeWalletID={this.state.activeWalletID} />
         <WalletContainer>
@@ -31,6 +32,13 @@ class WalletManager extends Component{
       </div>
     );
   }
+
+  addWallet = (newID) => {
+    this.setState(prevState => ({
+      wallets: prevState.wallets.concat(newID),
+      activeWalletID: newID
+    }))
+  };
 
   selectWallet = (walletID) => {
     this.setState(prevState => ({

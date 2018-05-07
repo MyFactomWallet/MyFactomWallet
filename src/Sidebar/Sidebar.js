@@ -19,9 +19,13 @@ class Sidebar extends Component {
     return (
       <span className={this.props.className}>
         {listWallets}
-        <AddWallet>+ New Wallet</AddWallet>
+        <AddWallet onClick={this.addWallet}>+ New Wallet</AddWallet>
       </span>
     );
+  }
+
+  addWallet = () => {
+    this.props.addWallet(this.props.wallets.length + 1);
   }
 
   handleClick = (walletID) => {
@@ -70,8 +74,10 @@ const AddWallet = styled.div`
   font-size: 20px;
   line-height: 1.25;
   color: #007eff;
-  margin-top: 9px;
   text-align: center;
+  width: 150px;
+  margin: 0 auto;
+  cursor: pointer;
 `;
 
 const DollarAmount = styled.span`
