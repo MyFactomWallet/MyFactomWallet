@@ -45,7 +45,7 @@ const Wallet = (props) => {
       <br/><br/>
       <DollarAmount active={props.active} >{dollarAmountText}</DollarAmount>
       <br/><br/>
-      {factoidAmountText} {props.active == true}
+      {factoidAmountText}
     </div>
   );
 }

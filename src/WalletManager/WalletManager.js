@@ -2,33 +2,49 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import Sidebar from "../Sidebar/Sidebar.js";
 import {
-  Link,
+  NavLink,
   Route
 } from 'react-router-dom'
 
-class WalletManager extends Component{
-  state = {wallets: [1,2,3],
-           activeWalletID: 1}
+class WalletManager extends Component {
+  state = {
+    wallets: [1, 2, 3],
+    activeWalletID: 1
+  };
 
-  render(){
+  render() {
     const match = this.props.match;
     const walletID = this.props.match.params.walletID;
+    const activeTabStyle = {
+      borderBottomWidth: '7px',
+      borderBottomColor: 'white',
+      borderBottomStyle: 'solid',
+      opacity: 'unset'
+    };
     return (
       <div>
-        <StyledSidebarWallets addWallet={this.addWallet}
-                              selectWallet={this.selectWallet}
-                              wallets={this.state.wallets}
-                              activeWalletID={this.state.activeWalletID} />
+        <StyledSidebarWallets
+          addWallet={this.addWallet}
+          selectWallet={this.selectWallet}
+          wallets={this.state.wallets}
+          activeWalletID={this.state.activeWalletID}
+        />
         <WalletContainer>
           <WalletContainerTabs>
-            <StyledLink to={`${match.url}/send`}>Send Factoid</StyledLink>
-            <StyledLink to={`${match.url}/receive`}>Receive Factoid</StyledLink>
-            <StyledLink to={`${match.url}/backup`}>Backup Wallet</StyledLink>
+            <StyledLink
+              activeStyle={activeTabStyle}
+              to={`${match.url}/send`}>Send Factoid</StyledLink>
+            <StyledLink
+              activeStyle={activeTabStyle}
+              to={`${match.url}/receive`}>Receive Factoid</StyledLink>
+            <StyledLink
+              activeStyle={activeTabStyle}
+              to={`${match.url}/backup`}>Backup Wallet</StyledLink>
           </WalletContainerTabs>
-          <Route path={`${match.url}/send`} component={WalletSend}/>
-          <Route path={`${match.url}/send`} component={TransactionPreview}/>
+          <Route path={`${match.url}/send`} component={WalletSend} />
+          <Route path={`${match.url}/send`} component={TransactionPreview} />
         </WalletContainer>
-        <Route path={`${match.url}/send`} component={SendButton}/>
+        <Route path={`${match.url}/send`} component={SendButton} />
       </div>
     );
   }
@@ -37,15 +53,16 @@ class WalletManager extends Component{
     this.setState(prevState => ({
       wallets: prevState.wallets.concat(newID),
       activeWalletID: newID
-    }))
+    }));
   };
 
   selectWallet = (walletID) => {
     this.setState(prevState => ({
       activeWalletID: walletID
-    }))
+    }));
   };
 }
+
 
 const SendButton = (props) => {
   return(
@@ -64,29 +81,36 @@ const TransactionPreview = (props) => {
     </StyledTransactionPreview>
   );
 }
+const WalletSend = props => {
+  return (
+    <div>
+      <FormItem>
+        <Label htmlFor="recipientInput">Recipient</Label>
+        <HelpText>Send to one of my wallets</HelpText>
+        <br />
+        <SendInput
+          type="text"
+          name="recipientInput"
+          placeholder="Enter recipient address"
+          required
+        />
+      </FormItem>
+      <br />
+      <FormItem>
+        <Label htmlFor="amountInput">Amount</Label>
+        <HelpText>Use Max</HelpText>
+        <br />
+        <SendInput
+          type="text"
+          name="amountInput"
+          placeholder="Enter Amount ($)"
+          required
+        />
+      </FormItem>
+    </div>
+  );
+};
 
-class WalletSend extends Component {
-
-  render (){
-      return(
-        <div>
-          <FormItem>
-            <Label htmlFor="recipientInput">Recipient</Label>
-            <HelpText>Send to one of my wallets</HelpText>
-            <br/>
-            <SendInput type="text" name="recipientInput" placeholder="Enter recipient address"/>
-          </FormItem>
-          <br/>
-          <FormItem>
-            <Label htmlFor="amountInput">Amount</Label>
-            <HelpText>Use Max</HelpText>
-            <br/>
-            <SendInput type="text" name="amountInput" placeholder="Enter Amount ($)"/>
-          </FormItem>
-        </div>
-      );
-  }
-}
 
 const FormItem = styled.div`
   text-align: left;
@@ -99,30 +123,36 @@ const Label = styled.label`
   height: 18px;
   font-weight: bold;
   color: #001830;
+  letter-spacing: normal;
+  margin-left: 12px;
 `;
 
 const HelpText = styled.div`
   font-size: 12px;
-  font-weight: 500;
+  font-weight: bold;
   text-align: right;
   float:right;
   color: #007eff;
+  letter-spacing: normal;
 `;
 
 const SendInput = styled.input`
   width: 651px;
   height: 55px;
   border-radius: 6px;
-  border: solid 1px #007eff;
+  border: none;
   background-color: #eef1f4;
   font-size: 20px;
   font-weight: 300;
   padding-left: 12px;
   margin-top: 7px;
   color: #007eff;
-  &:hover{
+  outline-style: none;
+  &:focus{
          background-color: #e6f3ff;
+         border: solid 1px #007eff;
          }
+
 `;
 
 const Submit = styled.button`
@@ -153,7 +183,7 @@ const SendWarning = styled.div`
 const WalletContainer = styled.div`
   width: 730px;
   height: 626px;
-  border-radius: 6px;
+  border-radius: 10px;
   box-shadow: 0 2px 13px 0 rgba(0, 16, 53, 0.5);
   margin-top:44px;
   margin-left: 500px;
@@ -162,7 +192,7 @@ const WalletContainer = styled.div`
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 1.4px;
-  padding-top:10px;
+  padding-top: 10px;
 `;
 
 const WalletContainerTabs = styled.div`
@@ -176,15 +206,11 @@ const WalletContainerTabs = styled.div`
   padding-bottom:35px;
 `;
 
-const StyledLink = styled(Link)`
+const StyledLink = styled(NavLink)`
   color: #ffffff;
   height: 77px;
   padding: 28px;
-  &:hover{
-         border-bottom-width: 7px;
-         border-bottom-color: white;
-         border-bottom-style: solid;
-         }
+  opacity: 0.5;
 `;
 
 const StyledTransactionPreview = styled.div`
@@ -194,6 +220,7 @@ const StyledTransactionPreview = styled.div`
   border-radius: 6px;
   background-color: #eef1f4;
   font-weight: bold;
+  letter-spacing: normal;
 `;
 
 const StyledSidebarWallets = styled(Sidebar)`
