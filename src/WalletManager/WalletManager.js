@@ -3,19 +3,21 @@ import styled from "styled-components";
 import Sidebar from "../Sidebar/Sidebar.js";
 import {
   Link,
-  Route,
-  Switch
+  Route
 } from 'react-router-dom'
 
 class WalletManager extends Component{
-  state = {wallets: [1,2,3]}
+  state = {wallets: [1,2,3],
+           activeWalletID: 1}
 
   render(){
     const match = this.props.match;
     const walletID = this.props.match.params.walletID;
     return (
       <div>
-        <StyledSidebarWallets wallets={this.state.wallets}/>
+        <StyledSidebarWallets selectWallet={this.selectWallet}
+                              wallets={this.state.wallets}
+                              activeWalletID={this.state.activeWalletID} />
         <WalletContainer>
           <WalletContainerTabs>
             <StyledLink to={`${match.url}/send`}>Send Factoid</StyledLink>
@@ -29,6 +31,12 @@ class WalletManager extends Component{
       </div>
     );
   }
+
+  selectWallet = (walletID) => {
+    this.setState(prevState => ({
+      activeWalletID: walletID
+    }))
+  };
 }
 
 const SendButton = (props) => {

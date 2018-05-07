@@ -1,19 +1,21 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router-dom';
+
 class Sidebar extends Component {
-  state = {activeWalletID: 1}
 
   render() {
-    const activeWalletID = this.state.activeWalletID;
+    const activeWalletID = this.props.activeWalletID;
     const sideBar_o = this;
+
     const listWallets = this.props.wallets.map(function(item, index){
-    if (activeWalletID === item){
-      return <Link key={index} to={"/wallet/manage/" + item + "/send"}><WalletSmall onClick={() => {sideBar_o.handleClick(item)}} active id={item}/></Link>
-    } else{
-      return <Link key={index} to={"/wallet/manage/" + item + "/send"}><WalletSmall onClick={() => {sideBar_o.handleClick(item)}} id={item}/></Link>
-    }
+      const isActive = (item === activeWalletID) ? true : false;
+
+      return <Link key={index} to={"/wallet/manage/" + item + "/send"}>
+              <WalletSmall amount={1203022.02} onClick={() => {sideBar_o.handleClick(item)}} active={isActive} id={item}/>
+             </Link>
     });
+
     return (
       <span className={this.props.className}>
         {listWallets}
@@ -23,31 +25,27 @@ class Sidebar extends Component {
   }
 
   handleClick = (walletID) => {
-    this.setState({
-      activeWalletID: walletID,
-    });
+    this.props.selectWallet(walletID);
   }
+
 }
 
-class Wallet extends Component {
-  state = {amount: 1203022.02}
+const Wallet = (props) => {
 
-  render() {
-    const amount = '$' + this.state.amount.toLocaleString();
-    const amountStyle = {
-      fontSize:'35px'
-    };
-    return (
-      <div className={this.props.className} onClick={this.props.onClick}>
-        My Wallet #{this.props.id}
-        <br/><br/>
-        <span style={amountStyle}>{amount}</span>
-        <br/><br/>
-        503.2024920 FCT
-      </div>
-    );
-  }
+  const dollarAmountText = '$' + props.amount.toLocaleString();
+  const factoidAmountText = (props.amount/25).toLocaleString() + ' FCT';
+
+  return (
+    <div className={props.className} onClick={props.onClick}>
+      My Wallet #{props.id}
+      <br/><br/>
+      <DollarAmount active={props.active} >{dollarAmountText}</DollarAmount>
+      <br/><br/>
+      {factoidAmountText} {props.active == true}
+    </div>
+  );
 }
+
 
 const WalletSmall = styled(Wallet)`
     width: 343px;
@@ -63,7 +61,7 @@ const WalletSmall = styled(Wallet)`
     font-weight: 300;
     letter-spacing: 0.4px;
     ${props => props.active ?
-      'background-image: linear-gradient(to bottom, #06c7ff, #0372ff); box-shadow: 0 0 10px 0 #007eff; font-weight:400' :
+      'background-image: linear-gradient(to bottom, #06c7ff, #0372ff); box-shadow: 0 0 10px 0 #007eff; ' :
       ''};
 `;
 
@@ -74,6 +72,14 @@ const AddWallet = styled.div`
   color: #007eff;
   margin-top: 9px;
   text-align: center;
+`;
+
+const DollarAmount = styled.span`
+  font-size: 35px;
+
+  ${props => props.active ?
+    'font-weight: 400;' :
+    ''};
 `;
 
 export default Sidebar;
