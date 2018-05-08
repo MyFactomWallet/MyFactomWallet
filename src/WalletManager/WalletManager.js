@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import Sidebar from "../Sidebar/Sidebar.js";
+import TransactionPreview from "./TransactionPreview.js";
+
 import {
   NavLink,
   Route
@@ -9,7 +11,8 @@ import {
 class WalletManager extends Component {
   state = {
     wallets: [1, 2, 3],
-    activeWalletID: 1
+    activeWalletID: 1,
+    sendDollarAmount: 0
   };
 
   render() {
@@ -41,10 +44,11 @@ class WalletManager extends Component {
               activeStyle={activeTabStyle}
               to={`${match.url}/backup`}>Backup Wallet</StyledLink>
           </WalletContainerTabs>
-          <Route path={`${match.url}/send`} component={WalletSend} />
-          <Route path={`${match.url}/send`} component={TransactionPreview} />
+          <Route path={`${match.url}/send`} render={() => <WalletSend updateSendAmount={this.updateSendAmount} test={1}/>} />
+          <Route path={`${match.url}/send`}
+                 render={() => <TransactionPreview networkFee={.02} dollarAmount={this.state.sendDollarAmount}/>} />
         </WalletContainer>
-        <Route path={`${match.url}/send`} component={SendButton} />
+        <Route path={`${match.url}/send`} render={() => <SendButton/>} />
       </div>
     );
   }
@@ -53,6 +57,12 @@ class WalletManager extends Component {
     this.setState(prevState => ({
       wallets: prevState.wallets.concat(newID),
       activeWalletID: newID
+    }));
+  };
+
+  updateSendAmount = (amount) => {
+    this.setState(prevState => ({
+      sendDollarAmount: amount
     }));
   };
 
@@ -74,41 +84,42 @@ const SendButton = (props) => {
   );
 }
 
-const TransactionPreview = (props) => {
-  return(
-    <StyledTransactionPreview>
-        Transaction Preview
-    </StyledTransactionPreview>
-  );
-}
-const WalletSend = props => {
-  return (
-    <div>
-      <FormItem>
-        <Label htmlFor="recipientInput">Recipient</Label>
-        <HelpText>Send to one of my wallets</HelpText>
+class WalletSend extends Component {
+
+  handleChange = (event) => {
+    this.props.updateSendAmount(event.target.value);
+  }
+
+  render(){
+    return (
+      <div>
+        <FormItem>
+          <Label htmlFor="recipientInput">Recipient</Label>
+          <HelpText>Send to one of my wallets</HelpText>
+          <br />
+          <SendInput
+            type="text"
+            name="recipientInput"
+            placeholder="Enter recipient address"
+            required
+          />
+        </FormItem>
         <br />
-        <SendInput
-          type="text"
-          name="recipientInput"
-          placeholder="Enter recipient address"
-          required
-        />
-      </FormItem>
-      <br />
-      <FormItem>
-        <Label htmlFor="amountInput">Amount</Label>
-        <HelpText>Use Max</HelpText>
-        <br />
-        <SendInput
-          type="text"
-          name="amountInput"
-          placeholder="Enter Amount ($)"
-          required
-        />
-      </FormItem>
-    </div>
-  );
+        <FormItem>
+          <Label htmlFor="amountInput">Amount</Label>
+          <HelpText>Use Max</HelpText>
+          <br />
+          <SendInput
+            type="number"
+            name="amountInput"
+            placeholder="Enter Amount ($)"
+            onChange={this.handleChange}
+            required
+          />
+        </FormItem>
+      </div>
+    );
+  }
 };
 
 
@@ -152,7 +163,6 @@ const SendInput = styled.input`
          background-color: #e6f3ff;
          border: solid 1px #007eff;
          }
-
 `;
 
 const Submit = styled.button`
@@ -165,6 +175,7 @@ const Submit = styled.button`
   font-size: 20px;
   font-weight: bold;
   float: right;
+  cursor: pointer;
 `;
 
 const SendWarning = styled.div`
@@ -211,16 +222,6 @@ const StyledLink = styled(NavLink)`
   height: 77px;
   padding: 28px;
   opacity: 0.5;
-`;
-
-const StyledTransactionPreview = styled.div`
-  padding-top: 23px;
-  margin-top: 39px;
-  height: 250px;
-  border-radius: 6px;
-  background-color: #eef1f4;
-  font-weight: bold;
-  letter-spacing: normal;
 `;
 
 const StyledSidebarWallets = styled(Sidebar)`
