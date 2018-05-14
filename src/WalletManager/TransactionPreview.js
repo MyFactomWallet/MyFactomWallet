@@ -1,5 +1,5 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 
 const TransactionPreview = (props) => {
 	const transferDollarAmount = props.dollarAmount;
@@ -10,12 +10,14 @@ const TransactionPreview = (props) => {
 	const totalDollarAmount = transferDollarAmount + dollarFee;
 	const totalFactoidAmount = transferFactoidAmount + factoidFee;
 
-	const transferDollarAmountText = "$" + transferDollarAmount.toLocaleString() + " USD";
+	const transferDollarAmountText =
+		'$' + transferDollarAmount.toLocaleString() + ' USD';
 	const transferFactoidAmountText = transferFactoidAmount.toLocaleString();
-	const totalDollarAmountText = "$" + totalDollarAmount.toLocaleString() + " USD";
-	const totalFactoidAmountText = totalFactoidAmount.toLocaleString() + " FCT";
-	const feeDollarAmountText = "$" + dollarFee.toLocaleString() + " USD";
-	const feeFactoidAmountText = factoidFee.toLocaleString() + " FCT";
+	const totalDollarAmountText =
+		'$' + totalDollarAmount.toLocaleString() + ' USD';
+	const totalFactoidAmountText = totalFactoidAmount.toLocaleString() + ' FCT';
+	const feeDollarAmountText = '$' + dollarFee.toLocaleString() + ' USD';
+	const feeFactoidAmountText = factoidFee.toLocaleString() + ' FCT';
 
 	return (
 		<StyledTransactionPreview>
