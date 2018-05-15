@@ -88,7 +88,7 @@ class WalletManager extends Component {
 const SendButton = (props) => {
 	return (
 		<div>
-			<Submit onClick={() => alert('Sent!')}>Send Funds</Submit>
+			<Submit disabled>Send Funds</Submit>
 			<br />
 			<SendWarning>
 				Please verify all details are correct before hitting send.<br />We can
@@ -99,10 +99,6 @@ const SendButton = (props) => {
 };
 
 class WalletSend extends Component {
-	handleChange = (event) => {
-		this.props.updateSendAmount(event.target.value);
-	};
-
 	render() {
 		return (
 			<div>
@@ -126,7 +122,9 @@ class WalletSend extends Component {
 						type="number"
 						name="amountInput"
 						placeholder="Enter Amount ($)"
-						onChange={this.handleChange}
+						onChange={(event) =>
+							this.props.updateSendAmount(event.target.value)
+						}
 						required
 					/>
 				</FormItem>

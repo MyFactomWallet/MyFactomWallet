@@ -7,18 +7,16 @@ class Sidebar extends Component {
 		const activeWalletID = this.props.activeWalletID;
 		const sideBar_o = this;
 
-		const listWallets = this.props.wallets.map(function(item, index) {
-			const isActive = item === activeWalletID ? true : false;
+		const listWallets = this.props.wallets.map(function(walletID, index) {
+			const isActive = walletID === activeWalletID ? true : false;
 
 			return (
-				<Link key={index} to={'/wallet/manage/' + item + '/send'}>
+				<Link key={index} to={'/wallet/manage/' + walletID + '/send'}>
 					<WalletSmall
 						amount={1203022.02}
-						onClick={() => {
-							sideBar_o.handleClick(item);
-						}}
+						onClick={() => sideBar_o.props.selectWallet(walletID)}
 						active={isActive}
-						id={item}
+						id={walletID}
 					/>
 				</Link>
 			);
@@ -27,18 +25,14 @@ class Sidebar extends Component {
 		return (
 			<span className={this.props.className}>
 				{listWallets}
-				<AddWallet onClick={this.addWallet}>+ New Wallet</AddWallet>
+				<AddWallet
+					onClick={() => this.props.addWallet(this.props.wallets.length + 1)}
+				>
+					+ New Wallet
+				</AddWallet>
 			</span>
 		);
 	}
-
-	addWallet = () => {
-		this.props.addWallet(this.props.wallets.length + 1);
-	};
-
-	handleClick = (walletID) => {
-		this.props.selectWallet(walletID);
-	};
 }
 
 const Wallet = (props) => {
