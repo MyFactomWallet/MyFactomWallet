@@ -1,46 +1,46 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
-import Intro from './Intro/Intro.js';
+import LandingPage from './LandingPage/LandingPage.js';
 import Header from './Header/Header.js';
 import WalletManager from './WalletManager/WalletManager.js';
-import CreatePage from './CreatePage/CreatePage.js';
+import CreateWallet from './CreateWallet/CreateWallet.js';
+import Help from './Help/Help.js';
+import Vote from './Vote/Vote.js';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
-import factomUtil from 'factomjs-util/dist/factomjs-util';
 import factomD from 'factomdjs/dist/factomd';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import withRootTheme from './withRootTheme';
 
 class App extends Component {
 	render() {
+		const { classes } = this.props;
 		return (
 			<Router>
 				<div>
 					<Header />
-					<MainBackground>
-						<Switch>
-							<CenterContent>
-								<Route exact path="/" component={Intro} />
-								<Route
-									path="/wallet/manage/:walletID"
-									component={WalletManager}
-								/>
-								<Route exact path="/createwallet" component={CreatePage} />
-							</CenterContent>
-						</Switch>
-					</MainBackground>
+					<Switch>
+						<div className={classes.body}>
+							<Route exact path="/" component={LandingPage} />
+							<Route exact path="/createwallet" component={CreateWallet} />
+							<Route path="/wallet/manage/" component={WalletManager} />
+							<Route exact path="/vote" component={Vote} />
+							<Route exact path="/help" component={Help} />
+						</div>
+					</Switch>
 				</div>
 			</Router>
 		);
 	}
 }
+App.propTypes = {
+	classes: PropTypes.object.isRequired,
+};
 
-const MainBackground = styled.div`
-	background-image: linear-gradient(to bottom, #002347, #001830);
-	height: 939px;
-	overflow: auto;
-`;
+const styles = (theme) => ({
+	body: {
+		width: 'fit-content',
+		margin: '0 auto',
+	},
+});
 
-const CenterContent = styled.div`
-	width: fit-content;
-	margin: 0 auto;
-`;
-
-export default App;
+export default withRootTheme(withStyles(styles)(App));
