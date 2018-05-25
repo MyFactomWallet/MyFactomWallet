@@ -5,16 +5,21 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import SendFactoidForm from './SendFactoidForm.js';
-import TransactionPreview from './TransactionPreview.js';
-import Button from '@material-ui/core/Button';
 
 class WalletTabs extends React.Component {
 	state = {
 		value: 0,
+		sendFactoidAmount: 0,
 	};
 
 	handleChange = (event, value) => {
 		this.setState({ value });
+	};
+
+	updateSendFactoidAmount = (amount) => {
+		this.setState((prevState) => ({
+			sendFactoidAmount: amount,
+		}));
 	};
 
 	render() {
@@ -37,23 +42,9 @@ class WalletTabs extends React.Component {
 				{value === 0 && (
 					<TabContainer>
 						<SendFactoidForm
-							updateSendFactoidAmount={this.props.updateSendFactoidAmount}
+							updateSendFactoidAmount={this.updateSendFactoidAmount}
+							sendFactoidAmount={this.state.sendFactoidAmount}
 						/>
-						<TransactionPreview factoidAmount={this.props.sendFactoidAmount} />
-						<br />
-						<Button
-							className={classes.sendButton}
-							variant="raised"
-							color="primary"
-						>
-							Send Funds
-						</Button>
-						<br />
-						<br />
-						<Typography>
-							Please verify all details are correct before hitting send.<br />We
-							can not reverse mistaken transactions.
-						</Typography>
 					</TabContainer>
 				)}
 				{value === 1 && <TabContainer>Coming Soon</TabContainer>}
@@ -68,7 +59,7 @@ WalletTabs.propTypes = {
 
 function TabContainer(props) {
 	return (
-		<Typography component="div" style={{ padding: 8 * 3 }}>
+		<Typography component="div" style={{ padding: 55 }}>
 			{props.children}
 		</Typography>
 	);
@@ -79,10 +70,6 @@ TabContainer.propTypes = {
 
 const styles = {
 	root: { height: '675px', textAlign: 'center' },
-	sendButton: {
-		width: '50%',
-		height: '24px',
-	},
 };
 
 export default withStyles(styles)(WalletTabs);

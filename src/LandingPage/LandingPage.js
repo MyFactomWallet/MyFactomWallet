@@ -13,9 +13,6 @@ class LandingPage extends Component {
 			<div className={classes.body}>
 				<div />
 				<Typography variant="headline">
-					You can use MyFactomToolbox to hold, send, and receive Factoids.
-				</Typography>
-				<Typography variant="body2">
 					Choose from the options below to get started
 				</Typography>
 				<br />
@@ -49,8 +46,8 @@ class LandingPage extends Component {
 					Vote
 				</Button>
 				<Typography variant="caption">
-					If you aren't sure which option to pick, please consult our{' '}
-					<a href="#Help">help guide.</a>
+					If you aren't sure which option to pick, please consult our
+					<a href="#Help"> help guide.</a>
 				</Typography>
 			</div>
 		);

@@ -14,6 +14,8 @@ Many thanks to [MyEtherWallet](https://github.com/MyEtherWallet/) for inspiratio
 
 ## Tools
 
+[factomjs](https://github.com/PaulBernier/factomjs)
+Library to interact easily with Factom blockchain.  
 [factomjs-util](https://github.com/Emyrk/factomjs-util) A collection of utility functions for factom.  
 [Material-UI](https://material-ui.com/) The official Semantic-UI-React integration.  
 [styled-components](https://www.styled-components.com/) Visual primitives for the component age.  

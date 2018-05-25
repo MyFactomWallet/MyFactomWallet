@@ -4,11 +4,9 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import { convertToDollar } from '../Utils/Utils.js';
 
 const WalletCard = (props) => {
-	const factoidAmountText = props.amount.toLocaleString() + ' FCT';
-	const dollarAmountText = '$' + convertToDollar(props.amount).toLocaleString();
+	const factoidBalanceText = props.balance.toLocaleString() + ' FCT';
 
 	const { classes, active } = props;
 
@@ -18,19 +16,18 @@ const WalletCard = (props) => {
 				//Active Card
 				<CardContent className={classes.activeCard}>
 					<Typography>Factoid Wallet #{props.id}</Typography>
-					<Typography
-						className={classes.amount}
-						variant="headline"
-						component="h2"
-					>
-						{factoidAmountText}
+					<Typography className={classes.balance} variant="headline">
+						{factoidBalanceText}
 					</Typography>
-					<Typography>{dollarAmountText}</Typography>
+					<Typography className={classes.public_address}>
+						{props.public_address}
+					</Typography>
 				</CardContent>
 			) : (
 				//Inactive Card
-				<CardContent>
+				<CardContent className={classes.inactiveCard}>
 					<Typography>Factoid Wallet #{props.id}</Typography>
+					<Typography>{factoidBalanceText}</Typography>
 				</CardContent>
 			)}
 		</Card>
@@ -41,11 +38,18 @@ WalletCard.propTypes = {
 };
 
 const styles = {
-	amount: {
+	balance: {
 		fontSize: '35px',
 	},
 	activeCard: {
 		border: '3px solid #757de8',
+	},
+	inactiveCard: {
+		display: 'flex',
+		justifyContent: 'space-between',
+	},
+	public_address: {
+		wordWrap: 'break-word',
 	},
 };
 

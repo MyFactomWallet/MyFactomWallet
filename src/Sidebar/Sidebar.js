@@ -9,25 +9,25 @@ import { withStyles } from '@material-ui/core/styles';
 
 class Sidebar extends Component {
 	render() {
-		const activeWalletID = this.props.activeWalletID;
-		const sideBar_o = this;
 		const { classes } = this.props;
 
-		const listWallets = this.props.wallets.map(function(walletID, index) {
+		const activeWalletID = this.props.activeWalletID;
+		const sideBar_o = this;
+
+		const listWallets = this.props.wallets.map(function(wallet, index) {
+			const walletID = wallet.id;
+
 			const isActive = walletID === activeWalletID ? true : false;
 
 			return (
-				<ListItem>
-					<Link
-						className={classes.fullWidth}
-						key={index}
-						to={'/wallet/manage/'}
-					>
+				<ListItem key={index}>
+					<Link className={classes.fullWidth} to={'/wallet/manage/'}>
 						<WalletCard
-							amount={10000}
 							onClick={() => sideBar_o.props.selectWallet(walletID)}
 							active={isActive}
+							balance={wallet.balance}
 							id={walletID}
+							public_address={wallet.public_address}
 						/>
 					</Link>
 				</ListItem>
