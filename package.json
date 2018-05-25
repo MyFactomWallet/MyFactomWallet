@@ -6,15 +6,13 @@
 	"dependencies": {
 		"@material-ui/core": "^1.0.0",
 		"@material-ui/icons": "^1.0.0",
-		"factom": "^0.1.9",
-		"factomdjs": "^0.4.1",
-		"factomjs-util": "^0.1.5",
-		"gh-pages": "^1.0.0",
-		"react": "^16.0.0",
-		"react-dom": "^16.0.0",
+		"factomjs-util": "0.1.5",
+		"gh-pages": "^1.1.0",
+		"react": "^16.4.0",
+		"react-dom": "^16.4.0",
 		"react-router-dom": "^4.2.2",
-		"react-scripts": "^1.0.14",
-		"styled-components": "^3.2.6"
+		"react-scripts": "^1.1.4",
+		"styled-components": "^3.3.0"
 	},
 	"scripts": {
 		"precommit": "lint-staged",
@@ -27,7 +25,7 @@
 	},
 	"devDependencies": {
 		"husky": "^0.14.3",
-		"lint-staged": "^7.1.0",
+		"lint-staged": "^7.1.2",
 		"prettier": "^1.12.1"
 	},
 	"lint-staged": {
