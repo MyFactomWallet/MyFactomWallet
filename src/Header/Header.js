@@ -26,7 +26,7 @@ function ButtonAppBar(props) {
 
 				<Typography variant="title" color="inherit" className={classes.flex}>
 					<Link className={classes.title} to="/">
-						MyFactomToolbox
+						MyFactomWallet
 					</Link>
 				</Typography>
 

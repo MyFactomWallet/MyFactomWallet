@@ -36,15 +36,6 @@ class LandingPage extends Component {
 					Import Wallet
 				</Button>
 				<br />
-				<Button
-					className={classes.button}
-					component={Link}
-					to={'/vote/'}
-					variant="outlined"
-					color="secondary"
-				>
-					Vote
-				</Button>
 				<Typography variant="caption">
 					If you aren't sure which option to pick, please consult our
 					<a href="#Help"> help guide.</a>
