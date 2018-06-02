@@ -47,9 +47,10 @@ ButtonAppBar.propTypes = {
 const styles = {
 	root: {
 		flexGrow: 1,
+		marginBottom: '15px',
 	},
 	toolbar: {
-		width: '76%',
+		width: '90%',
 		margin: '0 auto',
 	},
 	flex: {

@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
+import AddWalletModal from '../AddWallet/AddWalletModal.js';
 
 class LandingPage extends Component {
 	render() {
@@ -11,30 +12,31 @@ class LandingPage extends Component {
 
 		return (
 			<div className={classes.body}>
-				<div />
 				<Typography variant="headline">
 					Choose from the options below to get started
 				</Typography>
 				<br />
+				<AddWalletModal addWallet={this.props.addWallet} />
 				<Button
 					className={classes.button}
 					component={Link}
-					to={'/createwallet'}
+					to={'/wallet/manage'}
 					variant="outlined"
 					color="primary"
 				>
-					Create New Wallet
+					Manage Wallets
 				</Button>
 				<br />
 				<Button
 					className={classes.button}
 					component={Link}
-					to={'/wallet/manage/'}
+					to={'/vote'}
 					variant="outlined"
-					color="primary"
+					color="secondary"
 				>
-					Import Wallet
+					Vote
 				</Button>
+
 				<br />
 				<Typography variant="caption">
 					If you aren't sure which option to pick, please consult our
@@ -56,7 +58,7 @@ const styles = (theme) => ({
 		marginTop: '20px',
 	},
 	button: {
-		width: '277px;',
+		width: '275px;',
 		height: '50px',
 		marginBottom: '15px',
 	},

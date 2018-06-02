@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Sidebar from '../Sidebar/Sidebar.js';
-import WalletTabs from './WalletTabs.js';
+import WalletTabContent from './WalletTabContent.js';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
@@ -22,7 +22,7 @@ class WalletManager extends Component {
 				</Grid>
 				<Grid item xs={8} className={classes.root}>
 					<Paper>
-						<WalletTabs />
+						<WalletTabContent />
 					</Paper>
 				</Grid>
 			</Grid>

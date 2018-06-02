@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
 import WalletCard from './WalletCard.js';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import AddWalletModal from '../AddWallet/AddWalletModal.js';
 
 class Sidebar extends Component {
 	render() {
@@ -35,17 +35,10 @@ class Sidebar extends Component {
 		});
 
 		return (
-			<List className={classes.addNew}>
+			<List className={classes.fullWidth}>
 				{listWallets}
 				<ListItem>
-					<Button
-						className={classes.fullWidth}
-						variant="outlined"
-						size="large"
-						onClick={() => this.props.addWallet(this.props.wallets.length + 1)}
-					>
-						+ New Wallet
-					</Button>
+					<AddWalletModal addWallet={this.props.addWallet} />
 				</ListItem>
 			</List>
 		);
@@ -58,9 +51,6 @@ Sidebar.propTypes = {
 const styles = {
 	fullWidth: {
 		width: '100%',
-	},
-	addNew: {
-		paddingLeft: '10px',
 	},
 };
 

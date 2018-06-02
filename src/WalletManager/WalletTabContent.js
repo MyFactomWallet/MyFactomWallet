@@ -6,7 +6,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import SendFactoidForm from './SendFactoidForm.js';
 
-class WalletTabs extends React.Component {
+class WalletTabContent extends React.Component {
 	state = {
 		value: 0,
 		sendFactoidAmount: 0,
@@ -37,7 +37,7 @@ class WalletTabs extends React.Component {
 				>
 					<Tab label="Send Factoid" />
 					<Tab label="Wallet Info" />
-					<Tab label="Entry Credits" />
+					<Tab label="Convert to EC" />
 				</Tabs>
 				{value === 0 && (
 					<TabContainer>
@@ -53,7 +53,7 @@ class WalletTabs extends React.Component {
 		);
 	}
 }
-WalletTabs.propTypes = {
+WalletTabContent.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
@@ -72,4 +72,4 @@ const styles = {
 	root: { height: '675px', textAlign: 'center' },
 };
 
-export default withStyles(styles)(WalletTabs);
+export default withStyles(styles)(WalletTabContent);
