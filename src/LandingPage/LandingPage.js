@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import AddWalletModal from '../AddWallet/AddWalletModal.js';
+import WhereToVote from '@material-ui/icons/WhereToVoteOutlined';
+import AccountBalance from '@material-ui/icons/AccountBalanceOutlined';
 
 class LandingPage extends Component {
 	render() {
@@ -24,7 +26,8 @@ class LandingPage extends Component {
 					variant="outlined"
 					color="primary"
 				>
-					Manage Wallets
+					Manage Wallets&nbsp;&nbsp;
+					<AccountBalance />
 				</Button>
 				<br />
 				<Button
@@ -32,12 +35,13 @@ class LandingPage extends Component {
 					component={Link}
 					to={'/vote'}
 					variant="outlined"
-					color="secondary"
+					color="primary"
 				>
-					Vote
+					Vote&nbsp;
+					<WhereToVote />
 				</Button>
-
 				<br />
+
 				<Typography variant="caption">
 					If you aren't sure which option to pick, please consult our
 					<a href="#Help"> help guide.</a>

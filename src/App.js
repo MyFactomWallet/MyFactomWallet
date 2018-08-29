@@ -4,6 +4,9 @@ import Header from './Header/Header.js';
 import WalletManager from './WalletManager/WalletManager.js';
 import Help from './Help/Help.js';
 import Vote from './Vote/Vote.js';
+import ViewVote from './Vote/ViewVote.js';
+import CreateVoteStepper from './Vote/CreateVoteStepper.js';
+import ManageVoterList from './Vote/ManageVoterList.js';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -76,6 +79,9 @@ class App extends Component {
 							)}
 						/>
 						<Route exact path="/vote" component={Vote} />
+						<Route exact path="/viewVote" component={ViewVote} />
+						<Route exact path="/createVote" component={CreateVoteStepper} />
+						<Route exact path="/manageVoters" component={ManageVoterList} />
 						<Route exact path="/help" component={Help} />
 					</div>
 				</div>
