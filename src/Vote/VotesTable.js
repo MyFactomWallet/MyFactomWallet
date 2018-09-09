@@ -28,8 +28,9 @@ const rows = [
 	createData(
 		'e62aeaad853809e0a6901faa7698d305b5927fe9aeffff9fa233f3367629f098',
 		'9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08',
-		'Elect Factom Emperor',
-		'Complete',
+
+		'Discussion (Pre-Commit) Phase Example',
+		'Discussion Phase',
 		<span>
 			Start: 08/22/2018
 			<br />
@@ -45,9 +46,8 @@ const rows = [
 	createData(
 		'c12941cbe6be9ae67caa3a34e2298bdf1b2feebe67a7144a40064aef908686b4',
 		'60303AE22B998861BCE3B28F33EEC1BE758A213C86C93C076DBE9F558C11C752',
-		'ANO Hunger Games Round 3',
-		'Complete',
-
+		'Commit Phase Example',
+		'Commit Phase',
 		<span>
 			Start: 08/22/2018
 			<br />
@@ -62,9 +62,9 @@ const rows = [
 	createData(
 		'872963d936f10cfefffae3d478d98730e1c2c731c703af2ea58710dfc5c9f45c',
 		'60303AE22B998861BCE3B28F33EEC1BE758A213C86C93C076DBE9F558C11C752',
-		'Rename Factom to Bitcoin #1',
-		'Reveal Phase',
 
+		'Reveal Phase Example',
+		'Reveal Phase',
 		<span>
 			Start: 08/22/2018
 			<br />
@@ -79,8 +79,9 @@ const rows = [
 	createData(
 		'71a7fc2f9e956515b2f2d43d6df67d2213fd5fe4cd37e477f8b9d6344120508f',
 		'2F110B81263414DFA03211351D7D2D3FFBCB7E1C4D699B3626ED520C6CD9738B',
-		'Replace Quintilian with Reptilian',
-		'Commit Phase',
+
+		'Completed Example',
+		'Completed',
 
 		<span>
 			Start: 08/22/2018
@@ -96,8 +97,8 @@ const rows = [
 	createData(
 		'dc1da9c406f1fa6a382840c1e268e25f083e66897dc8645aa337e2fc2e6f5424',
 		'DB90FFB7EAFF3C3DF027777F4B2C0D426000FDCBAA7097712408E1DBD955067A',
-		'Moon the Entry Credit Price',
-		'Commit Phase',
+		'Invalidated Example',
+		'Invalidated',
 		<span>
 			Start: 08/22/2018
 			<br />
@@ -157,7 +158,7 @@ class VoteTable extends React.Component {
 								<br />
 								<select>
 									<option defaultValue value="" />
-									<option>Pre-Commit Phase</option>
+									<option>Discussion Phase</option>
 									<option>Commit Phase</option>
 									<option>Reveal Phase</option>
 									<option>Complete</option>
@@ -258,20 +259,20 @@ const styles = (theme) => ({
 		//minWidth: 750,
 	},
 	titleColumn: {
-		minWidth: '210px',
+		minWidth: '325px',
 		paddingRight: '1px',
 	},
 	shortAdminIDColumn: {
 		paddingRight: '0px',
 	},
 	adminIDColumn: {
-		maxWidth: '265px',
+		maxWidth: '207px',
 		overflow: 'hidden',
 		textOverflow: 'ellipsis',
 		paddingRight: '0px',
 	},
 	pollChainIDColumn: {
-		maxWidth: '265px',
+		maxWidth: '207px',
 		overflow: 'hidden',
 		textOverflow: 'ellipsis',
 		paddingRight: '0px',

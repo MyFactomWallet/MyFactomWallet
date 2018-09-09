@@ -13,7 +13,7 @@ import { withStyles } from '@material-ui/core/styles';
 import withRootTheme from './withRootTheme';
 import fctUtils from 'factomjs-util/dist/factomjs-util';
 
-function Wallet(id, walletType, publicAddress, balance) {
+function FactomWallet(id, publicAddress, balance) {
 	if (!publicAddress) {
 		const privateKey = fctUtils.randomPrivateKey();
 
@@ -23,7 +23,6 @@ function Wallet(id, walletType, publicAddress, balance) {
 	}
 
 	this.id = id;
-	this.walletType = walletType;
 	this.public_address = publicAddress;
 	this.balance = balance ? balance : '?';
 }
@@ -31,10 +30,10 @@ function Wallet(id, walletType, publicAddress, balance) {
 class App extends Component {
 	state = {
 		activeWalletID: 1,
-		wallets: [
-			new Wallet(1, 'Factoid', undefined, 5000),
-			new Wallet(2, 'Factoid', undefined, 500),
-			new Wallet(3, 'Factoid', undefined, 5),
+		factomWallets: [
+			new FactomWallet(1, undefined, 5000),
+			new FactomWallet(2, undefined, 500),
+			new FactomWallet(3, undefined, 5),
 		],
 	};
 
@@ -73,7 +72,7 @@ class App extends Component {
 								<WalletManager
 									addWallet={this.addWallet}
 									selectWallet={this.selectWallet}
-									wallets={this.state.wallets}
+									wallets={this.state.factomWallets}
 									activeWalletID={this.state.activeWalletID}
 								/>
 							)}
@@ -89,17 +88,16 @@ class App extends Component {
 		);
 	}
 
-	addWallet = (walletType, publicAddress) => {
+	addWallet = (publicAddress) => {
 		this.setState((prevState) => ({
-			wallets: prevState.wallets.concat(
-				new Wallet(
-					prevState.wallets.length + 1,
-					walletType,
+			factomWallets: prevState.factomWallets.concat(
+				new FactomWallet(
+					prevState.factomWallets.length + 1,
 					publicAddress,
 					undefined
 				)
 			),
-			activeWalletID: prevState.wallets.length + 1,
+			activeWalletID: prevState.factomWallets.length + 1,
 		}));
 	};
 

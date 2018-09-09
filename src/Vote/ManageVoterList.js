@@ -68,8 +68,8 @@ class ManageVoterList extends React.Component {
 	render() {
 		const { classes } = this.props;
 
-		const voters = this.state.voters.map((voter) => (
-			<ListItem disableGutters divider>
+		const voters = this.state.voters.map((voter, index) => (
+			<ListItem key={index} disableGutters divider>
 				<Person />
 				<ListItemText
 					primary={'Voter ID: ' + voter.id}
@@ -162,7 +162,7 @@ class ManageVoterList extends React.Component {
 											variant="body2"
 											gutterBottom
 										>
-											Voter Chain ID:{' '}
+											Voter Chain ID:&nbsp;
 											<Typography
 												style={{ display: 'inline' }}
 												variant="body1"

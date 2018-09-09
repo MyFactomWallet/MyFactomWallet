@@ -11,6 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import Info from '@material-ui/icons/InfoOutlined';
+import Tooltip from '@material-ui/core/Tooltip';
 
 class PreviewVote extends React.Component {
 	state = {
@@ -19,10 +20,10 @@ class PreviewVote extends React.Component {
 		href:
 			'https://raw.githubusercontent.com/JacobEberhardt/ZoKrates/aa7e11/README.md',
 		hash: 'F30A765AD6C5777E82EB2B64CFA53CDBB08D435546DD351880C13691867290B4',
-		commitStartBlock: 154298,
-		commitEndBlock: 154310,
-		revealStartBlock: 154499,
-		revealEndBlock: 155909,
+		commitStartDate: 154298,
+		commitEndDate: 154310,
+		revealStartDate: 154499,
+		revealEndDate: 155909,
 		minTurnout: false,
 		minSupport: false,
 	};
@@ -34,7 +35,7 @@ class PreviewVote extends React.Component {
 			<Paper elevation={3} className={classes.paper}>
 				<Grid container>
 					<Grid item xs={12}>
-						<Typography align="center" gutterBottom variant="title">
+						<Typography gutterBottom variant="title">
 							Preview & Sign
 						</Typography>
 					</Grid>
@@ -69,10 +70,9 @@ class PreviewVote extends React.Component {
 						<Grid item xs={3} className={classes.smallGridColumn}>
 							<Typography variant="body2" gutterBottom>
 								Proposal Hash:&nbsp;
-								<Info
-									style={{ fontSize: '15px' }}
-									titleAccess="Hash Type: SHA-256"
-								/>
+								<Tooltip title="Hash Type: SHA-256">
+									<Info style={{ fontSize: '15px' }} />
+								</Tooltip>
 							</Typography>
 						</Grid>
 						<Grid item xs={9}>
@@ -80,27 +80,27 @@ class PreviewVote extends React.Component {
 						</Grid>
 						<Grid item xs={3} className={classes.smallGridColumn}>
 							<Typography variant="body2" gutterBottom>
-								Commit Start Block:
+								Commit Start Date:
 							</Typography>
 						</Grid>
 						<Grid item xs={9}>
-							<Typography>{this.state.commitStartBlock}</Typography>
+							<Typography>{this.state.commitStartDate}</Typography>
 						</Grid>
 						<Grid item xs={3} className={classes.smallGridColumn}>
 							<Typography variant="body2" gutterBottom>
-								Commit End Block:
+								Commit End Date:
 							</Typography>
 						</Grid>
 						<Grid item xs={9}>
-							<Typography>{this.state.commitEndBlock}</Typography>
+							<Typography>{this.state.commitEndDate}</Typography>
 						</Grid>
 						<Grid item xs={3} className={classes.smallGridColumn}>
 							<Typography variant="body2" gutterBottom>
-								Reveal Start Block:
+								Reveal Start Date:
 							</Typography>
 						</Grid>
 						<Grid item xs={9}>
-							<Typography>{this.state.revealStartBlock}</Typography>
+							<Typography>{this.state.revealStartDate}</Typography>
 						</Grid>
 						<Grid item xs={3} className={classes.smallGridColumn}>
 							<Typography variant="body2" gutterBottom>
@@ -108,7 +108,7 @@ class PreviewVote extends React.Component {
 							</Typography>
 						</Grid>
 						<Grid item xs={9}>
-							<Typography>{this.state.revealEndBlock}</Typography>
+							<Typography>{this.state.revealEndDate}</Typography>
 						</Grid>
 					</Grid>
 					<Grid item xs={12}>
@@ -157,7 +157,13 @@ class PreviewVote extends React.Component {
 									<Grid container>
 										<Grid item xs={4}>
 											<FormControlLabel
-												control={<Checkbox color="default" checked={true} />}
+												control={
+													<Checkbox
+														disableRipple
+														color="default"
+														checked={true}
+													/>
+												}
 												label="Minimum Turnout"
 											/>
 										</Grid>
@@ -201,10 +207,6 @@ class PreviewVote extends React.Component {
 					</Grid>
 					<Grid xs={10} item>
 						<input type="password" />
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<Button variant="outlined" size="small" color="secondary">
-							Calculate Nonce
-						</Button>
 					</Grid>
 					<Grid xs={12} item />
 				</Grid>

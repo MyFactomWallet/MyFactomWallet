@@ -66,6 +66,9 @@ class CreateVoteStepper extends React.Component {
 				<Grid item xs={2} />
 				<Grid item xs={8}>
 					<Paper className={classes.paper}>
+						<Typography variant="display1" align="center">
+							Create Poll
+						</Typography>
 						<Stepper activeStep={activeStep}>
 							{steps.map((label) => {
 								return (
@@ -75,7 +78,6 @@ class CreateVoteStepper extends React.Component {
 								);
 							})}
 						</Stepper>
-						<br />
 						<div>
 							{this.state.activeStep === steps.length ? (
 								<Paper className={classes.paper}>

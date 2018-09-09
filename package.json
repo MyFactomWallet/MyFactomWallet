@@ -6,7 +6,7 @@
 	"dependencies": {
 		"@material-ui/core": "3.0.1",
 		"@material-ui/icons": "3.0.1",
-		"factom": "0.3.1",
+		"factom": "0.3.0",
 		"factom-vote": "0.0.2",
 		"factomjs-util": "0.1.5",
 		"gh-pages": "^1.2.0",

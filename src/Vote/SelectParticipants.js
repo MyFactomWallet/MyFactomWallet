@@ -117,8 +117,8 @@ class SelectParticipants extends React.Component {
 		));
 		const voters =
 			this.state.voters.length > 0 ? (
-				this.state.voters.map((voter) => (
-					<ListItem key={voter.name} disableGutters divider>
+				this.state.voters.map((voter, index) => (
+					<ListItem key={index} disableGutters divider>
 						<Person />
 						<ListItemText
 							primary={'Voter ID: ' + voter.id}
@@ -136,105 +136,100 @@ class SelectParticipants extends React.Component {
 			);
 
 		return (
-			<Paper elevation={3} className={classes.pad}>
-				<Grid container>
-					<Grid item xs={12}>
-						<Typography align="center" gutterBottom variant="title">
-							Select Voters
-						</Typography>
-						<br />
+			<Grid container className={classes.pad}>
+				<Grid item xs={12}>
+					<Typography gutterBottom variant="title">
+						Select Voters
+					</Typography>
+				</Grid>
+				<Grid item container xs={12}>
+					<Grid item xs={3}>
+						<FormControl component="fieldset">
+							<RadioGroup
+								value={this.state.selectedValue}
+								onChange={this.handleChange}
+							>
+								<FormControlLabel
+									value="b"
+									control={<Radio />}
+									label="Standing Parties"
+								/>
+								<FormControlLabel
+									className={classes.raiseRadio}
+									value="a"
+									control={<Radio />}
+									label="Create New List"
+								/>
+							</RadioGroup>
+						</FormControl>
 					</Grid>
-					<Grid item container xs={12}>
-						<Grid item xs={3}>
-							<FormControl component="fieldset" className={classes.formControl}>
-								<RadioGroup
-									aria-label="Gender"
-									name="gender1"
-									className={classes.group}
-									value={this.state.selectedValue}
-									onChange={this.handleChange}
-								>
-									<FormControlLabel
-										value="b"
-										control={<Radio />}
-										label="Standing Parties Only"
-									/>
-									<FormControlLabel
-										value="a"
-										control={<Radio />}
-										label="Create New List"
-									/>
-								</RadioGroup>
-							</FormControl>
+					{this.state.selectedValue === 'a' ? (
+						<Grid item xs={4} className={classes.borders}>
+							<Typography variant="body2" gutterBottom>
+								Add Voter
+							</Typography>
+							<Typography gutterBottom>
+								Voter ID: <input type="text" />
+							</Typography>
+							<Typography gutterBottom>
+								Weight:&nbsp;&nbsp;&nbsp;
+								<input type="text" />
+							</Typography>
+							<button onClick={this.addVoter}>Add</button>
 						</Grid>
-						{this.state.selectedValue === 'a' ? (
-							<Grid item xs={4} className={classes.borders}>
+					) : (
+						<Grid item xs={4} />
+					)}
+					{this.state.selectedValue === 'a' ? (
+						<Grid item xs={5} className={classes.padLoadVoters}>
+							<div>
 								<Typography variant="body2" gutterBottom>
-									Add Voters
+									Load Voters
 								</Typography>
 								<Typography gutterBottom>
-									Voter ID: <input type="text" />
+									File: <input type="file" />
+								</Typography>
+								<Typography>
+									Voter Chain ID: <input type="text" />
 								</Typography>
 								<Typography gutterBottom>
-									Weight:&nbsp;&nbsp;&nbsp;
-									<input type="text" />
+									Authority Nodes
+									<input type="checkbox" />
+									<br />
+									Guides <input type="checkbox" />
 								</Typography>
-								<button onClick={this.addVoter}>Add</button>
-							</Grid>
-						) : (
-							<Grid item xs={4} />
-						)}
-						{this.state.selectedValue === 'a' ? (
-							<Grid item xs={5} className={classes.padLoadVoters}>
-								<div>
-									<Typography variant="body2" gutterBottom>
-										Load Voters
-									</Typography>
-									<Typography gutterBottom>
-										File: <input type="file" />
-									</Typography>
-									<Typography>
-										Voter Chain ID: <input type="text" />
-									</Typography>
-									<Typography gutterBottom>
-										Authority Nodes
-										<input type="checkbox" />
-										<br />
-										Guides <input type="checkbox" />
-									</Typography>
-									<button>Load</button>
-								</div>
-							</Grid>
-						) : (
-							<Grid item xs={5} />
-						)}
-					</Grid>
+								<button>Load</button>
+							</div>
+						</Grid>
+					) : (
+						<Grid item xs={5} />
+					)}
+				</Grid>
+				{this.state.selectedValue === 'a' && (
 					<Grid item xs={12}>
 						<Paper elevation={10} className={classes.listContainer}>
-							{this.state.selectedValue === 'a' && (
-								<div>
-									<Typography variant="subheading">Custom List</Typography>
+							<Typography variant="subheading">Custom List</Typography>
 
-									<List className={classes.list} dense>
-										{voters}
-									</List>
-								</div>
-							)}
-							{this.state.selectedValue === 'b' && (
-								<div>
-									<Typography variant="subheading">
-										Standing Party List
-									</Typography>
-
-									<List className={classes.list} dense>
-										{standingParties}
-									</List>
-								</div>
-							)}
+							<List className={classes.list} dense>
+								{voters}
+							</List>
 						</Paper>
 					</Grid>
-				</Grid>
-			</Paper>
+				)}
+				{this.state.selectedValue === 'b' && (
+					<Grid item xs={12}>
+						{/* 	<Paper elevation={10} className={classes.listContainer}>
+								<Typography variant="subheading">
+									Standing Party List
+								</Typography>
+
+								<List className={classes.list} dense>
+									{standingParties}
+								</List>
+							</Paper> */}
+					</Grid>
+				)}
+			</Grid>
 		);
 	}
 }
@@ -266,6 +261,10 @@ const styles = (theme) => ({
 	listContainer: {
 		marginTop: '10px',
 		padding: '15px',
+	},
+	raiseRadio: {
+		position: 'relative',
+		top: '-16px',
 	},
 });
 

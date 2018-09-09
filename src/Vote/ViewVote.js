@@ -25,6 +25,7 @@ import QS from 'qs';
 import Add from '@material-ui/icons/Add';
 import Remove from '@material-ui/icons/Remove';
 import Info from '@material-ui/icons/InfoOutlined';
+import Tooltip from '@material-ui/core/Tooltip';
 
 let id = 0;
 const createVoterData = (voterID, commit, reveal, role, vote) => {
@@ -70,10 +71,10 @@ class ViewVote extends React.Component {
 		href:
 			'https://raw.githubusercontent.com/JacobEberhardt/ZoKrates/aa7e11/README.md',
 		hash: 'F30A765AD6C5777E82EB2B64CFA53CDBB08D435546DD351880C13691867290B4',
-		commitStartBlock: 154298,
-		commitEndBlock: 154310,
-		revealStartBlock: 154499,
-		revealEndBlock: 155909,
+		commitStartDate: 154298,
+		commitEndDate: 154310,
+		revealStartDate: 154499,
+		revealEndDate: 155909,
 		minTurnout: false,
 		minSupport: false,
 		protocolVersion: 'v0.1',
@@ -93,10 +94,10 @@ class ViewVote extends React.Component {
 		options: [],
 		href: '',
 		hash: '',
-		commitStartBlock: null,
-		commitEndBlock: null,
-		revealStartBlock: null,
-		revealEndBlock: null,
+		commitStartDate: null,
+		commitEndDate: null,
+		revealStartDate: null,
+		revealEndDate: null,
 		minTurnout: false,
 		minSupport: false,
 		protocolVersion: null,
@@ -132,7 +133,7 @@ class ViewVote extends React.Component {
 										Status:&nbsp;
 									</Typography>
 									<Typography style={{ display: 'inline' }}>
-										Reveal phase ends on 12/12/2018 @ 12:00 AM UTC.
+										Reveal Phase
 									</Typography>
 								</Paper>
 								<br />
@@ -220,10 +221,9 @@ class ViewVote extends React.Component {
 												<Grid item xs={3} className={classes.smallGridColumn}>
 													<Typography variant="body2" gutterBottom>
 														Proposal Hash:&nbsp;
-														<Info
-															style={{ fontSize: '15px' }}
-															titleAccess="Hash Type: SHA-256"
-														/>
+														<Tooltip title="Hash Type: SHA-256">
+															<Info style={{ fontSize: '15px' }} />
+														</Tooltip>
 													</Typography>
 												</Grid>
 												<Grid item xs={9}>
@@ -231,35 +231,35 @@ class ViewVote extends React.Component {
 												</Grid>
 												<Grid item xs={3} className={classes.smallGridColumn}>
 													<Typography variant="body2" gutterBottom>
-														Commit Start Block:
+														Commit Start Date:
 													</Typography>
 												</Grid>
 												<Grid item xs={9}>
-													<Typography>{this.state.commitStartBlock}</Typography>
+													<Typography>{this.state.commitStartDate}</Typography>
 												</Grid>
 												<Grid item xs={3} className={classes.smallGridColumn}>
 													<Typography variant="body2" gutterBottom>
-														Commit End Block:
+														Commit End Date:
 													</Typography>
 												</Grid>
 												<Grid item xs={9}>
-													<Typography>{this.state.commitEndBlock}</Typography>
+													<Typography>{this.state.commitEndDate}</Typography>
 												</Grid>
 												<Grid item xs={3} className={classes.smallGridColumn}>
 													<Typography variant="body2" gutterBottom>
-														Reveal Start Block:
+														Reveal Start Date:
 													</Typography>
 												</Grid>
 												<Grid item xs={9}>
-													<Typography>{this.state.revealStartBlock}</Typography>
+													<Typography>{this.state.revealStartDate}</Typography>
 												</Grid>
 												<Grid item xs={3} className={classes.smallGridColumn}>
 													<Typography variant="body2" gutterBottom>
-														Reveal End Block:
+														Reveal End Date:
 													</Typography>
 												</Grid>
 												<Grid item xs={9}>
-													<Typography>{this.state.revealEndBlock}</Typography>
+													<Typography>{this.state.revealEndDate}</Typography>
 												</Grid>
 												<Grid item xs={3} className={classes.smallGridColumn}>
 													<Typography variant="body2" gutterBottom>

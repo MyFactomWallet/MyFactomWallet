@@ -8,12 +8,12 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import AddWalletStepContent from './AddWalletStepContent';
 import fctUtils from 'factomjs-util/dist/factomjs-util';
-const { isValidFctPrivateAddress, isValidFctPublicAddress } = require('factom');
-/*import {
+//const { isValidFctPrivateAddress, isValidFctPublicAddress } = require('factom');
+import {
 	isValidFctPrivateAddress,
 	isValidFctPublicAddress,
 } from 'factom/dist/factom-struct.js';
-*/
+
 const getSteps = () => {
 	return ['Select options', 'Confirm details'];
 };
@@ -109,7 +109,9 @@ class AddWalletStepper extends React.Component {
 
 		// confirmed
 		if (activeStep === steps.length - 1) {
-			this.props.addWallet(this.state.walletType, this.state.publicAddress);
+			if (this.state.walletType === 'Factoid') {
+				this.props.addWallet(this.state.publicAddress);
+			}
 		}
 
 		this.setState({
