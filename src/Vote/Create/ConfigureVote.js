@@ -92,25 +92,25 @@ class ConfigureVote extends React.Component {
 						<Typography gutterBottom>Commit Start Date:</Typography>
 					</Grid>
 					<Grid item xs={10}>
-						<input type="datetime-local" />
+						<input type="date" />
 					</Grid>
 					<Grid item xs={2}>
 						<Typography gutterBottom>Commit End Date:</Typography>
 					</Grid>
 					<Grid item xs={10}>
-						<input type="datetime-local" />
+						<input type="date" />
 					</Grid>
 					<Grid item xs={2}>
 						<Typography gutterBottom>Reveal Start Date:</Typography>
 					</Grid>
 					<Grid item xs={10}>
-						<input type="datetime-local" />
+						<input type="date" />
 					</Grid>
 					<Grid item xs={2}>
 						<Typography gutterBottom>Reveal End Date:</Typography>
 					</Grid>
 					<Grid item xs={10}>
-						<input type="datetime-local" />
+						<input type="date" />
 					</Grid>
 				</Grid>
 				<Grid container item xs={12}>
@@ -282,7 +282,7 @@ class ConfigureVote extends React.Component {
 								</Grid>
 							</Grid>
 						</ListItem>
-						<ListItem disableGutters divider>
+						<ListItem disableGutters>
 							<Grid container>
 								<Grid item xs={4}>
 									<FormControlLabel

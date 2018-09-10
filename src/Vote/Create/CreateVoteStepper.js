@@ -15,7 +15,7 @@ import OpenInNew from '@material-ui/icons/OpenInNew';
 import { Link } from 'react-router-dom';
 
 const styles = (theme) => ({
-	paper: {
+	pad: {
 		padding: '15px',
 	},
 });
@@ -65,7 +65,7 @@ class CreateVoteStepper extends React.Component {
 			<Grid container>
 				<Grid item xs={2} />
 				<Grid item xs={8}>
-					<Paper className={classes.paper}>
+					<Paper className={classes.pad}>
 						<Typography variant="display1" align="center">
 							Create Poll
 						</Typography>
@@ -80,63 +80,36 @@ class CreateVoteStepper extends React.Component {
 						</Stepper>
 						<div>
 							{this.state.activeStep === steps.length ? (
-								<Paper className={classes.paper}>
-									<Typography align="center" variant="title" gutterBottom>
-										Success!
-									</Typography>
-									<Typography align="center" gutterBottom>
-										You're poll is pending confirmation on the Factom
-										blockchain.&nbsp;
-										<Link
-											target="_blank"
-											to={
-												'/viewVote?id=e62aeaad853809e0a6901faa7698d305b5927fe9aeffff9fa233f3367629f098'
-											}
+								<Grid className={classes.pad} container>
+									<Grid item xs={12}>
+										<Typography variant="title" gutterBottom>
+											Setup Complete!
+										</Typography>
+										<Typography gutterBottom>
+											You're poll is pending confirmation on the Factom
+											blockchain.&nbsp;
+											<Link
+												target="_blank"
+												to={
+													'/viewVote?id=e62aeaad853809e0a6901faa7698d305b5927fe9aeffff9fa233f3367629f098'
+												}
+											>
+												<Button variant="outlined">
+													View Poll
+													<OpenInNew />
+												</Button>
+											</Link>
+										</Typography>
+									</Grid>
+									<Grid item xs={12}>
+										<Typography
+											style={{ display: 'inline' }}
+											variant="body2"
+											gutterBottom
 										>
-											<Button variant="outlined">
-												View Poll
-												<OpenInNew />
-											</Button>
-										</Link>
-									</Typography>
-									<Grid container>
-										<Grid item xs={1} />
-										<Grid item xs={11}>
-											<Typography
-												style={{ display: 'inline' }}
-												variant="body2"
-												gutterBottom
-											>
-												Voter Chain ID:&nbsp;
-												<Typography
-													style={{ display: 'inline' }}
-													variant="body1"
-												>
-													df3ade9eec4b08d5379cc64270c30ea7315d8a8a1a69efe2b98a60ecdd69e604&nbsp;
-													<a
-														target="_blank"
-														href={
-															'https://explorer.factom.com/eblocks/0e5570917c25c6b35dbf67c802958d802e43fd9f48dd0c35a01feec1235de267'
-														}
-													>
-														<OpenInNew
-															color="primary"
-															style={{ fontSize: 15 }}
-														/>
-													</a>
-												</Typography>
-											</Typography>
-
-											<br />
-											<Typography
-												style={{ display: 'inline' }}
-												variant="body2"
-												gutterBottom
-											>
-												Poll Chain ID:&nbsp;
-											</Typography>
+											Voter Chain ID:&nbsp;
 											<Typography style={{ display: 'inline' }} variant="body1">
-												e5783ef44313a678d489b6917ef96d971156615ae71a671fdf638af403146ab7&nbsp;
+												df3ade9eec4b08d5379cc64270c30ea7315d8a8a1a69efe2b98a60ecdd69e604&nbsp;
 												<a
 													target="_blank"
 													href={
@@ -146,9 +119,29 @@ class CreateVoteStepper extends React.Component {
 													<OpenInNew color="primary" style={{ fontSize: 15 }} />
 												</a>
 											</Typography>
-										</Grid>
+										</Typography>
+
+										<br />
+										<Typography
+											style={{ display: 'inline' }}
+											variant="body2"
+											gutterBottom
+										>
+											Poll Chain ID:&nbsp;
+										</Typography>
+										<Typography style={{ display: 'inline' }} variant="body1">
+											e5783ef44313a678d489b6917ef96d971156615ae71a671fdf638af403146ab7&nbsp;
+											<a
+												target="_blank"
+												href={
+													'https://explorer.factom.com/eblocks/0e5570917c25c6b35dbf67c802958d802e43fd9f48dd0c35a01feec1235de267'
+												}
+											>
+												<OpenInNew color="primary" style={{ fontSize: 15 }} />
+											</a>
+										</Typography>
 									</Grid>
-								</Paper>
+								</Grid>
 							) : (
 								<div>
 									<div>{getStepContent(activeStep)}</div>

@@ -3,13 +3,13 @@ import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import VotesTable from './VotesTable';
+import VotesTable from './VoteTable';
 import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
 import FilterList from '@material-ui/icons/FilterList';
 import Grid from '@material-ui/core/Grid';
 
-class Vote extends Component {
+class VoteListing extends Component {
 	render() {
 		const { classes } = this.props;
 
@@ -49,7 +49,7 @@ class Vote extends Component {
 	}
 }
 
-Vote.propTypes = {
+VoteListing.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
@@ -67,4 +67,4 @@ const styles = (theme) => ({
 	},
 });
 
-export default withStyles(styles)(Vote);
+export default withStyles(styles)(VoteListing);
