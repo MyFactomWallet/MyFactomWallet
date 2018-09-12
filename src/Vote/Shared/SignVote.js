@@ -83,7 +83,7 @@ class SignVote extends React.Component {
 				<div className={classes.wrapper}>
 					<Button
 						variant="fab"
-						color="primary"
+						color="secondary"
 						className={buttonClassname}
 						onClick={this.handleButtonClick}
 					>
@@ -96,7 +96,7 @@ class SignVote extends React.Component {
 				<div className={classes.wrapper}>
 					<Button
 						variant="contained"
-						color="primary"
+						color="secondary"
 						className={buttonClassname}
 						disabled={loading}
 						onClick={this.handleButtonClick}

@@ -86,21 +86,6 @@ class ViewVote extends React.Component {
 			expand: !prevState.expand,
 		}));
 	};
-	/* state = {
-		title: '',
-		type: '',
-		options: [],
-		href: '',
-		hash: '',
-		commitStartDate: null,
-		commitEndDate: null,
-		revealStartDate: null,
-		revealEndDate: null,
-		minTurnout: false,
-		minSupport: false,
-		protocolVersion: null,
-		pollAdminID: null,
-	}; */
 
 	handleTabChange = (event, value) => {
 		this.setState({ tabValue: value });

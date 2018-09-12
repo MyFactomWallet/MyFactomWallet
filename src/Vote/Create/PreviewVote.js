@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import SignVote from '../Shared/SignVote';
 import VoteSummary from '../Shared/VoteSummary';
+import Button from '@material-ui/core/Button';
 
 class PreviewVote extends React.Component {
 	state = {
@@ -56,6 +57,17 @@ class PreviewVote extends React.Component {
 				<Grid item xs={12}>
 					<SignVote />
 				</Grid>
+				<Grid item xs={12} className={classes.stepperButtons}>
+					<br />
+					<Button onClick={this.props.handleBack}>Back</Button>
+					<Button
+						variant="raised"
+						color="primary"
+						onClick={this.props.handleNext}
+					>
+						Submit Poll
+					</Button>
+				</Grid>
 			</Grid>
 		);
 	}
@@ -75,6 +87,9 @@ const styles = (theme) => ({
 	optionList: {
 		width: '350px',
 		overflow: 'auto',
+	},
+	stepperButtons: {
+		marginLeft: '-15px',
 	},
 });
 

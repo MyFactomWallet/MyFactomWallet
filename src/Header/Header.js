@@ -104,13 +104,13 @@ class ButtonAppBar extends React.Component {
 							>
 								Create Poll
 							</MenuItem>
-							<MenuItem
+							{/*	<MenuItem
 								component={Link}
 								to={'/manageVoters'}
 								onClick={this.handleVoteClose}
 							>
 								Manage Voter List
-							</MenuItem>
+							</MenuItem>*/}
 						</Menu>
 					</div>
 					<Button href="#/wallet/manage" className={classes.menuText}>

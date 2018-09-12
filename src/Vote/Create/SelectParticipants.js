@@ -14,6 +14,7 @@ import Radio from '@material-ui/core/Radio';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import Button from '@material-ui/core/Button';
 
 function Voter(id, weight, name, role) {
 	this.id = id;
@@ -209,7 +210,6 @@ class SelectParticipants extends React.Component {
 					<Grid item xs={12}>
 						<Paper elevation={10} className={classes.listContainer}>
 							<Typography variant="subheading">Custom List</Typography>
-
 							<List className={classes.list} dense>
 								{voters}
 							</List>
@@ -229,6 +229,19 @@ class SelectParticipants extends React.Component {
 							</Paper> */}
 					</Grid>
 				)}
+				<Grid item xs={12} className={classes.stepperButtons}>
+					<br />
+					<Button disabled onClick={this.props.handleBack}>
+						Back
+					</Button>
+					<Button
+						variant="raised"
+						color="primary"
+						onClick={this.props.handleNext}
+					>
+						Next
+					</Button>
+				</Grid>
 			</Grid>
 		);
 	}
@@ -265,6 +278,9 @@ const styles = (theme) => ({
 	raiseRadio: {
 		position: 'relative',
 		top: '-16px',
+	},
+	stepperButtons: {
+		marginLeft: '-15px',
 	},
 });
 

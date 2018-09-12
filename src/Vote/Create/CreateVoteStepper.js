@@ -24,23 +24,38 @@ function getSteps() {
 	return ['Select Voters', 'Configure Poll', 'Preview & Sign'];
 }
 
-function getStepContent(stepIndex) {
-	switch (stepIndex) {
-		case 0:
-			return <SelectParticipants />;
-		case 1:
-			return <ConfigureVote />;
-		case 2:
-			return <PreviewVote />;
-		default:
-			return 'Content D';
-	}
-}
-
 class CreateVoteStepper extends React.Component {
 	state = {
 		activeStep: 0,
 	};
+
+	getStepContent(stepIndex) {
+		switch (stepIndex) {
+			case 0:
+				return (
+					<SelectParticipants
+						handleNext={this.handleNext}
+						handleBack={this.handleBack}
+					/>
+				);
+			case 1:
+				return (
+					<ConfigureVote
+						handleNext={this.handleNext}
+						handleBack={this.handleBack}
+					/>
+				);
+			case 2:
+				return (
+					<PreviewVote
+						handleNext={this.handleNext}
+						handleBack={this.handleBack}
+					/>
+				);
+			default:
+				return 'Content D';
+		}
+	}
 
 	handleNext = () => {
 		const { activeStep } = this.state;
@@ -144,8 +159,8 @@ class CreateVoteStepper extends React.Component {
 								</Grid>
 							) : (
 								<div>
-									<div>{getStepContent(activeStep)}</div>
-									<div>
+									<div>{this.getStepContent(activeStep)}</div>
+									{/* <div>
 										<br />
 										<Button
 											disabled={activeStep === 0}
@@ -160,7 +175,7 @@ class CreateVoteStepper extends React.Component {
 										>
 											{activeStep === steps.length - 1 ? 'Submit Poll' : 'Next'}
 										</Button>
-									</div>
+									</div> */}
 								</div>
 							)}
 						</div>
