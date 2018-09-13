@@ -28,6 +28,10 @@ class ConfigureVoteForm extends React.Component {
 		options: [],
 	};
 
+	componentDidMount() {
+		window.scrollTo(0, 0);
+	}
+
 	toggleCheckbox = (name) => (event) => {
 		this.setState({ [name]: event.target.checked });
 	};
@@ -47,6 +51,12 @@ class ConfigureVoteForm extends React.Component {
 			options: prevState.options.slice(0, prevState.options.length - 1),
 		}));
 	};
+
+	handleKeyPress(event) {
+		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
+			event.preventDefault();
+		}
+	}
 
 	render() {
 		const { poll, updatePoll, classes } = this.props;
@@ -75,10 +85,10 @@ class ConfigureVoteForm extends React.Component {
 
 		const requiredStar = <span style={{ color: 'red' }}>&nbsp;*</span>;
 
-		const now = new Date();
+		/*const now = new Date();
 		const today = new Date(
 			Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-		);
+		);*/
 
 		return (
 			<Formik
@@ -87,30 +97,20 @@ class ConfigureVoteForm extends React.Component {
 					title: Yup.string()
 						.required('Required')
 						.max(256),
-					commitStartDate: Yup.date()
-						.required('Required')
-						.min(
+					commitStartDate: Yup.date().required('Required'),
+					/* 	.min(
 							today,
 							`Commit Start Date should be equal or later than today's date`
-						),
+						), */
+					commitEndDate: Yup.date().required('Required'),
+					revealStartDate: Yup.date().required('Required'),
+					revealEndDate: Yup.date().required('Required'),
 				})}
 				onSubmit={(values, actions) => {
 					updatePoll(values);
 					this.props.handleNext();
-					console.log(actions);
-					//this.props.handleNext
-					/*CallMyApi(user.id, values).then(
-							updatedUser => {
-								actions.setSubmitting(false);
-								updatePoll(updatedUser), onClose();
-							},
-							error => {
-								actions.setSubmitting(false);
-								actions.setErrors(transformMyAPIErrorToAnObject(error));
-							}
-						);*/
 				}}
-				render={({ errors, touched, isSubmitting }) => (
+				render={({ errors, touched, isSubmitting, handleReset, dirty }) => (
 					<Grid container className={classes.pad}>
 						<Grid item xs={12}>
 							<Typography gutterBottom variant="title">
@@ -118,7 +118,16 @@ class ConfigureVoteForm extends React.Component {
 							</Typography>
 						</Grid>
 						<Grid item xs={12}>
-							<Form>
+							<button
+								type="button"
+								onClick={handleReset}
+								disabled={!dirty || isSubmitting}
+							>
+								Reset
+							</button>
+						</Grid>
+						<Grid item xs={12}>
+							<Form onKeyPress={this.handleKeyPress}>
 								<Grid container>
 									<Grid item xs={3}>
 										<Typography gutterBottom>
@@ -166,22 +175,73 @@ class ConfigureVoteForm extends React.Component {
 											)}
 									</Grid>
 									<Grid item xs={3}>
-										<Typography gutterBottom>Commit End Date:</Typography>
+										<Typography gutterBottom>
+											Commit End Date:
+											{errors.commitEndDate &&
+												touched.commitEndDate &&
+												requiredStar}
+										</Typography>
 									</Grid>
 									<Grid item xs={9} className={classes.moveLeft}>
-										<input type="date" />
+										<Field
+											type="date"
+											name="commitEndDate"
+											className={`${errors.commitEndDate &&
+												touched.commitEndDate &&
+												classes.isInvalid}`}
+										/>
+										{errors.commitEndDate &&
+											touched.commitEndDate && (
+												<div className={classes.invalidFeedback}>
+													{errors.commitEndDate}
+												</div>
+											)}
 									</Grid>
 									<Grid item xs={3}>
-										<Typography gutterBottom>Reveal Start Date:</Typography>
+										<Typography gutterBottom>
+											Reveal Start Date:
+											{errors.revealStartDate &&
+												touched.revealStartDate &&
+												requiredStar}
+										</Typography>
 									</Grid>
 									<Grid item xs={9} className={classes.moveLeft}>
-										<input type="date" />
+										<Field
+											type="date"
+											name="revealStartDate"
+											className={`${errors.revealStartDate &&
+												touched.revealStartDate &&
+												classes.isInvalid}`}
+										/>
+										{errors.revealStartDate &&
+											touched.revealStartDate && (
+												<div className={classes.invalidFeedback}>
+													{errors.revealStartDate}
+												</div>
+											)}
 									</Grid>
 									<Grid item xs={3}>
-										<Typography gutterBottom>Reveal End Date:</Typography>
+										<Typography gutterBottom>
+											Reveal End Date:
+											{errors.revealEndDate &&
+												touched.revealEndDate &&
+												requiredStar}
+										</Typography>
 									</Grid>
 									<Grid item xs={9} className={classes.moveLeft}>
-										<input type="date" />
+										<Field
+											type="date"
+											name="revealEndDate"
+											className={`${errors.revealEndDate &&
+												touched.revealEndDate &&
+												classes.isInvalid}`}
+										/>
+										{errors.revealEndDate &&
+											touched.revealEndDate && (
+												<div className={classes.invalidFeedback}>
+													{errors.revealEndDate}
+												</div>
+											)}
 									</Grid>
 								</Grid>
 								<Grid container>
@@ -417,6 +477,7 @@ class ConfigureVoteForm extends React.Component {
 									>
 										Next
 									</Button>
+									{isSubmitting && errors && window.scrollTo(0, 0)}
 								</div>
 							</Form>
 						</Grid>

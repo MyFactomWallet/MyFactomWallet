@@ -8,28 +8,18 @@ import VoteSummary from '../Shared/VoteSummary';
 import Button from '@material-ui/core/Button';
 
 class PreviewVote extends React.Component {
-	state = {
-		poll: {
-			title: 'This is the Title of the Poll',
-			type: 'Single Option Voting',
-			href:
-				'https://raw.githubusercontent.com/JacobEberhardt/ZoKrates/aa7e11/README.md',
-			hash: 'F30A765AD6C5777E82EB2B64CFA53CDBB08D435546DD351880C13691867290B4',
-			commitStartDate: '09/10/2018',
-			commitEndDate: '09/11/2018',
-			revealStartDate: '09/12/2018',
-			revealEndDate: '09/13/2018',
-			minTurnout: false,
-			minSupport: false,
-		},
-	};
+	state = {};
+
+	componentDidMount() {
+		window.scrollTo(0, 0);
+	}
 
 	render() {
 		const { classes } = this.props;
 
 		return (
 			<Grid container className={classes.pad}>
-				<VoteSummary poll={this.state.poll} />
+				<VoteSummary poll={this.props.poll} />
 				<Grid item xs={12}>
 					<Typography gutterBottom variant="title">
 						Sign Transaction

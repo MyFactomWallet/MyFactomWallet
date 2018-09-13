@@ -10,6 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
 import Add from '@material-ui/icons/Add';
 import Remove from '@material-ui/icons/Remove';
+import Grid from '@material-ui/core/Grid';
 
 let id = 0;
 const createData = (
@@ -125,123 +126,133 @@ class VoteTable extends React.Component {
 		const { classes } = this.props;
 
 		return (
-			<div className={classes.tableWrapper}>
-				<Table>
-					<TableHead>
-						<TableRow>
-							<th className={classes.expandColumn}>
-								{!this.state.expanded ? (
-									<Remove
-										style={{ cursor: 'pointer' }}
-										titleAccess="Collapse"
-										onClick={this.toggleExpand}
-										title="Collapse Row"
-										className={classes.expandIcon}
-									/>
+			<Grid container>
+				<Grid item xs={12} className={classes.tableWrapper}>
+					<Table>
+						<TableHead>
+							<TableRow>
+								<th className={classes.expandColumn}>
+									{!this.state.expanded ? (
+										<Remove
+											style={{ cursor: 'pointer' }}
+											titleAccess="Collapse"
+											onClick={this.toggleExpand}
+											title="Collapse Row"
+											className={classes.expandIcon}
+										/>
+									) : (
+										<Add
+											style={{ cursor: 'pointer' }}
+											titleAccess="Expand"
+											onClick={this.toggleExpand}
+											title="Expand Row"
+											className={classes.expandIcon}
+										/>
+									)}
+								</th>
+								<TableCell className={classes.titleColumn}>
+									Title
+									<br />
+									<input type="text" />
+								</TableCell>
+								<TableCell className={classes.statusColumn}>
+									Status
+									<br />
+									<select>
+										<option defaultValue value="" />
+										<option>Discussion Phase</option>
+										<option>Commit Phase</option>
+										<option>Reveal Phase</option>
+										<option>Complete</option>
+										<option>Invalidated</option>
+									</select>
+								</TableCell>
+								<TableCell className={classes.dateColumn}>
+									Commit Phase
+								</TableCell>
+								<TableCell className={classes.dateColumn}>
+									Reveal Phase
+								</TableCell>
+								{this.state.expanded ? (
+									<TableCell className={classes.pollChainIDColumn}>
+										Poll Chain ID
+										<br />
+										<input type="text" />
+									</TableCell>
 								) : (
-									<Add
-										style={{ cursor: 'pointer' }}
-										titleAccess="Expand"
-										onClick={this.toggleExpand}
-										title="Expand Row"
-										className={classes.expandIcon}
-									/>
+									<TableCell className={classes.shortPollChainIDColumn}>
+										Poll Chain ID
+										<br />
+										<input type="text" />
+									</TableCell>
 								)}
-							</th>
-							<TableCell className={classes.titleColumn}>
-								Title
-								<br />
-								<input type="text" />
-							</TableCell>
-							<TableCell className={classes.statusColumn}>
-								Status
-								<br />
-								<select>
-									<option defaultValue value="" />
-									<option>Discussion Phase</option>
-									<option>Commit Phase</option>
-									<option>Reveal Phase</option>
-									<option>Complete</option>
-									<option>Invalidated</option>
-								</select>
-							</TableCell>
-							<TableCell className={classes.dateColumn}>Commit Phase</TableCell>
-							<TableCell className={classes.dateColumn}>Reveal Phase</TableCell>
-							{this.state.expanded ? (
-								<TableCell className={classes.pollChainIDColumn}>
-									Poll Chain ID
-									<br />
-									<input type="text" />
-								</TableCell>
-							) : (
-								<TableCell className={classes.shortPollChainIDColumn}>
-									Poll Chain ID
-									<br />
-									<input type="text" />
-								</TableCell>
-							)}
-							{this.state.expanded ? (
-								<TableCell className={classes.adminIDColumn}>
-									Poll Admin ID
-									<br />
-									<input type="text" />
-								</TableCell>
-							) : (
-								<TableCell className={classes.shortAdminIDColumn}>
-									Poll Admin ID
-									<br />
-									<input type="text" />
-								</TableCell>
-							)}
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{rows.map((row) => {
-							return (
-								<TableRow key={row.id} hover={true}>
-									<td className={classes.expandColumn} />
-									<TableCell className={classes.titleColumn}>
-										<Link to={'/viewVote?id=' + row.voteID}>{row.title}</Link>
+								{this.state.expanded ? (
+									<TableCell className={classes.adminIDColumn}>
+										Poll Admin ID
+										<br />
+										<input type="text" />
 									</TableCell>
-									<TableCell className={classes.statusColumn}>
-										{row.status}
+								) : (
+									<TableCell className={classes.shortAdminIDColumn}>
+										Poll Admin ID
+										<br />
+										<input type="text" />
 									</TableCell>
-									<TableCell className={classes.dateColumn}>
-										<div style={{ width: '104px' }}>{row.commitPhase}</div>
-									</TableCell>
-									<TableCell className={classes.dateColumn}>
-										<div style={{ width: '104px' }}>{row.revealPhase}</div>
-									</TableCell>
-									{this.state.expanded ? (
-										<TableCell className={classes.pollChainIDColumn}>
-											{row.voteID}
+								)}
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{rows.map((row) => {
+								return (
+									<TableRow key={row.id} hover={true}>
+										<td className={classes.expandColumn} />
+										<TableCell className={classes.titleColumn}>
+											<Link to={'/viewVote?id=' + row.voteID}>{row.title}</Link>
 										</TableCell>
-									) : (
-										<TableCell className={classes.shortPollChainIDColumn}>
-											{row.voteID}
+										<TableCell className={classes.statusColumn}>
+											{row.status}
 										</TableCell>
-									)}
-									{this.state.expanded ? (
-										<TableCell className={classes.adminIDColumn}>
-											{row.adminID}
+										<TableCell className={classes.dateColumn}>
+											<div style={{ width: '104px' }}>{row.commitPhase}</div>
 										</TableCell>
-									) : (
-										<TableCell className={classes.shortAdminIDColumn}>
-											{row.adminID}
+										<TableCell className={classes.dateColumn}>
+											<div style={{ width: '104px' }}>{row.revealPhase}</div>
 										</TableCell>
-									)}
-								</TableRow>
-							);
-						})}
-					</TableBody>
-				</Table>
-				<TablePagination
-					onChangePage={() => {}}
-					count={rows.length}
-					rowsPerPage={25}
-					page={0}
-				/>
-			</div>
+										{this.state.expanded ? (
+											<TableCell className={classes.pollChainIDColumn}>
+												{row.voteID}
+											</TableCell>
+										) : (
+											<TableCell className={classes.shortPollChainIDColumn}>
+												{row.voteID}
+											</TableCell>
+										)}
+										{this.state.expanded ? (
+											<TableCell className={classes.adminIDColumn}>
+												{row.adminID}
+											</TableCell>
+										) : (
+											<TableCell className={classes.shortAdminIDColumn}>
+												{row.adminID}
+											</TableCell>
+										)}
+									</TableRow>
+								);
+							})}
+						</TableBody>
+					</Table>
+				</Grid>
+				<Grid item xs={2}>
+					<TablePagination
+						component={Grid}
+						onChangePage={() => {}}
+						count={rows.length}
+						rowsPerPage={25}
+						page={0}
+						align="left"
+					/>
+				</Grid>
+			</Grid>
 		);
 	}
 }

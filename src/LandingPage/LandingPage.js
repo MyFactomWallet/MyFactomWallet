@@ -42,10 +42,10 @@ class LandingPage extends Component {
 				</Button>
 				<br />
 
-				<Typography variant="caption">
+				{/* <Typography variant="caption">
 					If you aren't sure which option to pick, please consult our
 					<a href="#Help"> help guide.</a>
-				</Typography>
+				</Typography> */}
 			</div>
 		);
 	}

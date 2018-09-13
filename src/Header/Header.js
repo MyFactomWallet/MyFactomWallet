@@ -116,9 +116,9 @@ class ButtonAppBar extends React.Component {
 					<Button href="#/wallet/manage" className={classes.menuText}>
 						Wallet
 					</Button>
-					<Button href="#help" className={classes.menuText}>
+					{/* <Button href="#help" className={classes.menuText}>
 						Help
-					</Button>
+					</Button> */}
 					<div className={classes.network} style={{ color: operational }}>
 						<Typography
 							aria-owns={networkAnchorEl ? 'simple-vote-menu' : null}
