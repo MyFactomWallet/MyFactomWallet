@@ -18,6 +18,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Clear from '@material-ui/icons/Clear';
 import Button from '@material-ui/core/Button';
+import get from 'lodash/get';
 
 class ConfigureVoteForm extends React.Component {
 	state = {
@@ -83,28 +84,81 @@ class ConfigureVoteForm extends React.Component {
 				</ListItem>
 			);
 
-		const requiredStar = <span style={{ color: 'red' }}>&nbsp;*</span>;
+		const displayError = (errors, touched, path) => {
+			if (get(errors, path) && get(touched, path)) {
+				return true;
+			} else {
+				return false;
+			}
+		};
+
+		const errorStar = (errors, touched, path) => {
+			if (displayError(errors, touched, path)) {
+				return <span style={{ color: 'red' }}>&nbsp;*</span>;
+			}
+		};
+
+		const errorText = (errors, touched, path) => {
+			if (displayError(errors, touched, path)) {
+				return (
+					<div className={classes.invalidFeedback}>{get(errors, path)}</div>
+				);
+			}
+		};
+
+		const errorClass = (errors, touched, path, classes) => {
+			if (displayError(errors, touched, path)) {
+				return `${classes.isInvalid}`;
+			}
+		};
 
 		/*const now = new Date();
 		const today = new Date(
 			Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
 		);*/
 
+		const titlePath = 'proposal.title';
+		const commitStartPath = 'vote.phasesBlockHeights.commitStart';
+		const commitEndPath = 'vote.phasesBlockHeights.commitEnd';
+		const revealStartPath = 'vote.phasesBlockHeights.revealStart';
+		const revealEndPath = 'vote.phasesBlockHeights.revealEnd';
+		const hrefPath = 'proposal.externalRef.href';
+
 		return (
 			<Formik
 				initialValues={poll}
 				validationSchema={Yup.object().shape({
-					title: Yup.string()
-						.required('Required')
-						.max(256),
-					commitStartDate: Yup.date().required('Required'),
-					/* 	.min(
-							today,
-							`Commit Start Date should be equal or later than today's date`
-						), */
-					commitEndDate: Yup.date().required('Required'),
-					revealStartDate: Yup.date().required('Required'),
-					revealEndDate: Yup.date().required('Required'),
+					proposal: Yup.object().shape({
+						title: Yup.string().required('Required'),
+					}),
+					vote: Yup.object().shape({
+						phasesBlockHeights: Yup.object().shape({
+							commitStart: Yup.date()
+								.transform((currentValue, originalValue) => {
+									return originalValue === '' ? undefined : currentValue;
+								})
+								.required('Required'),
+							commitEnd: Yup.date()
+								.transform((currentValue, originalValue) => {
+									return originalValue === '' ? undefined : currentValue;
+								})
+								.required('Required'),
+							revealStart: Yup.date()
+								.transform((currentValue, originalValue) => {
+									return originalValue === '' ? undefined : currentValue;
+								})
+								.required('Required'),
+							revealEnd: Yup.date()
+								.transform((currentValue, originalValue) => {
+									return originalValue === '' ? undefined : currentValue;
+								})
+								.required('Required'),
+							/*.min(
+									today,
+									`Commit Start Date should be equal or later than today's date`
+								), */
+						}),
+					}),
 				})}
 				onSubmit={(values, actions) => {
 					updatePoll(values);
@@ -118,130 +172,120 @@ class ConfigureVoteForm extends React.Component {
 							</Typography>
 						</Grid>
 						<Grid item xs={12}>
-							<button
-								type="button"
-								onClick={handleReset}
-								disabled={!dirty || isSubmitting}
-							>
-								Reset
-							</button>
-						</Grid>
-						<Grid item xs={12}>
 							<Form onKeyPress={this.handleKeyPress}>
 								<Grid container>
 									<Grid item xs={3}>
 										<Typography gutterBottom>
 											Title:
-											{errors.title && touched.title && requiredStar}
+											{errorStar(errors, touched, titlePath)}
 										</Typography>
 									</Grid>
-									<Grid item xs={9} className={classes.moveLeft}>
+									<Grid item xs={6} className={classes.moveLeft}>
 										<Field
 											type="text"
-											name="title"
+											name={titlePath}
 											size="35"
-											className={`${errors.title &&
-												touched.title &&
-												classes.isInvalid}`}
-										/>
-										{errors.title &&
-											touched.title && (
-												<div className={classes.invalidFeedback}>
-													{errors.title}
-												</div>
+											className={errorClass(
+												errors,
+												touched,
+												titlePath,
+												classes
 											)}
+										/>
+										{errorText(errors, touched, titlePath)}
+									</Grid>
+									<Grid item xs={3}>
+										{/*<input
+											type="button"
+											onClick={handleReset}
+											disabled={!dirty || isSubmitting}
+											style={{ display: 'inline-block' }}
+											value="Fill [Test]"
+										/>*/}
+										&nbsp;
+										<input
+											type="button"
+											onClick={handleReset}
+											disabled={!dirty || isSubmitting}
+											style={{ display: 'inline-block' }}
+											value="Reset"
+										/>
 									</Grid>
 									<Grid item xs={3}>
 										<Typography gutterBottom>
 											Commit Start Date:
-											{errors.commitStartDate &&
-												touched.commitStartDate &&
-												requiredStar}
+											{errorStar(errors, touched, commitStartPath)}
 										</Typography>
 									</Grid>
 									<Grid item xs={9} className={classes.moveLeft}>
 										<Field
 											type="date"
-											name="commitStartDate"
-											className={`${errors.commitStartDate &&
-												touched.commitStartDate &&
-												classes.isInvalid}`}
-										/>
-										{errors.commitStartDate &&
-											touched.commitStartDate && (
-												<div className={classes.invalidFeedback}>
-													{errors.commitStartDate}
-												</div>
+											name={commitStartPath}
+											className={errorClass(
+												errors,
+												touched,
+												commitStartPath,
+												classes
 											)}
+										/>
+										{errorText(errors, touched, commitStartPath)}
 									</Grid>
 									<Grid item xs={3}>
 										<Typography gutterBottom>
 											Commit End Date:
-											{errors.commitEndDate &&
-												touched.commitEndDate &&
-												requiredStar}
+											{errorStar(errors, touched, commitEndPath)}
 										</Typography>
 									</Grid>
 									<Grid item xs={9} className={classes.moveLeft}>
 										<Field
 											type="date"
-											name="commitEndDate"
-											className={`${errors.commitEndDate &&
-												touched.commitEndDate &&
-												classes.isInvalid}`}
-										/>
-										{errors.commitEndDate &&
-											touched.commitEndDate && (
-												<div className={classes.invalidFeedback}>
-													{errors.commitEndDate}
-												</div>
+											name={commitEndPath}
+											className={errorClass(
+												errors,
+												touched,
+												commitEndPath,
+												classes
 											)}
+										/>
+										{errorText(errors, touched, commitEndPath)}
 									</Grid>
 									<Grid item xs={3}>
 										<Typography gutterBottom>
 											Reveal Start Date:
-											{errors.revealStartDate &&
-												touched.revealStartDate &&
-												requiredStar}
+											{errorStar(errors, touched, revealStartPath)}
 										</Typography>
 									</Grid>
 									<Grid item xs={9} className={classes.moveLeft}>
 										<Field
 											type="date"
-											name="revealStartDate"
-											className={`${errors.revealStartDate &&
-												touched.revealStartDate &&
-												classes.isInvalid}`}
-										/>
-										{errors.revealStartDate &&
-											touched.revealStartDate && (
-												<div className={classes.invalidFeedback}>
-													{errors.revealStartDate}
-												</div>
+											name={revealStartPath}
+											className={errorClass(
+												errors,
+												touched,
+												revealStartPath,
+												classes
 											)}
+										/>
+										{errorText(errors, touched, revealStartPath)}
 									</Grid>
 									<Grid item xs={3}>
 										<Typography gutterBottom>
 											Reveal End Date:
-											{errors.revealEndDate &&
-												touched.revealEndDate &&
-												requiredStar}
+											{errorStar(errors, touched, revealEndPath)}
 										</Typography>
 									</Grid>
 									<Grid item xs={9} className={classes.moveLeft}>
 										<Field
 											type="date"
-											name="revealEndDate"
-											className={`${errors.revealEndDate &&
-												touched.revealEndDate &&
-												classes.isInvalid}`}
-										/>
-										{errors.revealEndDate &&
-											touched.revealEndDate && (
-												<div className={classes.invalidFeedback}>
-													{errors.revealEndDate}
-												</div>
+											name={revealEndPath}
+											className={errorClass(
+												errors,
+												touched,
+												revealEndPath,
+												classes
 											)}
+										/>
+										{errorText(errors, touched, revealEndPath)}
 									</Grid>
 								</Grid>
 								<Grid container>
@@ -285,9 +329,21 @@ class ConfigureVoteForm extends React.Component {
 									{this.state.questionType === 'b' && (
 										<Grid item xs={12}>
 											<Typography gutterBottom>
-												URL Link:&nbsp;
-												<input type="text" />
+												URL Link:
+												{errorStar(errors, touched, hrefPath)}
+												&nbsp;
+												<Field
+													type="text"
+													name={hrefPath}
+													className={errorClass(
+														errors,
+														touched,
+														hrefPath,
+														classes
+													)}
+												/>
 											</Typography>
+											{errorText(errors, touched, hrefPath)}
 										</Grid>
 									)}
 								</Grid>
@@ -298,10 +354,15 @@ class ConfigureVoteForm extends React.Component {
 											Answers
 										</Typography>
 									</Grid>
-									<Grid item xs={1}>
+									<Grid item xs={2}>
 										<Typography gutterBottom>Type:&nbsp;</Typography>
 									</Grid>
-									<Grid item xs={11}>
+									<Grid item xs={10}>
+										{/* <Field component="select" name="color">
+											<option value="red">Red</option>
+											<option value="green">Green</option>
+											<option value="blue">Blue</option>
+										</Field> */}
 										<select onChange={this.handleChange('voteType')}>
 											<option selected disabled hidden>
 												Choose a Type
@@ -310,6 +371,12 @@ class ConfigureVoteForm extends React.Component {
 											<option value="b">Approval Voting</option>
 											<option value="c">Instant Run-Off Voting</option>
 										</select>
+									</Grid>
+									<Grid item xs={2}>
+										<Typography gutterBottom>Allow Abstain:&nbsp;</Typography>
+									</Grid>
+									<Grid item xs={10}>
+										<input type="checkbox" />
 									</Grid>
 									{this.state.voteType === 'a' && (
 										<Grid container>
@@ -355,8 +422,12 @@ class ConfigureVoteForm extends React.Component {
 												<Paper elevation={10} className={classes.pad}>
 													<Typography variant="subheading">
 														Options&nbsp;
-														<input type="text" />{' '}
-														<button onClick={this.addOption}>Add</button>
+														<input type="text" />
+														<input
+															type="button"
+															onClick={this.addOption}
+															value="Add"
+														/>
 													</Typography>
 
 													<List className={classes.optionList} dense>

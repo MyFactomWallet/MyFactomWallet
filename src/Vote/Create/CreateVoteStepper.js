@@ -47,7 +47,7 @@ class CreateVoteStepper extends React.Component {
 						handleNext={this.handleNext}
 						handleBack={this.handleBack}
 						updatePoll={createVoteSnapshot.updatePoll}
-						poll={createVoteSnapshot.pollConfiguration}
+						poll={createVoteSnapshot.pollJSON}
 					/>
 				);
 			case 2:

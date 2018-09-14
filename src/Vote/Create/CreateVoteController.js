@@ -2,6 +2,35 @@ import React from 'react';
 
 export class CreateVoteController extends React.Component {
 	state = {
+		pollJSON: {
+			proposal: {
+				title: '',
+				text: '',
+				externalRef: {
+					href: '',
+					hash: {
+						value: '',
+						algo: '',
+					},
+				},
+			},
+			vote: {
+				phasesBlockHeights: {
+					commitStart: '',
+					commitEnd: '',
+					revealStart: '',
+					revealEnd: '',
+				},
+				participantChainId: '',
+				type: '',
+				config: {
+					options: [],
+					acceptanceCriteria: [],
+					minOptions: '',
+					maxOptions: '',
+				},
+			},
+		},
 		pollConfiguration: {
 			title: '',
 			type: '',
@@ -23,17 +52,17 @@ export class CreateVoteController extends React.Component {
 			href:
 				'https://raw.githubusercontent.com/JacobEberhardt/ZoKrates/aa7e11/README.md',
 			hash: 'F30A765AD6C5777E82EB2B64CFA53CDBB08D435546DD351880C13691867290B4',
-			commitStartDate: '09/10/2018',
-			commitEndDate: '09/11/2018',
-			revealStartDate: '09/12/2018',
-			revealEndDate: '09/13/2018',
+			commitStartDate: '2018-09-10',
+			commitEndDate: '2018-09-11',
+			revealStartDate: '2018-09-12',
+			revealEndDate: '2018-09-13',
 			minTurnout: false,
 			minSupport: false,
 		},
 	};
 
 	updatePoll = (poll) => {
-		this.setState({ pollConfiguration: poll });
+		this.setState({ pollJSON: poll });
 	};
 
 	render() {
