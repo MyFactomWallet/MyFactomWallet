@@ -2,33 +2,64 @@ import React from 'react';
 
 export class CreateVoteController extends React.Component {
 	state = {
-		pollJSON: {
-			proposal: {
-				title: '',
-				text: '',
-				externalRef: {
-					href: '',
-					hash: {
-						value: '',
-						algo: '',
+		pollForm: {
+			pollJSON: {
+				proposal: {
+					title: '',
+					text: '',
+					externalRef: {
+						href: '',
+						hash: {
+							value: '',
+							algo: '',
+						},
+					},
+				},
+				vote: {
+					phasesBlockHeights: {
+						commitStart: '',
+						commitEnd: '',
+						revealStart: '',
+						revealEnd: '',
+					},
+					participantChainId: '',
+					type: '',
+					config: {
+						options: [],
+						acceptanceCriteria: [
+							/*
+							{
+								minSupport: '',
+								weighted: true,
+							},
+							{
+								minSupport: '',
+								weighted: false,
+							},
+							{
+								minTurnout: '',
+								weighted: true,
+							},
+							{
+								minTurnout: '',
+								weighted: false,
+							},
+							*/
+						],
+						minOptions: '',
+						maxOptions: '',
 					},
 				},
 			},
-			vote: {
-				phasesBlockHeights: {
-					commitStart: '',
-					commitEnd: '',
-					revealStart: '',
-					revealEnd: '',
-				},
-				participantChainId: '',
-				type: '',
-				config: {
-					options: [],
-					acceptanceCriteria: [],
-					minOptions: '',
-					maxOptions: '',
-				},
+			formFields: {
+				questionType: 'text',
+				workingOption: '',
+				weightMinSupport: '',
+				unweightMinSupport: '',
+				weightedMinTurnout: '',
+				unweightedMinTurnout: '',
+				checkedTurnout: false,
+				checkedSupport: false,
 			},
 		},
 		pollConfiguration: {
@@ -61,8 +92,8 @@ export class CreateVoteController extends React.Component {
 		},
 	};
 
-	updatePoll = (poll) => {
-		this.setState({ pollJSON: poll });
+	updatePoll = (form) => {
+		this.setState({ pollForm: form });
 	};
 
 	render() {

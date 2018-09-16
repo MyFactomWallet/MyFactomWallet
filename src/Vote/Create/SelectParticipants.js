@@ -86,10 +86,6 @@ class SelectParticipants extends React.Component {
 		],
 	};
 
-	componentDidMount() {
-		window.scrollTo(0, 0);
-	}
-
 	addVoter = () => {
 		this.setState((prevState) => ({
 			voters: prevState.voters.concat(
