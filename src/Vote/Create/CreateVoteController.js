@@ -26,69 +26,23 @@ export class CreateVoteController extends React.Component {
 					type: '',
 					config: {
 						options: [],
-						acceptanceCriteria: [
-							/*
-							{
-								minSupport: '',
-								weighted: true,
-							},
-							{
-								minSupport: '',
-								weighted: false,
-							},
-							{
-								minTurnout: '',
-								weighted: true,
-							},
-							{
-								minTurnout: '',
-								weighted: false,
-							},
-							*/
-						],
+						acceptanceCriteria: {
+							weightedMinSupport: '',
+							unweightedMinSupport: '',
+							weightedMinTurnout: '',
+							unweightedMinTurnout: '',
+						},
 						minOptions: '',
 						maxOptions: '',
 					},
 				},
 			},
 			formFields: {
-				questionType: 'text',
+				questionSource: '',
 				workingOption: '',
-				weightMinSupport: '',
-				unweightMinSupport: '',
-				weightedMinTurnout: '',
-				unweightedMinTurnout: '',
 				checkedTurnout: false,
 				checkedSupport: false,
 			},
-		},
-		pollConfiguration: {
-			title: '',
-			type: '',
-			options: [],
-			href: '',
-			hash: '',
-			commitStartDate: '',
-			commitEndDate: '',
-			revealStartDate: '',
-			revealEndDate: '',
-			minTurnout: false,
-			minSupport: false,
-			protocolVersion: '',
-			pollAdminID: '',
-		},
-		examplePoll: {
-			title: 'This is the Title of the Poll',
-			type: 'Single Option Voting',
-			href:
-				'https://raw.githubusercontent.com/JacobEberhardt/ZoKrates/aa7e11/README.md',
-			hash: 'F30A765AD6C5777E82EB2B64CFA53CDBB08D435546DD351880C13691867290B4',
-			commitStartDate: '2018-09-10',
-			commitEndDate: '2018-09-11',
-			revealStartDate: '2018-09-12',
-			revealEndDate: '2018-09-13',
-			minTurnout: false,
-			minSupport: false,
 		},
 	};
 

@@ -36,16 +36,20 @@ const textPath = 'pollJSON.proposal.text';
 const voteTypePath = 'pollJSON.vote.type';
 const minOptionsPath = 'pollJSON.vote.config.minOptions';
 const maxOptionsPath = 'pollJSON.vote.config.maxOptions';
+//const configPath = 'pollJSON.vote.config';
 const optionsPath = 'pollJSON.vote.config.options';
-const criteriaPath = 'pollJSON.vote.config.acceptanceCriteria';
+const weightedMinTurnoutPath =
+	'pollJSON.vote.config.acceptanceCriteria.weightedMinTurnout';
+const unweightedMinTurnoutPath =
+	'pollJSON.vote.config.acceptanceCriteria.unweightedMinTurnout';
+const weightedMinSupportPath =
+	'pollJSON.vote.config.acceptanceCriteria.weightedMinSupport';
+const unweightedMinSupportPath =
+	'pollJSON.vote.config.acceptanceCriteria.unweightedMinSupport';
 
 // form specific fields
-const workingQuestionTypePath = 'formFields.questionType';
+const questionSourcePath = 'formFields.questionSource';
 const workingOptionPath = 'formFields.workingOption';
-const workingWeightedMinSupportPath = 'formFields.weightMinSupport';
-const workingUnweightedMinSupportPath = 'formFields.unweightMinSupport';
-const workingWeightedMinTurnoutPath = 'formFields.weightedMinTurnout';
-const workingUnweightedMinTurnoutPath = 'formFields.unweightedMinTurnout';
 const checkedTurnoutPath = 'formFields.checkedTurnout';
 const checkedSupportPath = 'formFields.checkedSupport';
 
@@ -60,40 +64,38 @@ class ConfigureVoteForm extends React.Component {
 		}
 	}
 
+	displayError = (errors, touched, path) => {
+		if (get(errors, path) && get(touched, path)) {
+			return true;
+		} else {
+			return false;
+		}
+	};
+
+	errorStar = (errors, touched, path) => {
+		if (this.displayError(errors, touched, path)) {
+			return <span style={{ color: 'red' }}>&nbsp;*</span>;
+		}
+	};
+
+	errorText = (errors, touched, path, classes) => {
+		if (this.displayError(errors, touched, path)) {
+			return <div className={classes.invalidFeedback}>{get(errors, path)}</div>;
+		}
+	};
+
+	errorClass = (errors, touched, path, classes) => {
+		if (this.displayError(errors, touched, path)) {
+			return `${classes.isInvalid}`;
+		}
+	};
+
+	criteriaStyle = (values, path) => {
+		return !get(values, path) ? 'gray' : '';
+	};
+
 	render() {
 		const { pollForm, updatePoll, classes } = this.props;
-
-		const displayError = (errors, touched, path) => {
-			if (get(errors, path) && get(touched, path)) {
-				return true;
-			} else {
-				return false;
-			}
-		};
-
-		const errorStar = (errors, touched, path) => {
-			if (displayError(errors, touched, path)) {
-				return <span style={{ color: 'red' }}>&nbsp;*</span>;
-			}
-		};
-
-		const errorText = (errors, touched, path) => {
-			if (displayError(errors, touched, path)) {
-				return (
-					<div className={classes.invalidFeedback}>{get(errors, path)}</div>
-				);
-			}
-		};
-
-		const errorClass = (errors, touched, path, classes) => {
-			if (displayError(errors, touched, path)) {
-				return `${classes.isInvalid}`;
-			}
-		};
-
-		function criteriaStyle(values, path) {
-			return !get(values, path) ? 'gray' : '';
-		}
 
 		/*const now = new Date();
 		const today = new Date(
@@ -166,7 +168,7 @@ class ConfigureVoteForm extends React.Component {
 										<Grid item xs={3}>
 											<Typography gutterBottom>
 												Title:
-												{errorStar(errors, touched, titlePath)}
+												{this.errorStar(errors, touched, titlePath)}
 											</Typography>
 										</Grid>
 										<Grid item xs={6} className={classes.moveLeft}>
@@ -174,14 +176,14 @@ class ConfigureVoteForm extends React.Component {
 												type="text"
 												name={titlePath}
 												size="35"
-												className={errorClass(
+												className={this.errorClass(
 													errors,
 													touched,
 													titlePath,
 													classes
 												)}
 											/>
-											{errorText(errors, touched, titlePath)}
+											{this.errorText(errors, touched, titlePath, classes)}
 										</Grid>
 										<Grid item xs={3}>
 											{/*<input
@@ -191,90 +193,92 @@ class ConfigureVoteForm extends React.Component {
 											style={{ display: 'inline-block' }}
 											value="Fill [Test]"
 										/>*/}
-											&nbsp;
-											<input
-												type="button"
-												onClick={handleReset}
-												disabled={!dirty || isSubmitting}
-												style={{ display: 'inline-block' }}
-												value="Reset"
-											/>
 										</Grid>
 										<Grid item xs={3}>
 											<Typography gutterBottom>
 												Commit Start Date:
-												{errorStar(errors, touched, commitStartPath)}
+												{this.errorStar(errors, touched, commitStartPath)}
 											</Typography>
 										</Grid>
 										<Grid item xs={9} className={classes.moveLeft}>
 											<Field
 												type="date"
 												name={commitStartPath}
-												className={errorClass(
+												className={this.errorClass(
 													errors,
 													touched,
 													commitStartPath,
 													classes
 												)}
 											/>
-											{errorText(errors, touched, commitStartPath)}
+											{this.errorText(
+												errors,
+												touched,
+												commitStartPath,
+												classes
+											)}
 										</Grid>
 										<Grid item xs={3}>
 											<Typography gutterBottom>
 												Commit End Date:
-												{errorStar(errors, touched, commitEndPath)}
+												{this.errorStar(errors, touched, commitEndPath)}
 											</Typography>
 										</Grid>
 										<Grid item xs={9} className={classes.moveLeft}>
 											<Field
 												type="date"
 												name={commitEndPath}
-												className={errorClass(
+												className={this.errorClass(
 													errors,
 													touched,
 													commitEndPath,
 													classes
 												)}
 											/>
-											{errorText(errors, touched, commitEndPath)}
+											{this.errorText(errors, touched, commitEndPath, classes)}
 										</Grid>
 										<Grid item xs={3}>
 											<Typography gutterBottom>
 												Reveal Start Date:
-												{errorStar(errors, touched, revealStartPath)}
+												{this.errorStar(errors, touched, revealStartPath)}
 											</Typography>
 										</Grid>
 										<Grid item xs={9} className={classes.moveLeft}>
 											<Field
 												type="date"
 												name={revealStartPath}
-												className={errorClass(
+												className={this.errorClass(
 													errors,
 													touched,
 													revealStartPath,
 													classes
 												)}
 											/>
-											{errorText(errors, touched, revealStartPath)}
+											{this.errorText(
+												errors,
+												touched,
+												revealStartPath,
+												classes
+											)}
 										</Grid>
 										<Grid item xs={3}>
 											<Typography gutterBottom>
 												Reveal End Date:
-												{errorStar(errors, touched, revealEndPath)}
+												{this.errorStar(errors, touched, revealEndPath)}
 											</Typography>
 										</Grid>
 										<Grid item xs={9} className={classes.moveLeft}>
 											<Field
 												type="date"
 												name={revealEndPath}
-												className={errorClass(
+												className={this.errorClass(
 													errors,
 													touched,
 													revealEndPath,
 													classes
 												)}
 											/>
-											{errorText(errors, touched, revealEndPath)}
+											{this.errorText(errors, touched, revealEndPath, classes)}
 										</Grid>
 									</Grid>
 									<Grid container item xs={12}>
@@ -288,9 +292,16 @@ class ConfigureVoteForm extends React.Component {
 										<Grid item xs={12}>
 											<FormControl component="fieldset">
 												<RadioGroup
-													name={workingQuestionTypePath}
-													value={get(values, workingQuestionTypePath)}
-													onChange={handleChange}
+													name={questionSourcePath}
+													value={get(values, questionSourcePath)}
+													onChange={(e) => {
+														handleChange(e);
+														if (e.target.value === 'text') {
+															setFieldValue(hrefPath, '');
+														} else {
+															setFieldValue(textPath, '');
+														}
+													}}
 													onBlur={handleBlur}
 												>
 													<FormControlLabel
@@ -307,7 +318,7 @@ class ConfigureVoteForm extends React.Component {
 												</RadioGroup>
 											</FormControl>
 										</Grid>
-										{get(values, workingQuestionTypePath) === 'href' && (
+										{get(values, questionSourcePath) === 'text' && (
 											<Grid item container xs={12}>
 												<Grid item xs={1}>
 													<Typography gutterBottom>Question:</Typography>
@@ -321,16 +332,16 @@ class ConfigureVoteForm extends React.Component {
 												</Grid>
 											</Grid>
 										)}
-										{get(values, workingQuestionTypePath) === 'text' && (
+										{get(values, questionSourcePath) === 'href' && (
 											<Grid item xs={12}>
 												<Typography gutterBottom>
 													URL Link:
-													{errorStar(errors, touched, hrefPath)}
+													{this.errorStar(errors, touched, hrefPath)}
 													&nbsp;
 													<Field
 														type="text"
 														name={hrefPath}
-														className={errorClass(
+														className={this.errorClass(
 															errors,
 															touched,
 															hrefPath,
@@ -338,7 +349,7 @@ class ConfigureVoteForm extends React.Component {
 														)}
 													/>
 												</Typography>
-												{errorText(errors, touched, hrefPath)}
+												{this.errorText(errors, touched, hrefPath, classes)}
 											</Grid>
 										)}
 									</Grid>
@@ -349,10 +360,10 @@ class ConfigureVoteForm extends React.Component {
 												Answers
 											</Typography>
 										</Grid>
-										<Grid item xs={2}>
+										<Grid item xs={1}>
 											<Typography gutterBottom>Type:&nbsp;</Typography>
 										</Grid>
-										<Grid item xs={10}>
+										<Grid item xs={11}>
 											<Field
 												name={voteTypePath}
 												render={({ field, form }) => (
@@ -360,16 +371,9 @@ class ConfigureVoteForm extends React.Component {
 														{...field}
 														onChange={(e) => {
 															handleChange(e);
-															const nextValue = e.target.value;
-
 															form.setFieldValue(minOptionsPath, '');
 															form.setFieldValue(maxOptionsPath, '');
-
-															if (nextValue === SINGLE_OPTION_VOTING) {
-																form.setFieldValue(optionsPath, ['Yes', 'No']);
-															} else {
-																form.setFieldValue(optionsPath, []);
-															}
+															form.setFieldValue(optionsPath, []);
 														}}
 													>
 														<option value="" defaultValue />
@@ -387,7 +391,7 @@ class ConfigureVoteForm extends React.Component {
 											/>
 										</Grid>
 										{get(values, voteTypePath) && (
-											<Grid container>
+											<Grid container item xs={12}>
 												<Grid item xs={2}>
 													<Typography gutterBottom>
 														Allow Abstain:&nbsp;
@@ -398,34 +402,10 @@ class ConfigureVoteForm extends React.Component {
 												</Grid>
 											</Grid>
 										)}
-										{get(values, voteTypePath) === SINGLE_OPTION_VOTING && (
-											<Grid container>
-												<Grid item xs={6}>
-													<Paper elevation={10} className={classes.pad}>
-														<Typography variant="subheading">
-															Options
-														</Typography>
-														<List dense>
-															{get(values, optionsPath) &&
-																get(values, optionsPath).map(
-																	(option, index) => (
-																		<ListItem key={index} divider>
-																			<LabelImportant
-																				style={{ fontSize: 15 }}
-																			/>
-																			<ListItemText primary={option} />
-																		</ListItem>
-																	)
-																)}
-														</List>
-													</Paper>
-												</Grid>
-												<Grid item xs={6} />
-											</Grid>
-										)}
+
 										{(get(values, voteTypePath) === APPROVAL_VOTING ||
 											get(values, voteTypePath) === INSTANT_RUNOFF_VOTING) && (
-											<Grid container>
+											<Grid container item xs={12}>
 												<Grid item xs={12}>
 													<Typography gutterBottom>
 														Minimum Options Allowed:&nbsp;&nbsp;
@@ -435,6 +415,8 @@ class ConfigureVoteForm extends React.Component {
 															name={minOptionsPath}
 														/>
 													</Typography>
+												</Grid>
+												<Grid item xs={12}>
 													<Typography gutterBottom>
 														Maximum Options Allowed:&nbsp;
 														<Field
@@ -444,77 +426,74 @@ class ConfigureVoteForm extends React.Component {
 														/>
 													</Typography>
 												</Grid>
-												<Grid item xs={12}>
-													<Paper elevation={10} className={classes.pad}>
-														<List className={classes.optionList} dense>
-															<FieldArray
-																name={optionsPath}
-																render={(arrayHelpers) => (
-																	<div>
-																		<Typography variant="subheading">
-																			Options&nbsp;&nbsp;
-																			<Field
-																				name={workingOptionPath}
-																				type="text"
-																			/>
-																			<input
-																				type="button"
-																				onClick={() => {
-																					if (get(values, workingOptionPath)) {
-																						// add value
-																						arrayHelpers.push(
-																							get(values, workingOptionPath)
-																						);
-																						// reset input
-																						setFieldValue(
-																							workingOptionPath,
-																							''
-																						);
-																					}
-																				}}
-																				value="Add"
-																				disabled={
-																					!get(values, workingOptionPath)
+											</Grid>
+										)}
+										{get(values, voteTypePath) && (
+											<Grid item xs={12}>
+												<Paper elevation={10} className={classes.pad}>
+													<List className={classes.optionList} dense>
+														<FieldArray
+															name={optionsPath}
+															render={(arrayHelpers) => (
+																<div>
+																	<Typography variant="subheading">
+																		Options&nbsp;&nbsp;
+																		<Field
+																			name={workingOptionPath}
+																			type="text"
+																		/>
+																		<input
+																			type="button"
+																			onClick={() => {
+																				if (get(values, workingOptionPath)) {
+																					// add value
+																					arrayHelpers.push(
+																						get(values, workingOptionPath)
+																					);
+																					// reset input
+																					setFieldValue(workingOptionPath, '');
 																				}
-																			/>
-																		</Typography>
-																		{get(values, optionsPath).length > 0 ? (
-																			get(values, optionsPath).map(
-																				(option, index) => (
-																					<ListItem
-																						key={index}
-																						disableGutters
-																						divider
-																						className={classes.optionListItem}
+																			}}
+																			value="Add"
+																			disabled={!get(values, workingOptionPath)}
+																		/>
+																	</Typography>
+																	{get(values, optionsPath).length > 0 ? (
+																		get(values, optionsPath).map(
+																			(option, index) => (
+																				<ListItem
+																					key={index}
+																					disableGutters
+																					divider
+																					className={classes.optionListItem}
+																				>
+																					<LabelImportant
+																						style={{ fontSize: 15 }}
+																					/>
+																					<ListItemText primary={option} />
+																					<IconButton
+																						onClick={() =>
+																							arrayHelpers.remove(index)
+																						}
+																						aria-label="Clear"
 																					>
-																						<LabelImportant
-																							style={{ fontSize: 15 }}
-																						/>
-																						<ListItemText primary={option} />
-																						<IconButton
-																							onClick={() =>
-																								arrayHelpers.remove(index)
-																							}
-																							aria-label="Clear"
-																						>
-																							<Clear />
-																						</IconButton>
-																					</ListItem>
-																				)
+																						<Clear />
+																					</IconButton>
+																				</ListItem>
 																			)
-																		) : (
-																			<ListItem divider>
-																				<ListItemText
-																					primary={'No Options have been added'}
-																				/>
-																			</ListItem>
-																		)}
-																	</div>
-																)}
-															/>
-														</List>
-													</Paper>
-												</Grid>
+																		)
+																	) : (
+																		<ListItem divider>
+																			<ListItemText
+																				primary={'No Options have been added'}
+																			/>
+																		</ListItem>
+																	)}
+																</div>
+															)}
+														/>
+													</List>
+												</Paper>
 											</Grid>
 										)}
 									</Grid>
@@ -544,11 +523,11 @@ class ConfigureVoteForm extends React.Component {
 																				if (field.value) {
 																					// reset turnout invalidation criteria
 																					form.setFieldValue(
-																						workingWeightedMinTurnoutPath,
+																						weightedMinTurnoutPath,
 																						''
 																					);
 																					form.setFieldValue(
-																						workingUnweightedMinTurnoutPath,
+																						unweightedMinTurnoutPath,
 																						''
 																					);
 																				}
@@ -565,7 +544,7 @@ class ConfigureVoteForm extends React.Component {
 													<Grid item xs={8}>
 														<label
 															style={{
-																color: criteriaStyle(
+																color: this.criteriaStyle(
 																	values,
 																	checkedTurnoutPath
 																),
@@ -573,23 +552,20 @@ class ConfigureVoteForm extends React.Component {
 														>
 															Weighted Ratio:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 															<input
-																name={workingWeightedMinTurnoutPath}
+																name={weightedMinTurnoutPath}
 																disabled={!get(values, checkedTurnoutPath)}
 																size="4"
 																onBlur={handleBlur}
 																type="number"
 																className={classes.numberInput}
-																value={get(
-																	values,
-																	workingWeightedMinTurnoutPath
-																)}
+																value={get(values, weightedMinTurnoutPath)}
 																onChange={handleChange}
 															/>
 														</label>
 														<br />
 														<label
 															style={{
-																color: criteriaStyle(
+																color: this.criteriaStyle(
 																	values,
 																	checkedTurnoutPath
 																),
@@ -597,16 +573,13 @@ class ConfigureVoteForm extends React.Component {
 														>
 															Unweighted Ratio:&nbsp;
 															<input
-																name={workingUnweightedMinTurnoutPath}
+																name={unweightedMinTurnoutPath}
 																disabled={!get(values, checkedTurnoutPath)}
 																size="4"
 																onBlur={handleBlur}
 																type="number"
 																className={classes.numberInput}
-																value={get(
-																	values,
-																	workingUnweightedMinTurnoutPath
-																)}
+																value={get(values, unweightedMinTurnoutPath)}
 																onChange={handleChange}
 															/>
 														</label>
@@ -631,11 +604,11 @@ class ConfigureVoteForm extends React.Component {
 																				if (field.value) {
 																					// reset support invalidation criteria
 																					form.setFieldValue(
-																						workingWeightedMinSupportPath,
+																						weightedMinSupportPath,
 																						''
 																					);
 																					form.setFieldValue(
-																						workingUnweightedMinSupportPath,
+																						unweightedMinSupportPath,
 																						''
 																					);
 																				}
@@ -651,7 +624,7 @@ class ConfigureVoteForm extends React.Component {
 													<Grid item xs={8}>
 														<label
 															style={{
-																color: criteriaStyle(
+																color: this.criteriaStyle(
 																	values,
 																	checkedSupportPath
 																),
@@ -659,16 +632,13 @@ class ConfigureVoteForm extends React.Component {
 														>
 															Weighted Ratio:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 															<input
-																name={workingWeightedMinSupportPath}
+																name={weightedMinSupportPath}
 																disabled={!get(values, checkedSupportPath)}
 																size="4"
 																onBlur={handleBlur}
 																type="number"
 																className={classes.numberInput}
-																value={get(
-																	values,
-																	workingWeightedMinSupportPath
-																)}
+																value={get(values, weightedMinSupportPath)}
 																onChange={handleChange}
 															/>
 														</label>
@@ -676,7 +646,7 @@ class ConfigureVoteForm extends React.Component {
 														<br />
 														<label
 															style={{
-																color: criteriaStyle(
+																color: this.criteriaStyle(
 																	values,
 																	checkedSupportPath
 																),
@@ -684,16 +654,13 @@ class ConfigureVoteForm extends React.Component {
 														>
 															Unweighted Ratio:&nbsp;
 															<input
-																name={workingUnweightedMinSupportPath}
+																name={unweightedMinSupportPath}
 																disabled={!get(values, checkedSupportPath)}
 																size="4"
 																onBlur={handleBlur}
 																type="number"
 																className={classes.numberInput}
-																value={get(
-																	values,
-																	workingUnweightedMinSupportPath
-																)}
+																value={get(values, unweightedMinSupportPath)}
 																onChange={handleChange}
 															/>
 														</label>

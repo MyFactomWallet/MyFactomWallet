@@ -55,7 +55,7 @@ class CreateVoteStepper extends React.Component {
 					<PreviewVote
 						handleNext={this.handleNext}
 						handleBack={this.handleBack}
-						poll={createVoteSnapshot.examplePoll}
+						poll={createVoteSnapshot.pollForm}
 					/>
 				);
 			default:
