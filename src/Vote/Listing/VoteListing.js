@@ -10,6 +10,20 @@ import FilterList from '@material-ui/icons/FilterList';
 import Grid from '@material-ui/core/Grid';
 
 class VoteListing extends Component {
+	state = { expanded: false };
+
+	toggleExpand = () => {
+		this.setState((prevState) => ({
+			expanded: !prevState.expanded,
+		}));
+	};
+
+	handleExpand = () => {
+		this.setState({
+			expanded: true,
+		});
+	};
+
 	render() {
 		const { classes } = this.props;
 
@@ -17,7 +31,7 @@ class VoteListing extends Component {
 			<div className={classes.body}>
 				<Paper className={classes.paper}>
 					<Grid container direction="row">
-						<Grid item xs={3}>
+						<Grid item xs={3} className={classes.topFilters}>
 							<Typography style={{ textAlign: 'left' }}>
 								Voter ID: <input type="text" />
 							</Typography>
@@ -34,14 +48,22 @@ class VoteListing extends Component {
 						<Grid item xs={2} />
 						<Grid item xs={1}>
 							<Grid style={{ paddingTop: '20px' }} item xs={2}>
-								<Button variant="outlined" color="primary" size="small">
+								<Button
+									onClick={this.handleExpand}
+									variant="outlined"
+									color="primary"
+									size="small"
+								>
 									<FilterList /> Filter
 								</Button>
 							</Grid>
 						</Grid>
 					</Grid>
 
-					<VotesTable />
+					<VotesTable
+						expanded={this.state.expanded}
+						toggleExpand={this.toggleExpand}
+					/>
 				</Paper>
 				<br />
 			</div>
@@ -64,6 +86,11 @@ const styles = (theme) => ({
 	},
 	paper: {
 		padding: '15px',
+	},
+	topFilters: {
+		top: '14px',
+		position: 'relative',
+		left: '8px',
 	},
 });
 

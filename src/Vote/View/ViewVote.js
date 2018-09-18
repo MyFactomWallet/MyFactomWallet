@@ -62,21 +62,48 @@ class ViewVote extends React.Component {
 	state = {
 		tabValue: 0,
 		poll: {
-			title: 'This Is The Poll Title',
-			type: 'Single Option Voting',
-			href:
-				'https://raw.githubusercontent.com/JacobEberhardt/ZoKrates/aa7e11/README.md',
-			hash: 'F30A765AD6C5777E82EB2B64CFA53CDBB08D435546DD351880C13691867290B4',
-			commitStartDate: '09/10/2018',
-			commitEndDate: '09/11/2018',
-			revealStartDate: '09/12/2018',
-			revealEndDate: '09/13/2018',
-			minTurnout: false,
-			minSupport: false,
-			protocolVersion: 'v0.1',
-			pollAdminID:
-				'888888655866a003faabd999c7b0a7c908af17d63fd2ac2951dc99e1ad2a14f4',
-			pollChainID: QS.parse(this.props.location.search)['?id'],
+			pollJSON: {
+				proposal: {
+					title: 'This Is The Poll Title',
+					text: '',
+					externalRef: {
+						href:
+							'https://raw.githubusercontent.com/JacobEberhardt/ZoKrates/aa7e11/README.md',
+						hash: {
+							value:
+								'F30A765AD6C5777E82EB2B64CFA53CDBB08D435546DD351880C13691867290B4',
+							algo: 'SHA-256',
+						},
+					},
+				},
+				vote: {
+					phasesBlockHeights: {
+						commitStart: '158883',
+						commitEnd: '158884',
+						revealStart: '158885',
+						revealEnd: '158886',
+					},
+					participantChainId: '',
+					type: '0',
+					config: {
+						options: ['Yes', 'No', 'Abstain'],
+						acceptanceCriteria: {
+							weightedMinSupport: '0.4',
+							unweightedMinSupport: '0.5',
+							weightedMinTurnout: '',
+							unweightedMinTurnout: '',
+						},
+						minOptions: '',
+						maxOptions: '',
+					},
+				},
+			},
+			formFields: {
+				protocolVersion: 'v0.1',
+				pollAdminID:
+					'888888655866a003faabd999c7b0a7c908af17d63fd2ac2951dc99e1ad2a14f4',
+				pollChainID: QS.parse(this.props.location.search)['?id'],
+			},
 		},
 		expand: false,
 	};

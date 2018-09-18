@@ -8,8 +8,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
-import Add from '@material-ui/icons/Add';
-import Remove from '@material-ui/icons/Remove';
+import Add from '@material-ui/icons/ArrowForward';
+import Remove from '@material-ui/icons/ArrowBack';
 import Grid from '@material-ui/core/Grid';
 
 let id = 0;
@@ -114,16 +114,9 @@ const rows = [
 ];
 
 class VoteTable extends React.Component {
-	state = { expanded: true };
-
-	toggleExpand = () => {
-		this.setState((prevState) => ({
-			expanded: !prevState.expanded,
-		}));
-	};
-
 	render() {
 		const { classes } = this.props;
+		const expanded = this.props.expanded;
 
 		return (
 			<Grid container>
@@ -132,11 +125,11 @@ class VoteTable extends React.Component {
 						<TableHead>
 							<TableRow>
 								<th className={classes.expandColumn}>
-									{!this.state.expanded ? (
+									{expanded ? (
 										<Remove
 											style={{ cursor: 'pointer' }}
 											titleAccess="Collapse"
-											onClick={this.toggleExpand}
+											onClick={this.props.toggleExpand}
 											title="Collapse Row"
 											className={classes.expandIcon}
 										/>
@@ -144,59 +137,91 @@ class VoteTable extends React.Component {
 										<Add
 											style={{ cursor: 'pointer' }}
 											titleAccess="Expand"
-											onClick={this.toggleExpand}
+											onClick={this.props.toggleExpand}
 											title="Expand Row"
 											className={classes.expandIcon}
 										/>
 									)}
 								</th>
-								<TableCell className={classes.titleColumn}>
+								<TableCell
+									className={`${classes.titleColumn} ${classes.columnHeader}`}
+								>
 									Title
-									<br />
-									<input type="text" />
+									{expanded && (
+										<span>
+											<br />
+											<input type="text" />
+										</span>
+									)}
 								</TableCell>
-								<TableCell className={classes.statusColumn}>
+								<TableCell
+									className={`${classes.statusColumn} ${classes.columnHeader}`}
+								>
 									Status
-									<br />
-									<select>
-										<option defaultValue value="" />
-										<option>Discussion Phase</option>
-										<option>Commit Phase</option>
-										<option>Reveal Phase</option>
-										<option>Complete</option>
-										<option>Invalidated</option>
-									</select>
+									{expanded && (
+										<span>
+											<br />
+											<select>
+												<option defaultValue value="" />
+												<option>Discussion Phase</option>
+												<option>Commit Phase</option>
+												<option>Reveal Phase</option>
+												<option>Complete</option>
+												<option>Invalidated</option>
+											</select>
+										</span>
+									)}
 								</TableCell>
-								<TableCell className={classes.dateColumn}>
+								<TableCell
+									className={`${classes.dateColumn} ${classes.columnHeader}`}
+								>
 									Commit Phase
 								</TableCell>
-								<TableCell className={classes.dateColumn}>
+								<TableCell
+									className={`${classes.dateColumn} ${classes.columnHeader}`}
+								>
 									Reveal Phase
 								</TableCell>
-								{this.state.expanded ? (
-									<TableCell className={classes.pollChainIDColumn}>
+								{expanded ? (
+									<TableCell
+										className={`${classes.pollChainIDColumn} ${
+											classes.columnHeader
+										}`}
+									>
 										Poll Chain ID
 										<br />
 										<input type="text" />
 									</TableCell>
 								) : (
-									<TableCell className={classes.shortPollChainIDColumn}>
+									<TableCell
+										className={`${classes.shortPollChainIDColumn} ${
+											classes.columnHeader
+										}`}
+									>
 										Poll Chain ID
-										<br />
-										<input type="text" />
+										{/* <br />
+										<input type="text" /> */}
 									</TableCell>
 								)}
-								{this.state.expanded ? (
-									<TableCell className={classes.adminIDColumn}>
+								{expanded ? (
+									<TableCell
+										className={`${classes.adminIDColumn} ${
+											classes.columnHeader
+										}`}
+									>
 										Poll Admin ID
 										<br />
 										<input type="text" />
 									</TableCell>
 								) : (
-									<TableCell className={classes.shortAdminIDColumn}>
+									<TableCell
+										className={`${classes.shortAdminIDColumn} ${
+											classes.columnHeader
+										}`}
+									>
 										Poll Admin ID
-										<br />
-										<input type="text" />
+										{/* <br />
+										<input type="text" /> */}
 									</TableCell>
 								)}
 							</TableRow>
@@ -218,7 +243,7 @@ class VoteTable extends React.Component {
 										<TableCell className={classes.dateColumn}>
 											<div style={{ width: '104px' }}>{row.revealPhase}</div>
 										</TableCell>
-										{this.state.expanded ? (
+										{expanded ? (
 											<TableCell className={classes.pollChainIDColumn}>
 												{row.voteID}
 											</TableCell>
@@ -227,7 +252,7 @@ class VoteTable extends React.Component {
 												{row.voteID}
 											</TableCell>
 										)}
-										{this.state.expanded ? (
+										{expanded ? (
 											<TableCell className={classes.adminIDColumn}>
 												{row.adminID}
 											</TableCell>
@@ -249,7 +274,6 @@ class VoteTable extends React.Component {
 						count={rows.length}
 						rowsPerPage={25}
 						page={0}
-						align="left"
 					/>
 				</Grid>
 			</Grid>
@@ -273,22 +297,22 @@ const styles = (theme) => ({
 		minWidth: '325px',
 		paddingRight: '1px',
 	},
-	shortAdminIDColumn: {
-		paddingRight: '0px',
-	},
 	adminIDColumn: {
-		maxWidth: '207px',
-		overflow: 'hidden',
-		textOverflow: 'ellipsis',
 		paddingRight: '0px',
 	},
-	pollChainIDColumn: {
+	shortAdminIDColumn: {
 		maxWidth: '207px',
 		overflow: 'hidden',
 		textOverflow: 'ellipsis',
 		paddingRight: '0px',
 	},
 	shortPollChainIDColumn: {
+		maxWidth: '207px',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		paddingRight: '0px',
+	},
+	pollChainIDColumn: {
 		paddingRight: '0px',
 	},
 	statusColumn: {
@@ -302,13 +326,15 @@ const styles = (theme) => ({
 	},
 	expandIcon: {
 		margin: '-5px',
-		marginTop: '12px',
 	},
 	expandColumn: {
 		maxWidth: '3px',
 	},
 	footerPagination: {
 		maxWidth: '345px',
+	},
+	columnHeader: {
+		fontSize: '13px',
 	},
 });
 

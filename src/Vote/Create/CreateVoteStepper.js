@@ -5,7 +5,7 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
-import SelectParticipants from './SelectParticipants.js';
+import SelectParticipants from './ParticipantsForm.js';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import PreviewVote from './PreviewVote.js';
@@ -39,6 +39,8 @@ class CreateVoteStepper extends React.Component {
 					<SelectParticipants
 						handleNext={this.handleNext}
 						handleBack={this.handleBack}
+						participantsForm={createVoteSnapshot.participantsForm}
+						updateParticipants={createVoteSnapshot.updateParticipants}
 					/>
 				);
 			case 1:

@@ -44,16 +44,29 @@ export class CreateVoteController extends React.Component {
 				checkedSupport: false,
 			},
 		},
+		participantsForm: {
+			participantsJSON: [],
+			formFields: {
+				selectedList: 'standing',
+				workingVoterID: '',
+				workingWeight: '',
+			},
+		},
 	};
 
 	updatePoll = (form) => {
 		this.setState({ pollForm: form });
 	};
 
+	updateParticipants = (form) => {
+		this.setState({ participantsForm: form });
+	};
+
 	render() {
 		return this.props.children({
 			...this.state,
 			updatePoll: this.updatePoll,
+			updateParticipants: this.updateParticipants,
 		});
 	}
 }

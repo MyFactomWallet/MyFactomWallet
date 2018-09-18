@@ -44,6 +44,9 @@ const unweightedMinSupportPath =
 //unique so far
 const hashValuePath = 'pollJSON.proposal.externalRef.hash.value';
 const hashAlgoPath = 'pollJSON.proposal.externalRef.hash.algo';
+const protocolVersionPath = 'formFields.protocolVersion';
+const pollAdminIDPath = 'formFields.pollAdminID';
+const pollChainIDPath = 'formFields.pollChainID';
 const voteTypes = [
 	'Single Option Voting',
 	'Approval Voting',
@@ -76,46 +79,42 @@ class VoteSummary extends React.Component {
 						<Typography>{get(poll, titlePath)}</Typography>
 					</Grid>
 					<Grid item xs={3} className={classes.smallGridColumn}>
-						<Typography gutterBottom>Commit Start Date:</Typography>
+						<Typography gutterBottom>Commit Start Block:</Typography>
 					</Grid>
 					<Grid item xs={9}>
 						<Typography>
-							{new Date(get(poll, commitStartPath)).toLocaleDateString()}
+							{get(poll, commitStartPath)}
+
+							{/*{new Date(get(poll, commitStartPath)).toLocaleDateString()}*/}
 						</Typography>
 					</Grid>
 					<Grid item xs={3} className={classes.smallGridColumn}>
-						<Typography gutterBottom>Commit End Date:</Typography>
+						<Typography gutterBottom>Commit End Block:</Typography>
 					</Grid>
 					<Grid item xs={9}>
-						<Typography>
-							{new Date(get(poll, commitEndPath)).toLocaleDateString()}
-						</Typography>
+						<Typography>{get(poll, commitEndPath)}</Typography>
 					</Grid>
 					<Grid item xs={3} className={classes.smallGridColumn}>
-						<Typography gutterBottom>Reveal Start Date:</Typography>
+						<Typography gutterBottom>Reveal Start Block:</Typography>
 					</Grid>
 					<Grid item xs={9}>
-						<Typography>
-							{new Date(get(poll, revealStartPath)).toLocaleDateString()}
-						</Typography>
+						<Typography>{get(poll, revealStartPath)}</Typography>
 					</Grid>
 					<Grid item xs={3} className={classes.smallGridColumn}>
-						<Typography gutterBottom>Reveal End Date:</Typography>
+						<Typography gutterBottom>Reveal End Block:</Typography>
 					</Grid>
 					<Grid item xs={9}>
-						<Typography>
-							{new Date(get(poll, revealEndPath)).toLocaleDateString()}
-						</Typography>
+						<Typography>{get(poll, revealEndPath)}</Typography>
 					</Grid>
 				</Grid>
-				{poll.pollChainID && (
+				{get(poll, pollChainIDPath) && (
 					<Grid item xs={12} container>
 						<Grid item xs={3} className={classes.smallGridColumn}>
 							<Typography gutterBottom>Poll Chain ID:</Typography>
 						</Grid>
 						<Grid item xs={9}>
 							<Typography>
-								{poll.pollChainID}
+								{get(poll, pollChainIDPath)}
 								&nbsp;
 								<a
 									target="_blank"
@@ -129,14 +128,14 @@ class VoteSummary extends React.Component {
 						</Grid>
 					</Grid>
 				)}
-				{poll.pollAdminID && (
+				{get(poll, pollAdminIDPath) && (
 					<Grid item xs={12} container>
 						<Grid item xs={3} className={classes.smallGridColumn}>
 							<Typography gutterBottom>Poll Admin ID:</Typography>
 						</Grid>
 						<Grid item xs={9}>
 							<Typography>
-								{poll.pollAdminID}
+								{get(poll, pollAdminIDPath)}
 								&nbsp;
 								<a
 									target="_blank"
@@ -150,13 +149,13 @@ class VoteSummary extends React.Component {
 						</Grid>
 					</Grid>
 				)}
-				{poll.protocolVersion && (
+				{get(poll, protocolVersionPath) && (
 					<Grid item xs={12} container>
 						<Grid item xs={3} className={classes.smallGridColumn}>
 							<Typography gutterBottom>Protocol Version:</Typography>
 						</Grid>
 						<Grid item xs={9}>
-							<Typography>{poll.protocolVersion}</Typography>
+							<Typography>{get(poll, protocolVersionPath)}</Typography>
 						</Grid>
 					</Grid>
 				)}

@@ -97,11 +97,6 @@ class ConfigureVoteForm extends React.Component {
 	render() {
 		const { pollForm, updatePoll, classes } = this.props;
 
-		/*const now = new Date();
-		const today = new Date(
-			Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-		);*/
-
 		return (
 			<Formik
 				initialValues={pollForm}
@@ -111,32 +106,28 @@ class ConfigureVoteForm extends React.Component {
 							title: Yup.string().required('Required'),
 						}),
 						vote: Yup.object().shape({
-							/* phasesBlockHeights: Yup.object().shape({
-								commitStart: Yup.date()
+							phasesBlockHeights: Yup.object().shape({
+								commitStart: Yup.number()
 									.transform((currentValue, originalValue) => {
 										return originalValue === '' ? undefined : currentValue;
 									})
 									.required('Required'),
-								commitEnd: Yup.date()
+								commitEnd: Yup.number()
 									.transform((currentValue, originalValue) => {
 										return originalValue === '' ? undefined : currentValue;
 									})
 									.required('Required'),
-								revealStart: Yup.date()
+								revealStart: Yup.number()
 									.transform((currentValue, originalValue) => {
 										return originalValue === '' ? undefined : currentValue;
 									})
 									.required('Required'),
-								revealEnd: Yup.date()
+								revealEnd: Yup.number()
 									.transform((currentValue, originalValue) => {
 										return originalValue === '' ? undefined : currentValue;
 									})
 									.required('Required'),
-								//.min(
-								//		today,
-								//		`Commit Start Date should be equal or later than today's date`
-								//	),
-							}), */
+							}),
 						}),
 					}),
 				})}
@@ -148,8 +139,6 @@ class ConfigureVoteForm extends React.Component {
 					errors,
 					touched,
 					isSubmitting,
-					handleReset,
-					dirty,
 					values,
 					setFieldValue,
 					handleChange,
@@ -196,13 +185,13 @@ class ConfigureVoteForm extends React.Component {
 										</Grid>
 										<Grid item xs={3}>
 											<Typography gutterBottom>
-												Commit Start Date:
+												Commit Start Block:
 												{this.errorStar(errors, touched, commitStartPath)}
 											</Typography>
 										</Grid>
 										<Grid item xs={9} className={classes.moveLeft}>
 											<Field
-												type="date"
+												type="number"
 												name={commitStartPath}
 												className={this.errorClass(
 													errors,
@@ -220,13 +209,13 @@ class ConfigureVoteForm extends React.Component {
 										</Grid>
 										<Grid item xs={3}>
 											<Typography gutterBottom>
-												Commit End Date:
+												Commit End Block:
 												{this.errorStar(errors, touched, commitEndPath)}
 											</Typography>
 										</Grid>
 										<Grid item xs={9} className={classes.moveLeft}>
 											<Field
-												type="date"
+												type="number"
 												name={commitEndPath}
 												className={this.errorClass(
 													errors,
@@ -239,13 +228,13 @@ class ConfigureVoteForm extends React.Component {
 										</Grid>
 										<Grid item xs={3}>
 											<Typography gutterBottom>
-												Reveal Start Date:
+												Reveal Start Block:
 												{this.errorStar(errors, touched, revealStartPath)}
 											</Typography>
 										</Grid>
 										<Grid item xs={9} className={classes.moveLeft}>
 											<Field
-												type="date"
+												type="number"
 												name={revealStartPath}
 												className={this.errorClass(
 													errors,
@@ -263,13 +252,13 @@ class ConfigureVoteForm extends React.Component {
 										</Grid>
 										<Grid item xs={3}>
 											<Typography gutterBottom>
-												Reveal End Date:
+												Reveal End Block:
 												{this.errorStar(errors, touched, revealEndPath)}
 											</Typography>
 										</Grid>
 										<Grid item xs={9} className={classes.moveLeft}>
 											<Field
-												type="date"
+												type="number"
 												name={revealEndPath}
 												className={this.errorClass(
 													errors,
@@ -445,14 +434,11 @@ class ConfigureVoteForm extends React.Component {
 																		<input
 																			type="button"
 																			onClick={() => {
-																				if (get(values, workingOptionPath)) {
-																					// add value
-																					arrayHelpers.push(
-																						get(values, workingOptionPath)
-																					);
-																					// reset input
-																					setFieldValue(workingOptionPath, '');
-																				}
+																				arrayHelpers.push(
+																					get(values, workingOptionPath)
+																				);
+																				// reset input
+																				setFieldValue(workingOptionPath, '');
 																			}}
 																			value="Add"
 																			disabled={!get(values, workingOptionPath)}
@@ -539,7 +525,7 @@ class ConfigureVoteForm extends React.Component {
 																/>
 															)}
 														/>
-														<pre>{JSON.stringify(values, null, 2)}</pre>
+														{/*	<pre>{JSON.stringify(values, null, 2)}</pre> */}
 													</Grid>
 													<Grid item xs={8}>
 														<label
@@ -671,7 +657,7 @@ class ConfigureVoteForm extends React.Component {
 									</Grid>
 								</Grid>
 
-								<div className={classes.stepperButtons}>
+								<Grid item xs={12} className={classes.stepperButtons}>
 									<br />
 									<Button onClick={this.props.handleBack}>Back</Button>
 									<Button
@@ -683,7 +669,7 @@ class ConfigureVoteForm extends React.Component {
 										Next
 									</Button>
 									{isSubmitting && errors && window.scrollTo(0, 0)}
-								</div>
+								</Grid>
 							</Form>
 						</Grid>
 					</Grid>
