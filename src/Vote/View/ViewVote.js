@@ -17,8 +17,8 @@ import Button from '@material-ui/core/Button';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { Link } from 'react-router-dom';
 import QS from 'qs';
-import Add from '@material-ui/icons/Add';
-import Remove from '@material-ui/icons/Remove';
+import Add from '@material-ui/icons/ArrowForward';
+import Remove from '@material-ui/icons/ArrowBack';
 import VoteSummary from '../Shared/VoteSummary';
 import SignVote from '../Shared/SignVote';
 
@@ -64,7 +64,7 @@ class ViewVote extends React.Component {
 		poll: {
 			pollJSON: {
 				proposal: {
-					title: 'This Is The Poll Title',
+					title: 'This Is The Title',
 					text: '',
 					externalRef: {
 						href:
@@ -83,18 +83,18 @@ class ViewVote extends React.Component {
 						revealStart: '158885',
 						revealEnd: '158886',
 					},
-					participantChainId: '',
+					eligibleVotersChainId: '',
 					type: '0',
 					config: {
 						options: ['Yes', 'No', 'Abstain'],
-						acceptanceCriteria: {
-							weightedMinSupport: '0.4',
-							unweightedMinSupport: '0.5',
-							weightedMinTurnout: '',
-							unweightedMinTurnout: '',
-						},
+						allowAbstention: '',
+						computeResultsAgainst: '',
 						minOptions: '',
 						maxOptions: '',
+						acceptanceCriteria: {
+							minSupport: {},
+							minTurnout: {},
+						},
 					},
 				},
 			},
@@ -129,7 +129,7 @@ class ViewVote extends React.Component {
 						<Grid container>
 							<Grid item xs={12}>
 								<Typography align="center" gutterBottom variant="title">
-									View Poll: {this.state.poll.title}
+									Poll: {this.state.poll.pollJSON.proposal.title}
 								</Typography>
 							</Grid>
 							<Grid item xs={12}>
@@ -177,7 +177,7 @@ class ViewVote extends React.Component {
 												}
 											>
 												<Button size="small" variant="outlined">
-													Manage Voter List&nbsp;
+													Manage Eligible Voters&nbsp;
 													<OpenInNew />
 												</Button>
 											</Link>
@@ -294,8 +294,9 @@ class ViewVote extends React.Component {
 													<option selected disabled hidden>
 														Choose an Answer
 													</option>
-													<option>True</option>
-													<option>False</option>
+													<option>Yes</option>
+													<option>No</option>
+													<option>Abstain</option>
 												</select>
 											</Grid>
 											<Grid item xs={12}>

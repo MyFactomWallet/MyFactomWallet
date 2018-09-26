@@ -30,7 +30,7 @@ const rows = [
 		'e62aeaad853809e0a6901faa7698d305b5927fe9aeffff9fa233f3367629f098',
 		'9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08',
 
-		'Discussion (Pre-Commit) Phase Example',
+		'Discussion Phase Example',
 		'Discussion Phase',
 		<span>
 			Start: 08/22/2018
@@ -294,7 +294,7 @@ const styles = (theme) => ({
 		//minWidth: 750,
 	},
 	titleColumn: {
-		minWidth: '325px',
+		minWidth: '252',
 		paddingRight: '1px',
 	},
 	adminIDColumn: {

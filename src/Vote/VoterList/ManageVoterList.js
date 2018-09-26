@@ -89,7 +89,7 @@ class ManageVoterList extends React.Component {
 						<Grid container>
 							<Grid item xs={12}>
 								<Typography align="center" gutterBottom variant="title">
-									Manage Voter List
+									Manage Eligible Voters
 								</Typography>
 								<br />
 							</Grid>

@@ -22,29 +22,35 @@ export class CreateVoteController extends React.Component {
 						revealStart: '',
 						revealEnd: '',
 					},
-					participantChainId: '',
+					eligibleVotersChainId: '',
 					type: '',
 					config: {
 						options: [],
-						acceptanceCriteria: {
-							weightedMinSupport: '',
-							unweightedMinSupport: '',
-							weightedMinTurnout: '',
-							unweightedMinTurnout: '',
-						},
+						allowAbstention: '',
+						computeResultsAgainst: '',
 						minOptions: '',
 						maxOptions: '',
+						acceptanceCriteria: {
+							minSupport: {},
+							minTurnout: {},
+						},
 					},
 				},
 			},
 			formFields: {
+				voteTypeText: '',
 				questionSource: '',
 				workingOption: '',
 				checkedTurnout: false,
 				checkedSupport: false,
+				workingWeightMinTurnout: '',
+				workingUnweightMinTurnout: '',
+				workingWeightMinSupport: '',
+				workingUnweightMinSupport: '',
+				applyMinSupportTo: 'all',
 			},
 		},
-		participantsForm: {
+		eligibleVotersForm: {
 			participantsJSON: [],
 			formFields: {
 				selectedList: 'standing',
@@ -59,7 +65,7 @@ export class CreateVoteController extends React.Component {
 	};
 
 	updateParticipants = (form) => {
-		this.setState({ participantsForm: form });
+		this.setState({ eligibleVotersForm: form });
 	};
 
 	render() {

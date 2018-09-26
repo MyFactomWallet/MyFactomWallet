@@ -42,7 +42,7 @@ class SelectParticipants extends React.Component {
 	}
 
 	render() {
-		const { participantsForm, classes, updateParticipants } = this.props;
+		const { eligibleVotersForm, classes, updateParticipants } = this.props;
 		/* const standingParties = this.state.standingParties.map((voter) => (
 			<ListItem key={voter.name} divider>
 				<Person />
@@ -56,7 +56,7 @@ class SelectParticipants extends React.Component {
 
 		return (
 			<Formik
-				initialValues={participantsForm}
+				initialValues={eligibleVotersForm}
 				onSubmit={(values, actions) => {
 					updateParticipants(values);
 					this.props.handleNext();
@@ -168,7 +168,7 @@ class SelectParticipants extends React.Component {
 														className={classes.listContainer}
 													>
 														<Typography variant="subheading">
-															Voter List
+															Eligible Voter List
 														</Typography>
 														<List className={classes.list} dense>
 															{get(values, participantsPath).length > 0 ? (

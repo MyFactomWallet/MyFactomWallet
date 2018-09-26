@@ -5,7 +5,7 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
-import SelectParticipants from './ParticipantsForm.js';
+import EligibleVotersForm from './EligibleVotersForm.js';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import PreviewVote from './PreviewVote.js';
@@ -36,10 +36,10 @@ class CreateVoteStepper extends React.Component {
 		switch (stepIndex) {
 			case 0:
 				return (
-					<SelectParticipants
+					<EligibleVotersForm
 						handleNext={this.handleNext}
 						handleBack={this.handleBack}
-						participantsForm={createVoteSnapshot.participantsForm}
+						eligibleVotersForm={createVoteSnapshot.eligibleVotersForm}
 						updateParticipants={createVoteSnapshot.updateParticipants}
 					/>
 				);

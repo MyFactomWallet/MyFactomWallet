@@ -3,6 +3,7 @@
 	"homepage": "https://myfactomwallet.github.io/MyFactomWallet/",
 	"version": "0.1.0",
 	"private": true,
+	"proxy": "https://courtesy-node.factom.com",
 	"dependencies": {
 		"@material-ui/core": "3.0.1",
 		"@material-ui/icons": "3.0.1",

@@ -32,6 +32,7 @@ const optionsPath = 'pollJSON.vote.config.options';
 const voteTypePath = 'pollJSON.vote.type';
 const minOptionsPath = 'pollJSON.vote.config.minOptions';
 const maxOptionsPath = 'pollJSON.vote.config.maxOptions';
+
 const weightedMinTurnoutPath =
 	'pollJSON.vote.config.acceptanceCriteria.weightedMinTurnout';
 const unweightedMinTurnoutPath =
