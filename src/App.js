@@ -12,6 +12,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import withRootTheme from './withRootTheme';
 import fctUtils from 'factomjs-util/dist/factomjs-util';
+import WalletController from './WalletController.js';
+
 const {
 	isValidFctPublicAddress,
 	//	FactomCli,
@@ -66,10 +68,10 @@ class App extends Component {
 		//console.log(cli.call('get head'));
 
 		//const response = await cli.getHeights();
-		const response = await cli.chainExists(
-			'df3ade9eec4b08d5379cc64270c30ea7315d8a8a1a69efe2b98a60ecdd69e604'
-		);
-		console.log(response);
+		//const response = await cli.chainExists(
+		//	'df3ade9eec4b08d5379cc64270c30ea7315d8a8a1a69efe2b98a60ecdd69e604'
+		//);
+		//console.log(response);
 
 		//const db = await cli.getDirectoryBlock(
 		//	'f55a19d9562843b642f1a20b34fcbb71e70f438c4d98d223fc2228ca2dd0c54a'
@@ -85,29 +87,37 @@ class App extends Component {
 			<Router>
 				<div>
 					<Header />
-					<div className={classes.body}>
-						<Route
-							exact
-							path="/"
-							render={() => <LandingPage addWallet={this.addWallet} />}
-						/>
-						<Route
-							path="/wallet/manage/"
-							render={() => (
-								<WalletManager
-									addWallet={this.addWallet}
-									selectWallet={this.selectWallet}
-									wallets={this.state.factomWallets}
-									activeWalletID={this.state.activeWalletID}
+					<WalletController>
+						{(walletSnapshot) => (
+							<div className={classes.body}>
+								<Route
+									exact
+									path="/"
+									render={() => <LandingPage addWallet={this.addWallet} />}
 								/>
-							)}
-						/>
-						<Route exact path="/vote" component={Vote} />
-						<Route exact path="/viewVote" component={ViewVote} />
-						<Route exact path="/createVote" component={CreateVoteStepper} />
-						<Route exact path="/manageVoters" component={ManageVoterList} />
-						<Route exact path="/help" component={Help} />
-					</div>
+								<Route
+									path="/wallet/manage/"
+									render={() => (
+										<WalletManager
+											addWallet={this.addWallet}
+											selectWallet={this.selectWallet}
+											wallets={this.state.factomWallets}
+											activeWalletID={this.state.activeWalletID}
+											addFactoidWallet={walletSnapshot.addFactoidWallet}
+											addECWallet={walletSnapshot.addECWallet}
+											factoidWallets={walletSnapshot.factoidWallets}
+											ecWallets={walletSnapshot.ecWallets}
+										/>
+									)}
+								/>
+								<Route exact path="/vote" component={Vote} />
+								<Route exact path="/viewVote" component={ViewVote} />
+								<Route exact path="/createVote" component={CreateVoteStepper} />
+								<Route exact path="/manageVoters" component={ManageVoterList} />
+								<Route exact path="/help" component={Help} />
+							</div>
+						)}
+					</WalletController>
 				</div>
 			</Router>
 		);

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export class CreateVoteController extends React.Component {
+export default class CreateVoteController extends React.Component {
 	state = {
 		pollForm: {
 			pollJSON: {

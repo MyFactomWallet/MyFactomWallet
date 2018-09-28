@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import PreviewVote from './PreviewVote.js';
 import FinalStep from './FinalStep.js';
-import { CreateVoteController } from './CreateVoteController';
+import CreateVoteController from './CreateVoteController';
 import ConfigureForm from './ConfigureForm';
 
 class CreateVoteStepper extends React.Component {

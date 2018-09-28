@@ -36,7 +36,7 @@ class WalletTabContent extends React.Component {
 					centered
 				>
 					<Tab label="Send Factoid" />
-					<Tab label="Wallet Info" />
+					{/* <Tab label="Wallet Info" /> */}
 					<Tab label="Convert to EC" />
 				</Tabs>
 				{value === 0 && (
@@ -47,8 +47,8 @@ class WalletTabContent extends React.Component {
 						/>
 					</TabContainer>
 				)}
+				{/* value === 1 && <TabContainer>Coming Soon</TabContainer> */}
 				{value === 1 && <TabContainer>Coming Soon</TabContainer>}
-				{value === 2 && <TabContainer>Coming Soon</TabContainer>}
 			</div>
 		);
 	}

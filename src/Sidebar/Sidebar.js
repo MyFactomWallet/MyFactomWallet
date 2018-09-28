@@ -9,11 +9,33 @@ import AddWalletModal from '../AddWallet/AddWalletModal.js';
 
 class Sidebar extends Component {
 	render() {
-		const { classes } = this.props;
-
-		const activeWalletID = this.props.activeWalletID;
 		const sideBar_o = this;
+		const { classes } = sideBar_o.props;
+		const activeWalletID = sideBar_o.props.activeWalletID;
 
+		const listFactoidWallets = sideBar_o.props.factoidWallets.map(function(
+			wallet,
+			index
+		) {
+			//const walletID = wallet.id;
+			//const isActive = walletID === activeWalletID ? true : false;
+			const walletID = 1;
+			const isActive = true;
+			return (
+				<ListItem key={index}>
+					<Link className={classes.fullWidth} to={'/wallet/manage/'}>
+						<WalletCard
+							onClick={() => sideBar_o.props.selectWallet(walletID)}
+							active={isActive}
+							balance={wallet.nickname}
+							id={walletID}
+							public_address={wallet.address}
+						/>
+					</Link>
+				</ListItem>
+			);
+		});
+		/*
 		const listWallets = this.props.wallets.map(function(wallet, index) {
 			const walletID = wallet.id;
 
@@ -33,10 +55,11 @@ class Sidebar extends Component {
 				</ListItem>
 			);
 		});
-
+*/
 		return (
 			<List className={classes.fullWidth}>
-				{listWallets}
+				{listFactoidWallets}
+				{/* listWallets */}
 				<ListItem>
 					<AddWalletModal addWallet={this.props.addWallet} />
 				</ListItem>

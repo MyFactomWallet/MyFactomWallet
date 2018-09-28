@@ -18,6 +18,8 @@ class WalletManager extends Component {
 						selectWallet={this.props.selectWallet}
 						wallets={this.props.wallets}
 						activeWalletID={this.props.activeWalletID}
+						factoidWallets={this.props.factoidWallets}
+						ecWallets={this.props.ecWallets}
 					/>
 				</Grid>
 				<Grid item xs={8} className={classes.root}>
