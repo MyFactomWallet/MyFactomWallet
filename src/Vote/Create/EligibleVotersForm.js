@@ -17,6 +17,7 @@ import FormControl from '@material-ui/core/FormControl';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Button from '@material-ui/core/Button';
 import get from 'lodash/get';
+import SectionHeader from '../Shared/SectionHeader';
 
 const selectedListPath = 'formFields.selectedList';
 const workingVoterIDPath = 'formFields.workingVoterID';
@@ -70,9 +71,7 @@ class SelectParticipants extends React.Component {
 					<Grid container className={classes.pad}>
 						<Grid item xs={12}>
 							{/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
-							<Typography gutterBottom variant="title">
-								Select Voters
-							</Typography>
+							<SectionHeader text="Select Voters" />
 						</Grid>
 						<Grid item xs={12}>
 							<Form onKeyPress={this.handleKeyPress}>

@@ -30,16 +30,14 @@ export class CreateVoteController extends React.Component {
 						computeResultsAgainst: '',
 						minOptions: '',
 						maxOptions: '',
-						acceptanceCriteria: {
-							minSupport: {},
-							minTurnout: {},
-						},
+						acceptanceCriteria: {},
 					},
 				},
 			},
 			formFields: {
 				voteTypeText: '',
 				questionSource: '',
+				workingHref: '',
 				workingOption: '',
 				checkedTurnout: false,
 				checkedSupport: false,
@@ -47,7 +45,8 @@ export class CreateVoteController extends React.Component {
 				workingUnweightMinTurnout: '',
 				workingWeightMinSupport: '',
 				workingUnweightMinSupport: '',
-				applyMinSupportTo: 'all',
+				workingMinSupportOption: '',
+				applyMinSupportToAllOptions: true,
 			},
 		},
 		eligibleVotersForm: {

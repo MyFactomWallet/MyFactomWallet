@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import SignVote from '../Shared/SignVote';
 import VoteSummary from '../Shared/VoteSummary';
 import Button from '@material-ui/core/Button';
+import SectionHeader from '../Shared/SectionHeader';
 
 function PreviewVote(props) {
 	const { classes } = props;
@@ -14,9 +15,7 @@ function PreviewVote(props) {
 		<Grid container className={classes.pad}>
 			<VoteSummary poll={props.poll} />
 			<Grid item xs={12}>
-				<Typography gutterBottom variant="title">
-					Sign Transaction
-				</Typography>
+				<SectionHeader text="Sign Transaction" />
 			</Grid>
 
 			<Grid xs={2} item>

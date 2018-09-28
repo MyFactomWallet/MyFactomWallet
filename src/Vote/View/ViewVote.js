@@ -17,10 +17,11 @@ import Button from '@material-ui/core/Button';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { Link } from 'react-router-dom';
 import QS from 'qs';
-import Add from '@material-ui/icons/ArrowForward';
-import Remove from '@material-ui/icons/ArrowBack';
+import ArrowForward from '@material-ui/icons/ArrowForward';
+import ArrowBack from '@material-ui/icons/ArrowBack';
 import VoteSummary from '../Shared/VoteSummary';
 import SignVote from '../Shared/SignVote';
+import SectionHeader from '../Shared/SectionHeader';
 
 let id = 0;
 const createVoterData = (voterID, commit, reveal, role, vote) => {
@@ -187,13 +188,13 @@ class ViewVote extends React.Component {
 														<TableRow>
 															<th className={classes.expandColumn}>
 																{this.state.expand ? (
-																	<Remove
+																	<ArrowBack
 																		style={{ cursor: 'pointer' }}
 																		onClick={this.toggleExpand}
 																		titleAccess="Collapse"
 																	/>
 																) : (
-																	<Add
+																	<ArrowForward
 																		style={{ cursor: 'pointer' }}
 																		onClick={this.toggleExpand}
 																		titleAccess="Expand"
@@ -269,9 +270,7 @@ class ViewVote extends React.Component {
 										<Grid container className={classes.pad}>
 											<Grid item xs={12}>
 												<br />
-												<Typography gutterBottom variant="title">
-													Question
-												</Typography>
+												<SectionHeader text="Question" />
 											</Grid>
 											<Grid item xs={2} className={classes.smallGridColumn}>
 												<Typography gutterBottom>URL Link:</Typography>
@@ -285,9 +284,7 @@ class ViewVote extends React.Component {
 											</Grid>
 											<Grid item xs={12}>
 												<br />
-												<Typography gutterBottom variant="title">
-													Answer
-												</Typography>
+												<SectionHeader text="Answer" />
 											</Grid>
 											<Grid item xs={12}>
 												<select>
@@ -301,9 +298,7 @@ class ViewVote extends React.Component {
 											</Grid>
 											<Grid item xs={12}>
 												<br />
-												<Typography gutterBottom variant="title">
-													Sign Transaction
-												</Typography>
+												<SectionHeader text="Sign Transaction" />
 											</Grid>
 											<Grid xs={2} item>
 												<Typography gutterBottom>Voter ID:</Typography>

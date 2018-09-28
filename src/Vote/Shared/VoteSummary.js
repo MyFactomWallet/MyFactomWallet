@@ -14,6 +14,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import LabelImportant from '@material-ui/icons/LabelImportant';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import get from 'lodash/get';
+import SectionHeader from '../Shared/SectionHeader';
+
 import {
 	SINGLE_OPTION_VOTING,
 	APPROVAL_VOTING,
@@ -68,9 +70,7 @@ class VoteSummary extends React.Component {
 		return (
 			<Grid item xs={12} container>
 				<Grid item xs={12}>
-					<Typography gutterBottom variant="title">
-						Configuration
-					</Typography>
+					<SectionHeader text="Configuration" />
 				</Grid>
 				<Grid item container xs={12}>
 					<Grid item xs={3} className={classes.smallGridColumn}>
@@ -162,9 +162,7 @@ class VoteSummary extends React.Component {
 				)}
 				<Grid item xs={12}>
 					<br />
-					<Typography gutterBottom variant="title">
-						Question
-					</Typography>
+					<SectionHeader text="Question" />
 				</Grid>
 				{get(poll, hrefPath) && (
 					<Grid container item xs={12}>
@@ -202,9 +200,7 @@ class VoteSummary extends React.Component {
 
 				<Grid item xs={12}>
 					<br />
-					<Typography gutterBottom variant="title">
-						Answers
-					</Typography>
+					<SectionHeader text="Answers" />
 				</Grid>
 				<Grid item xs={2} className={classes.smallGridColumn}>
 					<Typography gutterBottom>Type:</Typography>
@@ -258,9 +254,7 @@ class VoteSummary extends React.Component {
 				)}
 				<Grid item xs={12}>
 					<br />
-					<Typography variant="title" gutterBottom>
-						Invalidation Criteria
-					</Typography>
+					<SectionHeader text="Acceptance Criteria" />
 					{hasMinTurnoutCritiera || hasMinSupportCriteria ? (
 						<List dense>
 							{hasMinTurnoutCritiera && (

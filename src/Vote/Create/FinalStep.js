@@ -6,6 +6,7 @@ import OpenInNew from '@material-ui/icons/OpenInNew';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import SectionHeader from '../Shared/SectionHeader';
 
 const styles = (theme) => ({
 	pad: {
@@ -19,9 +20,8 @@ function FinalStep(props) {
 	return (
 		<Grid className={classes.pad} container>
 			<Grid item xs={12}>
-				<Typography variant="title" gutterBottom>
-					Setup Complete!
-				</Typography>
+				<SectionHeader text="Setup Complete!" />
+
 				<Typography gutterBottom>
 					You're poll is pending confirmation on the Factom blockchain.&nbsp;
 					<Link
