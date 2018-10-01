@@ -38,7 +38,7 @@ class AddWalletModal extends React.Component {
 				>
 					<div className={classes.paper}>
 						<AddWalletStepper
-							addWallet={this.props.addWallet}
+							addFactoidWallet={this.props.addFactoidWallet}
 							handleClose={this.handleClose}
 						/>
 					</div>

@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import AddWalletStepContent from './AddWalletStepContent';
 import fctUtils from 'factomjs-util/dist/factomjs-util';
-//const { isValidFctPrivateAddress, isValidFctPublicAddress } = require('factom');
+
 import {
 	isValidFctPrivateAddress,
 	isValidFctPublicAddress,
@@ -47,16 +47,10 @@ class AddWalletStepper extends React.Component {
 		});
 	};
 
-	updatePublicAddress = () => (event) => {
-		if (event.target.value && isValidFctPublicAddress(event.target.value)) {
-			this.setState({
-				publicAddress: event.target.value,
-			});
-		} else {
-			this.setState({
-				publicAddress: null,
-			});
-		}
+	updatePublicAddress = () => (value) => {
+		this.setState({
+			publicAddress: value,
+		});
 	};
 
 	updatePrivateKey = () => (event) => {
@@ -110,7 +104,10 @@ class AddWalletStepper extends React.Component {
 		// confirmed
 		if (activeStep === steps.length - 1) {
 			if (this.state.walletType === 'Factoid') {
-				this.props.addWallet(this.state.publicAddress);
+				this.props.addFactoidWallet(
+					this.state.publicAddress,
+					'#Wallet Nickname#'
+				);
 			}
 		}
 

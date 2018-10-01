@@ -171,7 +171,7 @@ class ViewVote extends React.Component {
 									)}
 									{this.state.tabValue === 1 && (
 										<div>
-											<Link
+											{/* <Link
 												target="_blank"
 												to={
 													'/manageVoters?voterChainID=df3ade9eec4b08d5379cc64270c30ea7315d8a8a1a69efe2b98a60ecdd69e604'
@@ -181,7 +181,7 @@ class ViewVote extends React.Component {
 													Manage Eligible Voters&nbsp;
 													<OpenInNew />
 												</Button>
-											</Link>
+											</Link> */}
 											<div className={classes.tableWrapper}>
 												<Table>
 													<TableHead>

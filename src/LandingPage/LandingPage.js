@@ -18,7 +18,7 @@ class LandingPage extends Component {
 					Choose from the options below to get started
 				</Typography>
 				<br />
-				<AddWalletModal addWallet={this.props.addWallet} />
+				<AddWalletModal addFactoidWallet={this.props.addFactoidWallet} />
 				<Button
 					className={classes.button}
 					component={Link}

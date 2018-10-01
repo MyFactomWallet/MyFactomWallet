@@ -20,30 +20,7 @@ const {
 } = require('factom/dist/factom-struct');
 const { FactomCli } = require('factom/dist/factom');
 
-function FactomWallet(id, publicAddress, balance) {
-	if (!publicAddress) {
-		const privateKey = fctUtils.randomPrivateKey();
-
-		publicAddress = fctUtils.publicFactoidKeyToHumanAddress(
-			fctUtils.privateKeyToPublicKey(privateKey)
-		);
-	}
-
-	this.id = id;
-	this.public_address = publicAddress;
-	this.balance = balance ? balance : '?';
-}
-
 class App extends Component {
-	state = {
-		activeWalletID: 1,
-		factomWallets: [
-			new FactomWallet(1, undefined, 5000),
-			new FactomWallet(2, undefined, 500),
-			new FactomWallet(3, undefined, 5),
-		],
-	};
-
 	async componentDidMount() {
 		const cli = new FactomCli({
 			host: 'localhost',
@@ -93,20 +70,22 @@ class App extends Component {
 								<Route
 									exact
 									path="/"
-									render={() => <LandingPage addWallet={this.addWallet} />}
+									render={() => (
+										<LandingPage
+											addFactoidWallet={walletSnapshot.addFactoidWallet}
+										/>
+									)}
 								/>
 								<Route
 									path="/wallet/manage/"
 									render={() => (
 										<WalletManager
-											addWallet={this.addWallet}
-											selectWallet={this.selectWallet}
-											wallets={this.state.factomWallets}
-											activeWalletID={this.state.activeWalletID}
+											selectFactoidWallet={walletSnapshot.selectFactoidWallet}
+											activeFctWalletIndex={walletSnapshot.activeFctWalletIndex}
 											addFactoidWallet={walletSnapshot.addFactoidWallet}
-											addECWallet={walletSnapshot.addECWallet}
 											factoidWallets={walletSnapshot.factoidWallets}
-											ecWallets={walletSnapshot.ecWallets}
+											//addECWallet={walletSnapshot.addECWallet}
+											//ecWallets={walletSnapshot.ecWallets}
 										/>
 									)}
 								/>
@@ -122,25 +101,6 @@ class App extends Component {
 			</Router>
 		);
 	}
-
-	addWallet = (publicAddress) => {
-		this.setState((prevState) => ({
-			factomWallets: prevState.factomWallets.concat(
-				new FactomWallet(
-					prevState.factomWallets.length + 1,
-					publicAddress,
-					undefined
-				)
-			),
-			activeWalletID: prevState.factomWallets.length + 1,
-		}));
-	};
-
-	selectWallet = (walletID) => {
-		this.setState((prevState) => ({
-			activeWalletID: walletID,
-		}));
-	};
 }
 App.propTypes = {
 	classes: PropTypes.object.isRequired,

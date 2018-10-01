@@ -36,7 +36,9 @@ class WalletTabContent extends React.Component {
 					centered
 				>
 					<Tab label="Send Factoid" />
-					{/* <Tab label="Wallet Info" /> */}
+					{/* <Tab label="Wallet Info" />
+						Use TFA Explorer API /api/v1/address/transactions/	GET	Retrieves all factoid transactions related to a given address
+					*/}
 					<Tab label="Convert to EC" />
 				</Tabs>
 				{value === 0 && (

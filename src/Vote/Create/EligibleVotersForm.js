@@ -80,7 +80,7 @@ class SelectParticipants extends React.Component {
 									render={(arrayHelpers) => (
 										<Grid container>
 											<Grid item xs={12} container>
-												<Grid item xs={3}>
+												<Grid item xs={4}>
 													<FormControl component="fieldset">
 														<RadioGroup
 															name={selectedListPath}
@@ -93,15 +93,24 @@ class SelectParticipants extends React.Component {
 																label="Standing Parties"
 															/>
 															<FormControlLabel
-																className={classes.raiseRadio}
-																value="new"
+																value="anos"
 																control={<Radio />}
-																label="Create New List"
+																label="Authority Node Operators"
+															/>
+															<FormControlLabel
+																value="guides"
+																control={<Radio />}
+																label="Guides"
+															/>
+															<FormControlLabel
+																value="custom"
+																control={<Radio />}
+																label="Custom List"
 															/>
 														</RadioGroup>
 													</FormControl>
 												</Grid>
-												{get(values, selectedListPath) === 'new' ? (
+												{get(values, selectedListPath) === 'custom' ? (
 													<Grid item xs={4} className={classes.borders}>
 														<Typography variant="body2" gutterBottom>
 															Add Voter
@@ -134,8 +143,8 @@ class SelectParticipants extends React.Component {
 												) : (
 													<Grid item xs={4} />
 												)}
-												{get(values, selectedListPath) === 'new' ? (
-													<Grid item xs={5} className={classes.padLoadVoters}>
+												{get(values, selectedListPath) === 'custom' ? (
+													<Grid item xs={4} className={classes.padLoadVoters}>
 														<div>
 															<Typography variant="body2" gutterBottom>
 																Load Voters
@@ -160,7 +169,7 @@ class SelectParticipants extends React.Component {
 												)}
 											</Grid>
 
-											{get(values, selectedListPath) === 'new' && (
+											{get(values, selectedListPath) === 'custom' && (
 												<Grid item xs={12}>
 													<Paper
 														elevation={10}
@@ -271,10 +280,6 @@ const styles = (theme) => ({
 	listContainer: {
 		marginTop: '10px',
 		padding: '15px',
-	},
-	raiseRadio: {
-		position: 'relative',
-		top: '-16px',
 	},
 	stepperButtons: {
 		marginLeft: '-15px',

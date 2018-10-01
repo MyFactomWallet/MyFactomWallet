@@ -2,11 +2,15 @@ import React from 'react';
 
 export default class WalletController extends React.Component {
 	state = {
-		selectedFCTIndex: 0,
+		activeFctWalletIndex: 0,
 		factoidWallets: [
 			{
-				address: 'XXXXXX',
-				nickname: "David's wallet",
+				address: 'FA2MZs5wASMo9cCiKezdiQKCd8KA6Zbg2xKXKGmYEZBqon9J3ZKv',
+				nickname: 'Seed Wallet',
+			},
+			{
+				address: 'FA3pmaLxeLVypHij9WRyaqxruhdkNiPe4VML6FPBheuAhN6Mebtm',
+				nickname: 'Exchange Wallet',
 			},
 		],
 		ecWallets: [
@@ -17,14 +21,25 @@ export default class WalletController extends React.Component {
 		],
 	};
 
-	addFactoidWallet = (address) => {
+	addFactoidWallet = (address, nickname) => {
 		this.setState((prevState) => ({
-			factoidWallets: [...prevState.factoidWallets, address],
+			factoidWallets: [
+				...prevState.factoidWallets,
+				{ address: address, nickname: nickname },
+			],
+			activeFctWalletIndex: prevState.factoidWallets.length,
 		}));
 	};
+
 	addECWallet = (address) => {
 		this.setState((prevState) => ({
 			ecWallets: [...prevState.ecWallets, address],
+		}));
+	};
+
+	selectFactoidWallet = (index) => {
+		this.setState((prevState) => ({
+			activeFctWalletIndex: index,
 		}));
 	};
 
@@ -33,6 +48,23 @@ export default class WalletController extends React.Component {
 			...this.state,
 			addFactoidWallet: this.addFactoidWallet,
 			addECWallet: this.addECWallet,
+			selectFactoidWallet: this.selectFactoidWallet,
 		});
 	}
 }
+
+/*
+function FactomWallet(id, publicAddress, balance) {
+	if (!publicAddress) {
+		const privateKey = fctUtils.randomPrivateKey();
+
+		publicAddress = fctUtils.publicFactoidKeyToHumanAddress(
+			fctUtils.privateKeyToPublicKey(privateKey)
+		);
+	}
+
+	this.id = id;
+	this.public_address = publicAddress;
+	this.balance = balance ? balance : '?';
+}
+*/

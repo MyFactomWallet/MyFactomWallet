@@ -14,12 +14,11 @@ class WalletManager extends Component {
 			<Grid container spacing={24}>
 				<Grid item xs={4}>
 					<Sidebar
-						addWallet={this.props.addWallet}
-						selectWallet={this.props.selectWallet}
-						wallets={this.props.wallets}
-						activeWalletID={this.props.activeWalletID}
+						selectFactoidWallet={this.props.selectFactoidWallet}
+						addFactoidWallet={this.props.addFactoidWallet}
+						activeFctWalletIndex={this.props.activeFctWalletIndex}
 						factoidWallets={this.props.factoidWallets}
-						ecWallets={this.props.ecWallets}
+						//ecWallets={this.props.ecWallets}
 					/>
 				</Grid>
 				<Grid item xs={8} className={classes.root}>
