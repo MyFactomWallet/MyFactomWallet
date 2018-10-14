@@ -7,15 +7,11 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import AddWalletStepContent from './AddWalletStepContent';
-import fctUtils from 'factomjs-util/dist/factomjs-util';
-
-import {
-	isValidFctPrivateAddress,
-	isValidFctPublicAddress,
-} from 'factom/dist/factom-struct.js';
+import SectionHeader from '../Vote/Shared/SectionHeader.js';
+import Paper from '@material-ui/core/Paper';
 
 const getSteps = () => {
-	return ['Select options', 'Confirm details'];
+	return ['Select type', 'Confirm details'];
 };
 
 class AddWalletStepper extends React.Component {
@@ -25,103 +21,27 @@ class AddWalletStepper extends React.Component {
 
 	static initialState = () => ({
 		activeStep: 0,
-		walletType: '',
-		importMethod: '',
-		publicAddress: null,
-		privateKey: null,
+		importType: '',
 	});
 
 	state = AddWalletStepper.initialState();
 
-	updateWalletType = () => (event) => {
+	updateImportType = (importType) => {
 		this.setState({
-			walletType: event.target.value,
+			importType,
 		});
-	};
-
-	updateImportMethod = () => (event) => {
-		this.setState({
-			importMethod: event.target.value,
-			privateKey: null,
-			publicAddress: null,
-		});
-	};
-
-	updatePublicAddress = () => (value) => {
-		this.setState({
-			publicAddress: value,
-		});
-	};
-
-	updatePrivateKey = () => (event) => {
-		if (event.target.value && isValidFctPrivateAddress(event.target.value)) {
-			this.setState({
-				privateKey: fctUtils.privateHumanAddressStringToPrivate(
-					event.target.value
-				),
-			});
-		} else {
-			this.setState({
-				privateKey: null,
-			});
-		}
 	};
 
 	handleNext = () => {
-		const { activeStep } = this.state;
-		const steps = getSteps();
-
-		// private key form
-		if (activeStep === 0 && this.state.importMethod === 'Private Key') {
-			var humanPublic = null;
-
-			if (this.state.privateKey) {
-				humanPublic = fctUtils.publicFactoidKeyToHumanAddress(
-					fctUtils.privateKeyToPublicKey(this.state.privateKey)
-				);
-			}
-
-			this.setState({
-				publicAddress: humanPublic,
-				privateKey: null,
-			});
-		}
-
-		// random address form
-		if (activeStep === 0 && this.state.importMethod === 'New Address') {
-			const privateKey = fctUtils.randomPrivateKey();
-			const humanSecret = fctUtils.privateFactoidKeyToHumanAddress(privateKey);
-			const humanPublic = fctUtils.publicFactoidKeyToHumanAddress(
-				fctUtils.privateKeyToPublicKey(privateKey)
-			);
-
-			this.setState({
-				publicAddress: humanPublic,
-				privateKey: humanSecret,
-			});
-		}
-
-		// confirmed
-		if (activeStep === steps.length - 1) {
-			if (this.state.walletType === 'Factoid') {
-				this.props.addFactoidWallet(
-					this.state.publicAddress,
-					'#Wallet Nickname#'
-				);
-			}
-		}
-
-		this.setState({
-			activeStep: activeStep + 1,
-		});
+		this.setState((state) => ({
+			activeStep: state.activeStep + 1,
+		}));
 	};
 
 	handleBack = () => {
-		const { activeStep } = this.state;
-
-		this.setState({
-			activeStep: activeStep - 1,
-		});
+		this.setState((state) => ({
+			activeStep: state.activeStep - 1,
+		}));
 	};
 
 	handleReset = () => {
@@ -134,11 +54,8 @@ class AddWalletStepper extends React.Component {
 		const { activeStep } = this.state;
 
 		return (
-			<div>
-				<Typography variant="title" id="modal-title">
-					Add Wallet
-				</Typography>
-				<br />
+			<Paper className={classes.paper}>
+				<SectionHeader text="Add Addresses" id="modal-title" />
 				<Stepper activeStep={activeStep} className={classes.stepper}>
 					{steps.map((label, index) => {
 						const props = {};
@@ -151,9 +68,9 @@ class AddWalletStepper extends React.Component {
 						);
 					})}
 				</Stepper>
-				<div>
+				<React.Fragment>
 					{activeStep === steps.length ? (
-						<div>
+						<React.Fragment>
 							<Typography variant="subheading" gutterBottom>
 								Wallet has successfully been added.
 							</Typography>
@@ -167,21 +84,19 @@ class AddWalletStepper extends React.Component {
 									Exit
 								</Button>
 							</div>
-						</div>
+						</React.Fragment>
 					) : (
-						<div>
+						<React.Fragment>
+							<br />
 							<AddWalletStepContent
 								activeStep={activeStep}
-								walletType={this.state.walletType}
-								importMethod={this.state.importMethod}
-								publicAddress={this.state.publicAddress}
-								privateKey={this.state.privateKey}
-								updateWalletType={this.updateWalletType}
-								updateImportMethod={this.updateImportMethod}
-								updatePublicAddress={this.updatePublicAddress}
-								updatePrivateKey={this.updatePrivateKey}
+								updateImportType={this.updateImportType}
+								handleNext={this.handleNext}
+								handleBack={this.handleBack}
+								importType={this.state.importType}
 							/>
-							<br />
+
+							{/*
 							<div>
 								<Button disabled={activeStep === 0} onClick={this.handleBack}>
 									Back
@@ -193,11 +108,11 @@ class AddWalletStepper extends React.Component {
 								>
 									{activeStep === steps.length - 1 ? 'Add Wallet' : 'Next'}
 								</Button>
-							</div>
-						</div>
+							</div>*/}
+						</React.Fragment>
 					)}
-				</div>
-			</div>
+				</React.Fragment>
+			</Paper>
 		);
 	}
 }
@@ -206,6 +121,10 @@ const styles = (theme) => ({
 	stepper: {
 		backgroundColor: '#eeeeee',
 		width: 500,
+	},
+	paper: {
+		width: 575,
+		padding: theme.spacing.unit * 4,
 	},
 });
 

@@ -8,8 +8,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
-import ArrowForward from '@material-ui/icons/ArrowForward';
-import ArrowBack from '@material-ui/icons/ArrowBack';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import ExpandLess from '@material-ui/icons/ExpandLess';
 import Grid from '@material-ui/core/Grid';
 
 let id = 0;
@@ -126,7 +126,7 @@ class VoteTable extends React.Component {
 							<TableRow>
 								<th className={classes.expandColumn}>
 									{expanded ? (
-										<ArrowBack
+										<ExpandLess
 											style={{ cursor: 'pointer' }}
 											titleAccess="Collapse"
 											onClick={this.props.toggleExpand}
@@ -134,7 +134,7 @@ class VoteTable extends React.Component {
 											className={classes.expandIcon}
 										/>
 									) : (
-										<ArrowForward
+										<ExpandMore
 											style={{ cursor: 'pointer' }}
 											titleAccess="Expand"
 											onClick={this.props.toggleExpand}

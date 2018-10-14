@@ -29,18 +29,15 @@ class AddWalletModal extends React.Component {
 					variant="outlined"
 					color="primary"
 				>
-					Add Wallet
+					Add Addresses
 				</Button>
 				<Modal
 					aria-labelledby="modal-title"
 					open={this.state.open}
 					onClose={this.handleClose}
 				>
-					<div className={classes.paper}>
-						<AddWalletStepper
-							addFactoidWallet={this.props.addFactoidWallet}
-							handleClose={this.handleClose}
-						/>
+					<div className={classes.modalContent}>
+						<AddWalletStepper handleClose={this.handleClose} />
 					</div>
 				</Modal>
 			</div>
@@ -52,12 +49,9 @@ AddWalletModal.propTypes = {
 };
 
 const styles = (theme) => ({
-	paper: {
+	modalContent: {
 		position: 'absolute',
-		width: 575,
-		backgroundColor: theme.palette.background.paper,
 		boxShadow: theme.shadows[5],
-		padding: theme.spacing.unit * 4,
 		top: `50%`,
 		left: `50%`,
 		transform: `translate(-50%, -50%)`,

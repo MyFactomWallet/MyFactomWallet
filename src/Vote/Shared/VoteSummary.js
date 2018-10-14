@@ -17,7 +17,6 @@ import get from 'lodash/get';
 import SectionHeader from '../Shared/SectionHeader';
 
 import {
-	SINGLE_OPTION_VOTING,
 	APPROVAL_VOTING,
 	INSTANT_RUNOFF_VOTING,
 } from '../Create/VOTE_CONSTANTS';

@@ -14,14 +14,14 @@ import TableRow from '@material-ui/core/TableRow';
 import Done from '@material-ui/icons/Done';
 import Close from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
-import OpenInNew from '@material-ui/icons/OpenInNew';
-import { Link } from 'react-router-dom';
 import QS from 'qs';
 import ArrowForward from '@material-ui/icons/ArrowForward';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import VoteSummary from '../Shared/VoteSummary';
 import SignVote from '../Shared/SignVote';
 import SectionHeader from '../Shared/SectionHeader';
+//import OpenInNew from '@material-ui/icons/OpenInNew';
+//import { Link } from 'react-router-dom';
 
 let id = 0;
 const createVoterData = (voterID, commit, reveal, role, vote) => {

@@ -38,7 +38,6 @@ const revealStartPath = 'pollJSON.vote.phasesBlockHeights.revealStart';
 const revealEndPath = 'pollJSON.vote.phasesBlockHeights.revealEnd';
 const proposalPath = 'pollJSON.proposal';
 const externalRefPath = 'pollJSON.proposal.externalRef';
-//const hrefPath = 'pollJSON.proposal.externalRef.href';
 const textPath = 'pollJSON.proposal.text';
 const voteTypePath = 'pollJSON.vote.type';
 const minOptionsPath = 'pollJSON.vote.config.minOptions';
@@ -649,12 +648,12 @@ class ConfigureVoteForm extends React.Component {
 											</Grid>
 										)}
 									</Grid>
-									<Grid item xs={12}>
+									{/* 	<Grid item xs={12}>
 										<pre>{JSON.stringify(values.formFields, null, 2)}</pre>
 										<pre>
 											{JSON.stringify(values.pollJSON.vote.config, null, 2)}
 										</pre>
-									</Grid>
+									</Grid> */}
 									<Grid item xs={12}>
 										<br />
 										<br />

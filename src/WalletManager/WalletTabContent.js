@@ -5,52 +5,56 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import SendFactoidForm from './SendFactoidForm.js';
+import ConvertECForm from './ConvertECForm.js';
+import WalletInfo from './WalletInfo';
 
 class WalletTabContent extends React.Component {
 	state = {
-		value: 0,
-		sendFactoidAmount: 0,
+		tabValue: 0,
 	};
 
-	handleChange = (event, value) => {
-		this.setState({ value });
-	};
-
-	updateSendFactoidAmount = (amount) => {
-		this.setState((prevState) => ({
-			sendFactoidAmount: amount,
-		}));
+	handleChange = (event, tabValue) => {
+		this.setState({ tabValue });
 	};
 
 	render() {
-		const { classes } = this.props;
-		const { value } = this.state;
+		const { classes, hasFactoidWallet } = this.props;
 
+		const { tabValue } = this.state;
 		return (
 			<div className={classes.root}>
-				<Tabs
-					value={this.state.value}
-					onChange={this.handleChange}
-					indicatorColor="primary"
-					textColor="primary"
-					centered
-				>
-					<Tab label="Send Factoid" />
-					{/* <Tab label="Wallet Info" />
-						Use TFA Explorer API /api/v1/address/transactions/	GET	Retrieves all factoid transactions related to a given address
-					*/}
-					<Tab label="Convert to EC" />
-				</Tabs>
-				{value === 0 && (
-					<TabContainer>
-						<SendFactoidForm
-							updateSendFactoidAmount={this.updateSendFactoidAmount}
-							sendFactoidAmount={this.state.sendFactoidAmount}
-						/>
-					</TabContainer>
+				{hasFactoidWallet && (
+					<div>
+						<Tabs
+							value={tabValue}
+							onChange={this.handleChange}
+							indicatorColor="primary"
+							textColor="primary"
+							centered
+						>
+							<Tab label="Send Factoids" />
+							<Tab label="Address Info" />
+							{/* Use TFA Explorer API /api/v1/address/transactions/ GET Retrieves
+							all factoid transactions related to a given address */}
+							<Tab label="Convert FCT to EC" />
+						</Tabs>
+						{tabValue === 0 && (
+							<TabContainer classes={classes}>
+								<SendFactoidForm />
+							</TabContainer>
+						)}
+						{tabValue === 1 && (
+							<TabContainer classes={classes}>
+								<WalletInfo />
+							</TabContainer>
+						)}
+						{tabValue === 2 && (
+							<TabContainer classes={classes}>
+								<ConvertECForm />
+							</TabContainer>
+						)}
+					</div>
 				)}
-				{/* value === 1 && <TabContainer>Coming Soon</TabContainer> */}
-				{value === 1 && <TabContainer>Coming Soon</TabContainer>}
 			</div>
 		);
 	}
@@ -61,7 +65,7 @@ WalletTabContent.propTypes = {
 
 function TabContainer(props) {
 	return (
-		<Typography component="div" style={{ padding: 55 }}>
+		<Typography component="div" className={props.classes.tabContainer}>
 			{props.children}
 		</Typography>
 	);
@@ -71,7 +75,13 @@ TabContainer.propTypes = {
 };
 
 const styles = {
-	root: { height: '675px', textAlign: 'center' },
+	root: { textAlign: 'center' },
+	tabContainer: {
+		paddingLeft: 55,
+		paddingRight: 55,
+		paddingTop: 18,
+		paddingBottom: 10,
+	},
 };
 
 export default withStyles(styles)(WalletTabContent);

@@ -1,31 +1,42 @@
 import React, { Component } from 'react';
-import Sidebar from '../Sidebar/Sidebar.js';
+import _flowRight from 'lodash/flowRight';
+import Sidebar from './Sidebar.js';
 import WalletTabContent from './WalletTabContent.js';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import isEmpty from 'lodash/isEmpty';
+import AddWalletStepper from '../AddWallet/AddWalletStepper';
+import { withWalletContext } from '../Context/WalletContext';
 
 class WalletManager extends Component {
 	render() {
-		const { classes } = this.props;
+		const { factoidWallets, ecWallets } = this.props.walletController;
 
 		return (
-			<Grid container spacing={24}>
-				<Grid item xs={4}>
-					<Sidebar
-						selectFactoidWallet={this.props.selectFactoidWallet}
-						addFactoidWallet={this.props.addFactoidWallet}
-						activeFctWalletIndex={this.props.activeFctWalletIndex}
-						factoidWallets={this.props.factoidWallets}
-						//ecWallets={this.props.ecWallets}
-					/>
-				</Grid>
-				<Grid item xs={8} className={classes.root}>
-					<Paper>
-						<WalletTabContent />
-					</Paper>
-				</Grid>
+			<Grid container>
+				{!isEmpty(ecWallets) || !isEmpty(factoidWallets) ? (
+					<Grid container spacing={24} item xs={12}>
+						<Grid item xs={4}>
+							<Sidebar />
+						</Grid>
+
+						<Grid item xs={8}>
+							<Paper>
+								<WalletTabContent hasFactoidWallet={!isEmpty(factoidWallets)} />
+							</Paper>
+						</Grid>
+					</Grid>
+				) : (
+					<Grid container item xs={12}>
+						<Grid item xs={2} />
+						<Grid item xs={8}>
+							<AddWalletStepper />
+						</Grid>
+						<Grid item xs={2} />
+					</Grid>
+				)}
 			</Grid>
 		);
 	}
@@ -34,11 +45,7 @@ WalletManager.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
-const styles = (theme) => ({
-	root: {
-		width: '730px',
-		marginTop: '20px',
-	},
-});
+const styles = (theme) => ({});
 
-export default withStyles(styles)(WalletManager);
+const enhancer = _flowRight(withWalletContext, withStyles(styles));
+export default enhancer(WalletManager);

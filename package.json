@@ -3,14 +3,13 @@
 	"homepage": "https://myfactomwallet.github.io/MyFactomWallet/",
 	"version": "0.1.0",
 	"private": true,
-	"proxy": "https://courtesy-node.factom.com",
 	"dependencies": {
-		"@material-ui/core": "3.0.1",
+		"@material-ui/core": "3.1.2",
 		"@material-ui/icons": "3.0.1",
-		"factom": "0.3.0",
-		"factom-vote": "0.0.2",
-		"factomjs-util": "0.1.5",
-		"formik": "^1.2.0",
+		"factom": "0.3.6",
+		"factom-vote": "0.0.7",
+		"factombip44": "^0.1.4",
+		"formik": "^1.3.0",
 		"gh-pages": "^1.2.0",
 		"lodash": "^4.17.11",
 		"qs": "^6.5.2",
@@ -18,7 +17,6 @@
 		"react-dom": "^16.4.2",
 		"react-router-dom": "^4.3.1",
 		"react-scripts": "^1.1.4",
-		"styled-components": "^3.4.5",
 		"yup": "^0.26.5"
 	},
 	"scripts": {

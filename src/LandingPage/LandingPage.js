@@ -4,7 +4,6 @@ import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import AddWalletModal from '../AddWallet/AddWalletModal.js';
 import WhereToVote from '@material-ui/icons/WhereToVoteOutlined';
 import AccountBalance from '@material-ui/icons/AccountBalanceOutlined';
 
@@ -18,7 +17,7 @@ class LandingPage extends Component {
 					Choose from the options below to get started
 				</Typography>
 				<br />
-				<AddWalletModal addFactoidWallet={this.props.addFactoidWallet} />
+
 				<Button
 					className={classes.button}
 					component={Link}
@@ -26,7 +25,7 @@ class LandingPage extends Component {
 					variant="outlined"
 					color="primary"
 				>
-					Manage Wallets&nbsp;&nbsp;
+					Factom Wallet&nbsp;&nbsp;
 					<AccountBalance />
 				</Button>
 				<br />
@@ -37,7 +36,7 @@ class LandingPage extends Component {
 					variant="outlined"
 					color="primary"
 				>
-					Vote&nbsp;
+					Factom Vote&nbsp;
 					<WhereToVote />
 				</Button>
 				<br />

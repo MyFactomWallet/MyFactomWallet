@@ -11,61 +11,54 @@ import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import WalletInfoHeader from './Shared/WalletInfoHeader';
+
 import {
 	isValidFctPrivateAddress,
-	isValidFctPublicAddress,
+	isValidEcPublicAddress,
 } from 'factom/dist/factom-struct';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { withWalletContext } from '../Context/WalletContext';
-import TransactionPreview from './TransactionPreview';
 
-const sendFactoidAmountPath = 'sendFactoidAmount';
+const entryCreditAmountPath = 'entryCreditAmount';
 const recipientAddressPath = 'recipientAddress';
 const myFctWalletAnchorElPath = 'myFctWalletAnchorEl';
 const privateKeyPath = 'privateKey';
-const FACTOSHI_MULTIPLIER = 0.00000001;
-const FACTOID_MULTIPLIER = 100000000;
 
-class SendFactoidForm extends Component {
+class ConvertECForm extends Component {
 	handleKeyPress(event) {
 		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
 			event.preventDefault();
 		}
 	}
 
-	getMax(balance, fee) {
-		return balance * FACTOSHI_MULTIPLIER - fee;
-	}
-
 	render() {
 		const { classes } = this.props;
-
 		const {
-			factoidWallets,
+			ecWallets,
 			getActiveFctWallet,
 			updateBalances,
-			sendFactoidFee,
 		} = this.props.walletController;
 		const activeFctWallet = getActiveFctWallet();
+
 		const { factomCli } = this.props.factomCliController;
 
 		return (
 			<Formik
 				initialValues={{
-					sendFactoidAmount: '',
+					entryCreditAmount: '',
 					recipientAddress: '',
 					myFctWalletAnchorEl: null,
 					privateKey: '',
 					transactionID: null,
 				}}
 				onSubmit={async (values, actions) => {
-					const { sendFactoidAmount, recipientAddress, privateKey } = values;
+					const { entryCreditAmount, recipientAddress, privateKey } = values;
 
-					const transaction = await factomCli.createFactoidTransaction(
+					const transaction = await factomCli.createEntryCreditPurchaseTransaction(
 						privateKey,
 						recipientAddress,
-						FACTOID_MULTIPLIER * sendFactoidAmount
+						entryCreditAmount
 					);
 
 					const txId = await factomCli.sendTransaction(transaction);
@@ -74,11 +67,11 @@ class SendFactoidForm extends Component {
 					updateBalances();
 				}}
 				validationSchema={Yup.object().shape({
-					sendFactoidAmount: Yup.string().required('Required'),
+					entryCreditAmount: Yup.string().required('Required'),
 					recipientAddress: Yup.string().test(
 						recipientAddressPath,
 						'Invalid Address',
-						isValidFctPublicAddress
+						isValidEcPublicAddress
 					),
 					privateKey: Yup.string().test(
 						privateKeyPath,
@@ -106,10 +99,10 @@ class SendFactoidForm extends Component {
 											: false
 									}
 									{...field}
-									label="Recipient FCT address"
+									label="Recipient EC address"
 									fullWidth={true}
 									type="text"
-									placeholder="Enter Factoid Address"
+									placeholder="Enter Entry Credit address"
 									disabled={isSubmitting}
 								/>
 							)}
@@ -124,10 +117,10 @@ class SendFactoidForm extends Component {
 								/>
 							</Grid>
 							<Grid item>
-								<FactoidWalletMenu
+								<ECWalletMenu
 									values={values}
 									setFieldValue={setFieldValue}
-									factoidWallets={factoidWallets}
+									ecWallets={ecWallets}
 									activeFctWallet={activeFctWallet}
 								/>
 								<Typography
@@ -146,18 +139,18 @@ class SendFactoidForm extends Component {
 							</Grid>
 						</Grid>
 
-						<Field name={sendFactoidAmountPath}>
+						<Field name={entryCreditAmountPath}>
 							{({ field, form }) => (
 								<TextField
 									type="number"
 									error={
-										errors[sendFactoidAmountPath] &&
-										touched[sendFactoidAmountPath]
+										errors[entryCreditAmountPath] &&
+										touched[entryCreditAmountPath]
 											? true
 											: false
 									}
 									{...field}
-									placeholder="Enter Amount (FCT)"
+									placeholder="Enter Amount (EC)"
 									label="Amount"
 									fullWidth={true}
 									disabled={isSubmitting}
@@ -167,25 +160,14 @@ class SendFactoidForm extends Component {
 						<Grid container justify="space-between">
 							<Grid item>
 								<ErrorMessage
-									name={sendFactoidAmountPath}
+									name={entryCreditAmountPath}
 									render={(msg) => (
 										<div className={classes.errorText}>{msg}</div>
 									)}
 								/>
 							</Grid>
 							<Grid item>
-								<Typography
-									variant="caption"
-									onClick={(event) => {
-										setFieldValue(
-											sendFactoidAmountPath,
-											this.getMax(activeFctWallet.balance, sendFactoidFee)
-										);
-									}}
-									className={classes.pointer}
-								>
-									Use Max
-								</Typography>
+								<br />
 							</Grid>
 						</Grid>
 						<Field name={privateKeyPath}>
@@ -211,11 +193,6 @@ class SendFactoidForm extends Component {
 							render={(msg) => <div className={classes.errorText}>{msg}</div>}
 						/>
 
-						{values.sendFactoidAmount ? (
-							<TransactionPreview factoidAmount={values.sendFactoidAmount} />
-						) : (
-							''
-						)}
 						<br />
 						<br />
 						<br />
@@ -251,7 +228,7 @@ class SendFactoidForm extends Component {
 								type="submit"
 								disabled={isSubmitting}
 							>
-								Send Factoids
+								Convert FCT to EC
 							</Button>
 						)}
 
@@ -269,10 +246,10 @@ class SendFactoidForm extends Component {
 	}
 }
 
-function FactoidWalletMenu(props) {
-	const { values, setFieldValue, factoidWallets, activeFctWallet } = props;
+function ECWalletMenu(props) {
+	const { values, setFieldValue, ecWallets, activeFctWallet } = props;
 
-	const walletList = factoidWallets
+	const walletList = ecWallets
 		.filter((wallet) => wallet.address !== activeFctWallet.address)
 		.map((wallet, index) => (
 			<MenuItem
@@ -299,7 +276,7 @@ function FactoidWalletMenu(props) {
 	);
 }
 
-SendFactoidForm.propTypes = {
+ConvertECForm.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
@@ -320,4 +297,4 @@ const enhancer = _flowRight(
 	withStyles(styles)
 );
 
-export default enhancer(SendFactoidForm);
+export default enhancer(ConvertECForm);

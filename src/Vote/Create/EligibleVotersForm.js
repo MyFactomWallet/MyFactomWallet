@@ -2,7 +2,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { Formik, Field, FastField, Form, FieldArray } from 'formik';
+import { Formik, Field, Form, FieldArray } from 'formik';
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -23,13 +23,6 @@ const selectedListPath = 'formFields.selectedList';
 const workingVoterIDPath = 'formFields.workingVoterID';
 const workingWeightPath = 'formFields.workingWeight';
 const participantsPath = 'participantsJSON';
-
-function Voter(id, weight, name, role) {
-	this.id = id;
-	this.weight = weight;
-	this.name = name;
-	this.role = role;
-}
 
 class SelectParticipants extends React.Component {
 	componentDidMount() {

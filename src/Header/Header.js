@@ -12,13 +12,24 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import CloudDone from '@material-ui/icons/CloudDoneOutlined';
-import CloudOff from '@material-ui/icons/CloudOff';
+import CustomNodeForm from './CustomNodeForm';
+import Modal from '@material-ui/core/Modal';
+//import CloudOff from '@material-ui/icons/CloudOff';
 
 class ButtonAppBar extends React.Component {
 	state = {
 		voteAnchorEl: null,
 		networkAnchorEl: null,
-		network: 'Mainnet',
+		network: 'Testnet',
+		openCustomNodeForm: false,
+	};
+
+	handleOpenCustomNodeForm = () => {
+		this.setState({ openCustomNodeForm: true });
+	};
+
+	handleCloseCustomNodeForm = () => {
+		this.setState({ openCustomNodeForm: false });
 	};
 
 	handleVoteClick = (event) => {
@@ -51,10 +62,18 @@ class ButtonAppBar extends React.Component {
 		});
 	};
 
+	handleCustomNode = (host, port) => {
+		console.log('Host: ' + host);
+		console.log('Port: ' + port);
+		this.setState({
+			network: host + ':' + port,
+		});
+		this.handleCloseCustomNodeForm();
+	};
+
 	render() {
 		const { classes } = this.props;
 		const { voteAnchorEl, networkAnchorEl } = this.state;
-		const operational = this.state.network === 'Mainnet' ? 'green' : 'red';
 
 		return (
 			<AppBar position="static" className={classes.root}>
@@ -104,13 +123,6 @@ class ButtonAppBar extends React.Component {
 							>
 								Create Poll
 							</MenuItem>
-							{/*	<MenuItem
-								component={Link}
-								to={'/manageVoters'}
-								onClick={this.handleVoteClose}
-							>
-								Manage Voter List
-							</MenuItem>*/}
 						</Menu>
 					</div>
 					<Button href="#/wallet/manage" className={classes.menuText}>
@@ -119,56 +131,52 @@ class ButtonAppBar extends React.Component {
 					{/* <Button href="#help" className={classes.menuText}>
 						Help
 					</Button> */}
-					<div className={classes.network} style={{ color: operational }}>
-						<Typography
-							aria-owns={networkAnchorEl ? 'simple-vote-menu' : null}
+					<div className={classes.network}>
+						<Button
+							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
 							aria-haspopup="true"
 							onClick={this.handleNetworkClick}
 							className={classes.menuText}
 						>
-							Network: {this.state.network}
+							Node: {this.state.network}
 							&nbsp;
-							{this.state.network === 'Mainnet' && (
-								<CloudDone
-									titleAccess="Network Operational"
-									style={{
-										color: 'green',
-										top: '5px',
-										position: 'relative',
-									}}
-								/>
-							)}
-							{this.state.network === 'Testnet' && (
-								<CloudOff
-									titleAccess="Network Down"
-									style={{
-										color: 'red',
-										top: '5px',
-										position: 'relative',
-									}}
-								/>
-							)}
-							<ExpandMore
-								style={{
-									top: '5px',
-									position: 'relative',
-								}}
+							<CloudDone
+								titleAccess="Network Operational"
+								style={{ color: 'green' }}
 							/>
-						</Typography>
+							<ExpandMore />
+						</Button>
 						<Menu
 							id="simple-vote-menu"
 							anchorEl={networkAnchorEl}
 							open={Boolean(networkAnchorEl)}
 							onClose={this.handleNetworkClose}
 						>
-							<MenuItem onClick={this.handleMainnet}>
+							{/* 	<MenuItem onClick={this.handleMainnet}>
 								Mainnet&nbsp;&nbsp; <CloudDone style={{ color: 'green' }} />
-							</MenuItem>
+							</MenuItem> */}
 							<MenuItem onClick={this.handleTestnet}>
-								Testnet&nbsp;&nbsp; <CloudOff style={{ color: 'red' }} />
+								Testnet&nbsp;&nbsp; <CloudDone style={{ color: 'green' }} />
 							</MenuItem>
-							<MenuItem onClick={this.handleNetworkClose}>Custom Node</MenuItem>
+							{/* <MenuItem
+								onClick={() => {
+									this.handleNetworkClose();
+									this.handleOpenCustomNodeForm();
+								}}
+							>
+								Custom Node
+							</MenuItem> */}
 						</Menu>
+						<Modal
+							aria-labelledby="simple-modal-title"
+							aria-describedby="simple-modal-description"
+							open={this.state.openCustomNodeForm}
+							onClose={this.handleCloseCustomNodeForm}
+						>
+							<div className={classes.modalContent}>
+								<CustomNodeForm handleCustomNode={this.handleCustomNode} />
+							</div>
+						</Modal>
 					</div>
 				</Toolbar>
 			</AppBar>
@@ -179,7 +187,7 @@ ButtonAppBar.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
-const styles = {
+const styles = (theme) => ({
 	root: {
 		flexGrow: 1,
 		marginBottom: '15px',
@@ -202,15 +210,23 @@ const styles = {
 		color: 'white',
 	},
 	network: {
-		padding: '5px',
 		borderStyle: 'solid',
 		borderWidth: '1px',
-		color: 'white',
-		paddingTop: '0px',
+		color: 'green',
 	},
 	subMenuText: {
 		color: 'black',
 	},
-};
+	modalContent: {
+		position: 'absolute',
+		width: theme.spacing.unit * 50,
+		backgroundColor: theme.palette.background.paper,
+		boxShadow: theme.shadows[5],
+		padding: theme.spacing.unit * 4,
+		top: `50%`,
+		left: `50%`,
+		transform: `translate(-50%, -50%)`,
+	},
+});
 
 export default withStyles(styles)(ButtonAppBar);
