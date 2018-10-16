@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
+import _isNil from 'lodash/isNil';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import PropTypes from 'prop-types';
@@ -24,21 +25,25 @@ class Sidebar extends Component {
 		const { classes } = this.props;
 
 		const {
-			factoidWallets,
-			ecWallets,
-			activeFctWalletIndex,
-			selectFactoidWallet,
+			getFctAddresses,
+			getEcAddresses,
+			activeFctAddressIndex,
+			selectFactoidAddress,
 		} = this.props.walletController;
 
-		const listFactoidWallets = factoidWallets.map(function(wallet, index) {
-			const expanded = activeFctWalletIndex === index;
+		const ecAddresses = getEcAddresses();
+
+		const factoidAddresses = getFctAddresses();
+
+		const listfactoidAddresses = factoidAddresses.map(function(wallet, index) {
+			const expanded = activeFctAddressIndex === index;
 			const nicknameStyle = expanded ? { fontWeight: 500 } : {};
 
 			return (
 				<ExpansionPanel
 					key={index}
 					expanded={expanded}
-					onClick={() => selectFactoidWallet(index)}
+					onClick={() => selectFactoidAddress(index)}
 					className={expanded ? classes.expanded : ''}
 				>
 					<ExpansionPanelSummary>
@@ -48,11 +53,13 @@ class Sidebar extends Component {
 									{wallet.nickname}
 								</Typography>
 							</Grid>
-							<Grid item>
-								<Typography className={classes.break}>
-									<FormatFCTBalance balance={wallet.balance} />
-								</Typography>
-							</Grid>
+							{!_isNil(wallet.balance) && (
+								<Grid item>
+									<Typography className={classes.break}>
+										<FormatFCTBalance balance={wallet.balance} />
+									</Typography>
+								</Grid>
+							)}
 						</Grid>
 					</ExpansionPanelSummary>
 
@@ -69,15 +76,17 @@ class Sidebar extends Component {
 			);
 		});
 
-		const listECWallets = ecWallets.map(function(wallet, index) {
+		const listecAddresses = ecAddresses.map(function(wallet, index) {
 			return (
 				<ListItem divider dense key={index}>
 					<Grid container>
 						<Grid container item xs={12} justify="space-between">
 							<Grid item>{wallet.nickname}</Grid>
-							<Grid item>
-								<FormatECBalance balance={wallet.balance} />
-							</Grid>
+							{!_isNil(wallet.balance) && (
+								<Grid item>
+									<FormatECBalance balance={wallet.balance} />
+								</Grid>
+							)}
 						</Grid>
 						<Grid item xs={12}>
 							<br />
@@ -102,9 +111,9 @@ class Sidebar extends Component {
 								Factoid Addresses
 							</Typography>
 						</ListItem>
-						{!_isEmpty(factoidWallets) ? (
+						{!_isEmpty(factoidAddresses) ? (
 							<ListItem disableGutters className={classes.walletList}>
-								<div className={classes.fctRoot}> {listFactoidWallets}</div>
+								<div className={classes.fctRoot}> {listfactoidAddresses}</div>
 							</ListItem>
 						) : (
 							<ListItem>
@@ -115,7 +124,7 @@ class Sidebar extends Component {
 						)}
 					</List>
 				</Paper>
-				{!_isEmpty(ecWallets) && (
+				{!_isEmpty(ecAddresses) && (
 					<span>
 						<br />
 						<ExpansionPanel defaultExpanded className={classes.addressList}>
@@ -128,7 +137,7 @@ class Sidebar extends Component {
 								</Typography>
 							</ExpansionPanelSummary>
 							<ExpansionPanelDetails className={classes.ecList}>
-								<List className={classes.ecRoot}>{listECWallets}</List>
+								<List className={classes.ecRoot}>{listecAddresses}</List>
 							</ExpansionPanelDetails>
 						</ExpansionPanel>
 					</span>

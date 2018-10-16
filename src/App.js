@@ -13,6 +13,7 @@ import { withStyles } from '@material-ui/core/styles';
 import withRootTheme from './withRootTheme';
 import WalletController from './Context/WalletController.js';
 import FactomCliController from './Context/FactomCliController.js';
+import NetworkController from './Context/NetworkController.js';
 
 import { Transaction } from 'factom/dist/factom-struct';
 import { FactomCli } from 'factom/dist/factom';
@@ -25,26 +26,28 @@ class App extends Component {
 		return (
 			<Router>
 				<React.Fragment>
-					<FactomCliController>
-						<React.Fragment>
-							<Header />
-							<WalletController>
-								<div className={classes.body}>
-									<Route exact path="/" component={LandingPage} />
-									<Route path="/wallet/manage/" component={WalletManager} />
-									<Route exact path="/vote" component={Vote} />
-									<Route exact path="/viewVote" component={ViewVote} />
-									<Route
-										exact
-										path="/createVote"
-										component={CreateVoteStepper}
-									/>
-									{/* <Route exact path="/manageVoters" component={ManageVoterList} /> */}
-									<Route exact path="/help" component={Help} />
-								</div>
-							</WalletController>
-						</React.Fragment>
-					</FactomCliController>
+					<NetworkController>
+						<FactomCliController>
+							<React.Fragment>
+								<Header />
+								<WalletController>
+									<div className={classes.body}>
+										<Route exact path="/" component={LandingPage} />
+										<Route path="/wallet/manage/" component={WalletManager} />
+										<Route exact path="/vote" component={Vote} />
+										<Route exact path="/viewVote" component={ViewVote} />
+										<Route
+											exact
+											path="/createVote"
+											component={CreateVoteStepper}
+										/>
+										{/* <Route exact path="/manageVoters" component={ManageVoterList} /> */}
+										<Route exact path="/help" component={Help} />
+									</div>
+								</WalletController>
+							</React.Fragment>
+						</FactomCliController>
+					</NetworkController>
 				</React.Fragment>
 			</Router>
 		);

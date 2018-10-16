@@ -1,38 +1,59 @@
 import React from 'react';
 import _flowRight from 'lodash/flowRight';
+import _isEmpty from 'lodash/isEmpty';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { withWalletContext } from '../Context/WalletContext';
-import Typography from '@material-ui/core/Typography';
 import WalletInfoHeader from './Shared/WalletInfoHeader';
+import Fct from '@factoid.org/hw-app-fct';
+import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { withNetwork } from '../Context/NetworkContext';
+import Button from '@material-ui/core/Button';
 
-import isEmpty from 'lodash/isEmpty';
+const checkAddress = async (activeFctWallet, bip32Account) => {
+	const path =
+		"44'/131'/" + bip32Account + "'/0'/" + activeFctWallet.index + "'";
+
+	try {
+		var transport = await TransportU2F.create();
+		transport.setDebugMode(true);
+		const ledger = new Fct(transport);
+
+		const result = await ledger.getAddress(path, true);
+		if (result) {
+		}
+	} catch (err) {
+		console.error('Failed getFctAddr from Ledger :', err);
+	} finally {
+		transport.close();
+	}
+};
 
 const WalletInfo = (props) => {
 	const { classes } = props;
 
-	const { getActiveFctWallet } = props.walletController;
-	const activeFctWallet = getActiveFctWallet();
+	const { getActiveFctAddress } = props.walletController;
+	const activeFctWallet = getActiveFctAddress();
 
 	return (
 		<div>
 			<WalletInfoHeader wallet={activeFctWallet} />
 			<br />
-			{!isEmpty(activeFctWallet.transactions) ? (
+			{activeFctWallet.type === 'ledger' && (
 				<div className={classes.root}>
-					<Typography>Your Recent Transactions</Typography>
-					{activeFctWallet.transactions.map(function(transaction, index) {
-						return (
-							<div key={index}>
-								<Typography>
-									<b>Tx ID:</b> {transaction}
-								</Typography>
-							</div>
-						);
-					})}
+					<Button
+						onClick={async () => {
+							await checkAddress(
+								activeFctWallet,
+								props.networkController.networkProps.bip32Account
+							);
+						}}
+						variant="outlined"
+						color="primary"
+					>
+						Verify Ledger Address
+					</Button>
 				</div>
-			) : (
-				<div>No Recent Transactions</div>
 			)}
 		</div>
 	);
@@ -43,6 +64,6 @@ WalletInfo.propTypes = {
 };
 const styles = { root: { textAlign: 'left' } };
 
-const enhancer = _flowRight(withWalletContext, withStyles(styles));
+const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
 
 export default enhancer(WalletInfo);

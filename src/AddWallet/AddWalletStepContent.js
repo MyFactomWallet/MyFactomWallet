@@ -3,6 +3,7 @@ import WalletTypeForm from './WalletTypeForm.js';
 import ImportFctForm from './ImportFctForm.js';
 import ImportEcForm from './ImportEcForm.js';
 import NewWalletForm from './NewWalletForm.js';
+import LedgerForm from './LedgerForm.js';
 
 class AddWalletStepContent extends React.Component {
 	render() {
@@ -36,8 +37,24 @@ class AddWalletStepContent extends React.Component {
 							handleBack={this.props.handleBack}
 						/>
 					);
+				} else if (this.props.importType === 'ledger') {
+					return (
+						<LedgerForm
+							handleNext={this.props.handleNext}
+							handleBack={this.props.handleBack}
+						/>
+					);
 				}
 				break;
+			case 2:
+				if (this.props.importType === 'ledger') {
+					return (
+						<LedgerForm
+							handleNext={this.props.handleNext}
+							handleBack={this.props.handleBack}
+						/>
+					);
+				}
 			default:
 				return 'Unknown step';
 		}

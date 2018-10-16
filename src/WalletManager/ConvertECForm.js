@@ -35,22 +35,26 @@ class ConvertECForm extends Component {
 	render() {
 		const { classes } = this.props;
 		const {
-			ecWallets,
-			getActiveFctWallet,
+			getEcAddresses,
+			getActiveFctAddress,
 			updateBalances,
+			activeFctAddressIndex,
 		} = this.props.walletController;
-		const activeFctWallet = getActiveFctWallet();
+		const activeFctWallet = getActiveFctAddress();
+		const ecAddresses = getEcAddresses();
 
 		const { factomCli } = this.props.factomCliController;
 
 		return (
 			<Formik
+				enableReinitialize
 				initialValues={{
 					entryCreditAmount: '',
 					recipientAddress: '',
 					myFctWalletAnchorEl: null,
 					privateKey: '',
 					transactionID: null,
+					reinitialize: activeFctAddressIndex,
 				}}
 				onSubmit={async (values, actions) => {
 					const { entryCreditAmount, recipientAddress, privateKey } = values;
@@ -117,10 +121,10 @@ class ConvertECForm extends Component {
 								/>
 							</Grid>
 							<Grid item>
-								<ECWalletMenu
+								<ECAddressMenu
 									values={values}
 									setFieldValue={setFieldValue}
-									ecWallets={ecWallets}
+									ecAddresses={ecAddresses}
 									activeFctWallet={activeFctWallet}
 								/>
 								<Typography
@@ -246,20 +250,20 @@ class ConvertECForm extends Component {
 	}
 }
 
-function ECWalletMenu(props) {
-	const { values, setFieldValue, ecWallets, activeFctWallet } = props;
+function ECAddressMenu(props) {
+	const { values, setFieldValue, ecAddresses, activeFctWallet } = props;
 
-	const walletList = ecWallets
-		.filter((wallet) => wallet.address !== activeFctWallet.address)
-		.map((wallet, index) => (
+	const addressList = ecAddresses
+		.filter((address_o) => address_o.address !== activeFctWallet.address)
+		.map((address_o, index) => (
 			<MenuItem
 				key={index}
 				onClick={() => {
 					setFieldValue(myFctWalletAnchorElPath, null);
-					setFieldValue(recipientAddressPath, wallet.address);
+					setFieldValue(recipientAddressPath, address_o.address);
 				}}
 			>
-				{wallet.nickname}
+				{address_o.nickname}
 			</MenuItem>
 		));
 	return (
@@ -271,7 +275,7 @@ function ECWalletMenu(props) {
 				setFieldValue(myFctWalletAnchorElPath, null);
 			}}
 		>
-			{walletList}
+			{addressList}
 		</Menu>
 	);
 }

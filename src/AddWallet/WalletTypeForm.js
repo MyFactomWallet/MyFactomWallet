@@ -21,7 +21,7 @@ const importTypes = [
 	{
 		value: 'new',
 		label: 'Generate new 12-word seed',
-		disabled: false,
+		disabled: true,
 	},
 	{
 		value: 'seed',
@@ -32,7 +32,6 @@ const importTypes = [
 	{
 		value: 'ledger',
 		label: 'Import addresses from Ledger Nano S',
-		disabled: true,
 	},
 ];
 class WalletTypeForm extends React.Component {
@@ -47,8 +46,6 @@ class WalletTypeForm extends React.Component {
 			<Formik
 				initialValues={{ type: 'fct' }}
 				onSubmit={(values, actions) => {
-					this.props.updateImportType(values.type);
-
 					// proceed to next page
 					this.props.handleNext();
 				}}
@@ -62,7 +59,7 @@ class WalletTypeForm extends React.Component {
 							component="fieldset"
 						>
 							<FormLabel component="legend">
-								How would you like to add a new wallet?
+								How would you like to add a new address?
 								<ErrorMessage
 									name="type"
 									render={() => (
@@ -75,7 +72,10 @@ class WalletTypeForm extends React.Component {
 								aria-label="Import Type"
 								name="type"
 								value={values.type}
-								onChange={handleChange}
+								onChange={(e) => {
+									handleChange(e);
+									this.props.updateImportType(e.target.value);
+								}}
 							>
 								{importTypes.map((option, index) => (
 									<FormControlLabel

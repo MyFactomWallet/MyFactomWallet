@@ -12,11 +12,14 @@ import { withWalletContext } from '../Context/WalletContext';
 
 class WalletManager extends Component {
 	render() {
-		const { factoidWallets, ecWallets } = this.props.walletController;
+		const { getFctAddresses, getEcAddresses } = this.props.walletController;
+
+		const ecAddresses = getEcAddresses();
+		const factoidAddresses = getFctAddresses();
 
 		return (
 			<Grid container>
-				{!isEmpty(ecWallets) || !isEmpty(factoidWallets) ? (
+				{!isEmpty(ecAddresses) || !isEmpty(factoidAddresses) ? (
 					<Grid container spacing={24} item xs={12}>
 						<Grid item xs={4}>
 							<Sidebar />
@@ -24,7 +27,9 @@ class WalletManager extends Component {
 
 						<Grid item xs={8}>
 							<Paper>
-								<WalletTabContent hasFactoidWallet={!isEmpty(factoidWallets)} />
+								<WalletTabContent
+									hasFactoidWallet={!isEmpty(factoidAddresses)}
+								/>
 							</Paper>
 						</Grid>
 					</Grid>

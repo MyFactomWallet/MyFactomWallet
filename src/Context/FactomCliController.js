@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FactomCliContext } from './FactomCliContext';
 import { FactomCli } from 'factom/dist/factom';
+import { withNetwork } from './NetworkContext';
+import _flowRight from 'lodash/flowRight';
 import defaultsDeep from 'lodash/fp/defaultsDeep';
 
 class FactomCliController extends React.Component {
@@ -16,7 +18,7 @@ class FactomCliController extends React.Component {
 
 	defaultConnectionParams = {
 		host: 'api.myfactomwallet.com',
-		port: 8288,
+		port: this.props.networkController.networkProps.apiPort,
 		path: '/v2',
 		debugPath: '/debug',
 		protocol: 'https',
@@ -51,4 +53,6 @@ FactomCliController.propTypes = {
 	children: PropTypes.element.isRequired,
 };
 
-export default FactomCliController;
+const enhancer = _flowRight(withNetwork);
+
+export default enhancer(FactomCliController);

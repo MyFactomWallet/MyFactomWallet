@@ -12,18 +12,26 @@ import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import WalletInfoHeader from './Shared/WalletInfoHeader';
-import {
-	isValidFctPrivateAddress,
-	isValidFctPublicAddress,
-} from 'factom/dist/factom-struct';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withWalletContext } from '../Context/WalletContext';
 import TransactionPreview from './TransactionPreview';
+import Fct from '@factoid.org/hw-app-fct';
+import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { withNetwork } from '../Context/NetworkContext';
+import {
+	isValidFctPrivateAddress,
+	isValidFctPublicAddress,
+	Transaction,
+} from 'factom/dist/factom';
 
+/**
+ * CONSTANTS
+ */
 const sendFactoidAmountPath = 'sendFactoidAmount';
 const recipientAddressPath = 'recipientAddress';
 const myFctWalletAnchorElPath = 'myFctWalletAnchorEl';
 const privateKeyPath = 'privateKey';
+
 const FACTOSHI_MULTIPLIER = 0.00000001;
 const FACTOID_MULTIPLIER = 100000000;
 
@@ -38,40 +46,111 @@ class SendFactoidForm extends Component {
 		return balance * FACTOSHI_MULTIPLIER - fee;
 	}
 
+	signWithLedger = async ({ fromAddr, toAddr, amount, fee, index }) => {
+		try {
+			let signedTX = {};
+			let transport = await TransportU2F.create();
+
+			const bip32Account = this.props.networkController.networkProps
+				.bip32Account;
+			const path = "44'/131'/" + bip32Account + "'/0'/" + index + "'";
+
+			const ledger = new Fct(transport);
+
+			const unsignedTX = Transaction.builder()
+				.input(fromAddr, amount + fee)
+				.output(toAddr, amount)
+				.build();
+
+			const result = await ledger.signTransaction(
+				path,
+				unsignedTX.marshalBinarySig.toString('hex')
+			);
+
+			if (result) {
+				signedTX = Transaction.builder(unsignedTX)
+					.rcdSignature(
+						Buffer.from(result['r'], 'hex'),
+						Buffer.from(result['s'], 'hex')
+					)
+					.build();
+			}
+			transport.close();
+			return signedTX;
+		} catch (err) {
+			console.error('Failed signTx from Ledger :', err);
+		}
+	};
+
 	render() {
 		const { classes } = this.props;
+		const { factomCli } = this.props.factomCliController;
 
 		const {
-			factoidWallets,
-			getActiveFctWallet,
+			getFctAddresses,
+			getActiveFctAddress,
 			updateBalances,
-			sendFactoidFee,
+			getFactoshiFee,
+			activeFctAddressIndex,
+			getFactoidFee,
 		} = this.props.walletController;
-		const activeFctWallet = getActiveFctWallet();
-		const { factomCli } = this.props.factomCliController;
+
+		const factoidAddresses = getFctAddresses();
+		const sendFactoidFee = getFactoidFee();
+		const activeFctWallet = getActiveFctAddress();
 
 		return (
 			<Formik
+				enableReinitialize
 				initialValues={{
 					sendFactoidAmount: '',
 					recipientAddress: '',
 					myFctWalletAnchorEl: null,
 					privateKey: '',
 					transactionID: null,
+					reinitialize: activeFctAddressIndex,
+					walletType: activeFctWallet.type,
 				}}
 				onSubmit={async (values, actions) => {
 					const { sendFactoidAmount, recipientAddress, privateKey } = values;
+					let transaction = {};
 
-					const transaction = await factomCli.createFactoidTransaction(
-						privateKey,
-						recipientAddress,
-						FACTOID_MULTIPLIER * sendFactoidAmount
-					);
+					if (values.walletType === 'standard') {
+						transaction = await factomCli.createFactoidTransaction(
+							privateKey,
+							recipientAddress,
+							FACTOID_MULTIPLIER * sendFactoidAmount
+						);
+					} else if (values.walletType === 'ledger') {
+						const fromAddr = activeFctWallet.address;
+						const toAddr = recipientAddress;
+						const amount = sendFactoidAmount * FACTOID_MULTIPLIER;
+						const fee = getFactoshiFee();
+						const index = activeFctWallet.index;
 
-					const txId = await factomCli.sendTransaction(transaction);
-					actions.setFieldValue('transactionID', txId);
+						const ledgerTrans_o = {
+							fromAddr,
+							toAddr,
+							amount,
+							fee,
+							index,
+						};
 
-					updateBalances();
+						transaction = await this.signWithLedger(ledgerTrans_o);
+					}
+
+					try {
+						if (transaction instanceof Transaction) {
+							const txId = await factomCli.sendTransaction(transaction);
+							actions.setFieldValue('transactionID', txId);
+							updateBalances();
+						} else {
+							console.log('Not a Transaction');
+						}
+					} catch (err) {
+						console.log(err);
+						actions.resetForm();
+					}
 				}}
 				validationSchema={Yup.object().shape({
 					sendFactoidAmount: Yup.string().required('Required'),
@@ -80,11 +159,16 @@ class SendFactoidForm extends Component {
 						'Invalid Address',
 						isValidFctPublicAddress
 					),
-					privateKey: Yup.string().test(
-						privateKeyPath,
-						'Invalid Key',
-						isValidFctPrivateAddress
-					),
+					walletType: Yup.string(),
+					privateKey: Yup.string().when('walletType', {
+						is: 'standard',
+						then: Yup.string().test(
+							privateKeyPath,
+							'Invalid Key',
+							isValidFctPrivateAddress
+						),
+						otherwise: Yup.string().notRequired(),
+					}),
 				})}
 				render={({
 					isSubmitting,
@@ -96,6 +180,7 @@ class SendFactoidForm extends Component {
 				}) => (
 					<Form onKeyPress={this.handleKeyPress}>
 						<WalletInfoHeader wallet={activeFctWallet} />
+
 						<Field name={recipientAddressPath}>
 							{({ field, form }) => (
 								<TextField
@@ -124,10 +209,10 @@ class SendFactoidForm extends Component {
 								/>
 							</Grid>
 							<Grid item>
-								<FactoidWalletMenu
+								<FactoidAddressMenu
 									values={values}
 									setFieldValue={setFieldValue}
-									factoidWallets={factoidWallets}
+									factoidAddresses={factoidAddresses}
 									activeFctWallet={activeFctWallet}
 								/>
 								<Typography
@@ -188,28 +273,34 @@ class SendFactoidForm extends Component {
 								</Typography>
 							</Grid>
 						</Grid>
-						<Field name={privateKeyPath}>
-							{({ field, form }) => (
-								<TextField
-									error={
-										errors[privateKeyPath] && touched[privateKeyPath]
-											? true
-											: false
-									}
-									{...field}
-									placeholder={
-										'Enter Private Key for ' + activeFctWallet.nickname
-									}
-									label="Private Key"
-									fullWidth={true}
-									disabled={isSubmitting}
+						{values.walletType === 'standard' && (
+							<React.Fragment>
+								<Field name={privateKeyPath}>
+									{({ field, form }) => (
+										<TextField
+											error={
+												errors[privateKeyPath] && touched[privateKeyPath]
+													? true
+													: false
+											}
+											{...field}
+											placeholder={
+												'Enter Private Key for ' + activeFctWallet.nickname
+											}
+											label="Private Key"
+											fullWidth={true}
+											disabled={isSubmitting}
+										/>
+									)}
+								</Field>
+								<ErrorMessage
+									name={privateKeyPath}
+									render={(msg) => (
+										<div className={classes.errorText}>{msg}</div>
+									)}
 								/>
-							)}
-						</Field>
-						<ErrorMessage
-							name={privateKeyPath}
-							render={(msg) => <div className={classes.errorText}>{msg}</div>}
-						/>
+							</React.Fragment>
+						)}
 
 						{values.sendFactoidAmount ? (
 							<TransactionPreview factoidAmount={values.sendFactoidAmount} />
@@ -269,20 +360,20 @@ class SendFactoidForm extends Component {
 	}
 }
 
-function FactoidWalletMenu(props) {
-	const { values, setFieldValue, factoidWallets, activeFctWallet } = props;
+function FactoidAddressMenu(props) {
+	const { values, setFieldValue, factoidAddresses, activeFctWallet } = props;
 
-	const walletList = factoidWallets
-		.filter((wallet) => wallet.address !== activeFctWallet.address)
-		.map((wallet, index) => (
+	const addressList = factoidAddresses
+		.filter((address_o) => address_o.address !== activeFctWallet.address)
+		.map((address_o, index) => (
 			<MenuItem
 				key={index}
 				onClick={() => {
 					setFieldValue(myFctWalletAnchorElPath, null);
-					setFieldValue(recipientAddressPath, wallet.address);
+					setFieldValue(recipientAddressPath, address_o.address);
 				}}
 			>
-				{wallet.nickname}
+				{address_o.nickname}
 			</MenuItem>
 		));
 	return (
@@ -294,7 +385,7 @@ function FactoidWalletMenu(props) {
 				setFieldValue(myFctWalletAnchorElPath, null);
 			}}
 		>
-			{walletList}
+			{addressList}
 		</Menu>
 	);
 }
@@ -315,6 +406,7 @@ const styles = {
 };
 
 const enhancer = _flowRight(
+	withNetwork,
 	withWalletContext,
 	withFactomCli,
 	withStyles(styles)

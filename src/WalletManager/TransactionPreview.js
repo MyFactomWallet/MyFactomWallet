@@ -7,7 +7,8 @@ import { withWalletContext } from '../Context/WalletContext';
 
 const TransactionPreview = (props) => {
 	const { factoidAmount, classes } = props;
-	const { sendFactoidFee } = props.walletController;
+	const { getFactoidFee } = props.walletController;
+	const sendFactoidFee = getFactoidFee();
 
 	// total send amount
 	const totalFactoidAmount = factoidAmount + sendFactoidFee;

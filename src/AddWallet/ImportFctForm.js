@@ -24,17 +24,27 @@ class ImportFctForm extends React.Component {
 			event.preventDefault();
 		}
 	}
+
 	render() {
 		const { classes } = this.props;
-		const { factoidWallets, addFactoidWallet } = this.props.walletController;
+		const {
+			getFctAddresses,
+			newStandardAddress,
+			addFactoidAddress,
+		} = this.props.walletController;
+
+		const factoidAddresses = getFctAddresses();
 
 		return (
 			<Formik
 				initialValues={{ factoidAddress: '', nickname: '' }}
 				onSubmit={(values, actions) => {
-					console.log(values);
+					const fctAddress_o = newStandardAddress(
+						get(values, fctAddrPath),
+						get(values, nicknamePath)
+					);
 
-					addFactoidWallet(get(values, fctAddrPath), get(values, nicknamePath));
+					addFactoidAddress(fctAddress_o);
 
 					// proceed to next page
 					this.props.handleNext();
@@ -45,7 +55,7 @@ class ImportFctForm extends React.Component {
 						.test(
 							fctAddrPath,
 							'Enter unique address',
-							(value) => findIndex(factoidWallets, ['address', value]) === -1
+							(value) => findIndex(factoidAddresses, ['address', value]) === -1
 						),
 					[nicknamePath]: Yup.string()
 						.trim()
@@ -53,7 +63,8 @@ class ImportFctForm extends React.Component {
 						.test(
 							nicknamePath,
 							'Enter unique nickname',
-							(value) => findIndex(factoidWallets, [nicknamePath, value]) === -1
+							(value) =>
+								findIndex(factoidAddresses, [nicknamePath, value]) === -1
 						),
 				})}
 				render={({ isSubmitting, errors, touched }) => (

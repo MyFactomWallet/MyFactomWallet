@@ -10,8 +10,18 @@ import AddWalletStepContent from './AddWalletStepContent';
 import SectionHeader from '../Vote/Shared/SectionHeader.js';
 import Paper from '@material-ui/core/Paper';
 
-const getSteps = () => {
-	return ['Select type', 'Confirm details'];
+const getStandardSteps = () => {
+	return ['Address Type', 'Address details'];
+};
+
+const getLedgerSteps = () => {
+	return ['Address Type', 'FCT', 'EC', 'Address details'];
+};
+
+const stepMap = {
+	ledger: getLedgerSteps,
+	fct: getStandardSteps,
+	ec: getStandardSteps,
 };
 
 class AddWalletStepper extends React.Component {
@@ -22,13 +32,15 @@ class AddWalletStepper extends React.Component {
 	static initialState = () => ({
 		activeStep: 0,
 		importType: '',
+		getSteps: getStandardSteps,
 	});
 
 	state = AddWalletStepper.initialState();
 
 	updateImportType = (importType) => {
 		this.setState({
-			importType,
+			importType: importType,
+			getSteps: stepMap[importType],
 		});
 	};
 
@@ -50,8 +62,10 @@ class AddWalletStepper extends React.Component {
 
 	render() {
 		const { classes } = this.props;
-		const steps = getSteps();
+
 		const { activeStep } = this.state;
+
+		const steps = this.state.getSteps();
 
 		return (
 			<Paper className={classes.paper}>

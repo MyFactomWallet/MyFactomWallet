@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { isValidEcPublicAddress } from 'factom/dist/factom-struct';
-import get from 'lodash/get';
+import _get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
 import { withWalletContext } from '../Context/WalletContext';
 
@@ -27,15 +27,24 @@ class ImportEcForm extends React.Component {
 	render() {
 		const { classes } = this.props;
 
-		const { ecWallets, addECWallet } = this.props.walletController;
+		const {
+			getEcAddresses,
+			newStandardAddress,
+			addECAddress,
+		} = this.props.walletController;
+
+		const ecAddresses = getEcAddresses();
 
 		return (
 			<Formik
 				initialValues={{ entryCreditAddress: '', nickname: '' }}
 				onSubmit={(values, actions) => {
-					console.log(values);
+					const ecAddress_o = newStandardAddress(
+						_get(values, ecAddrNamePath),
+						_get(values, nicknamePath)
+					);
 
-					addECWallet(get(values, ecAddrNamePath), get(values, nicknamePath));
+					addECAddress(ecAddress_o);
 
 					// proceed to next page
 					this.props.handleNext();
@@ -46,7 +55,7 @@ class ImportEcForm extends React.Component {
 						.test(
 							ecAddrNamePath,
 							'Enter unique address',
-							(value) => findIndex(ecWallets, ['address', value]) === -1
+							(value) => findIndex(ecAddresses, ['address', value]) === -1
 						),
 					[nicknamePath]: Yup.string()
 						.trim()
@@ -54,7 +63,7 @@ class ImportEcForm extends React.Component {
 						.test(
 							nicknamePath,
 							'Enter unique nickname',
-							(value) => findIndex(ecWallets, [nicknamePath, value]) === -1
+							(value) => findIndex(ecAddresses, [nicknamePath, value]) === -1
 						),
 				})}
 				render={({ isSubmitting, errors, touched }) => (

@@ -135,7 +135,7 @@ class ButtonAppBar extends React.Component {
 						<Button
 							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
 							aria-haspopup="true"
-							onClick={this.handleNetworkClick}
+							disableRipple //onClick={this.handleNetworkClick}
 							className={classes.menuText}
 						>
 							Node: {this.state.network}
@@ -144,7 +144,7 @@ class ButtonAppBar extends React.Component {
 								titleAccess="Network Operational"
 								style={{ color: 'green' }}
 							/>
-							<ExpandMore />
+							{/* <ExpandMore /> */}
 						</Button>
 						<Menu
 							id="simple-vote-menu"
