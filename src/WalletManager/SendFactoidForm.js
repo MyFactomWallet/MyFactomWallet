@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
+import _isNil from 'lodash/isNil';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import TextField from '@material-ui/core/TextField';
@@ -18,6 +19,7 @@ import TransactionPreview from './TransactionPreview';
 import Fct from '@factoid.org/hw-app-fct';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { withNetwork } from '../Context/NetworkContext';
+import { withLedger } from '../Context/LedgerContext';
 import {
 	isValidFctPrivateAddress,
 	isValidFctPublicAddress,
@@ -79,6 +81,7 @@ class SendFactoidForm extends Component {
 			return signedTX;
 		} catch (err) {
 			console.error('Failed signTx from Ledger :', err);
+			throw err;
 		}
 	};
 
@@ -110,46 +113,64 @@ class SendFactoidForm extends Component {
 					transactionID: null,
 					reinitialize: activeFctAddressIndex,
 					walletType: activeFctWallet.type,
+					ledgerStatus: null,
+					transactionError: null,
 				}}
 				onSubmit={async (values, actions) => {
 					const { sendFactoidAmount, recipientAddress, privateKey } = values;
 					let transaction = {};
-
-					if (values.walletType === 'standard') {
-						transaction = await factomCli.createFactoidTransaction(
-							privateKey,
-							recipientAddress,
-							FACTOID_MULTIPLIER * sendFactoidAmount
-						);
-					} else if (values.walletType === 'ledger') {
-						const fromAddr = activeFctWallet.address;
-						const toAddr = recipientAddress;
-						const amount = sendFactoidAmount * FACTOID_MULTIPLIER;
-						const fee = getFactoshiFee();
-						const index = activeFctWallet.index;
-
-						const ledgerTrans_o = {
-							fromAddr,
-							toAddr,
-							amount,
-							fee,
-							index,
-						};
-
-						transaction = await this.signWithLedger(ledgerTrans_o);
-					}
-
 					try {
-						if (transaction instanceof Transaction) {
-							const txId = await factomCli.sendTransaction(transaction);
-							actions.setFieldValue('transactionID', txId);
-							updateBalances();
-						} else {
-							console.log('Not a Transaction');
+						if (values.walletType === 'standard') {
+							transaction = await factomCli.createFactoidTransaction(
+								privateKey,
+								recipientAddress,
+								FACTOID_MULTIPLIER * sendFactoidAmount
+							);
+						} else if (values.walletType === 'ledger') {
+							actions.setFieldValue('ledgerStatus', 'Connecting to Ledger');
+							const ledgerConnected = await this.props.ledgerController.isLedgerConnected();
+
+							if (ledgerConnected) {
+								actions.setFieldValue(
+									'ledgerStatus',
+									'Waiting for Confirmation'
+								);
+							} else {
+								actions.resetForm();
+								actions.setFieldValue(
+									'transactionError',
+									'Ledger Not Found. Please connect your ledger and try again.'
+								);
+							}
+
+							const fromAddr = activeFctWallet.address;
+							const toAddr = recipientAddress;
+							const amount = sendFactoidAmount * FACTOID_MULTIPLIER;
+							const fee = getFactoshiFee();
+							const index = activeFctWallet.index;
+
+							const ledgerTrans_o = {
+								fromAddr,
+								toAddr,
+								amount,
+								fee,
+								index,
+							};
+
+							transaction = await this.signWithLedger(ledgerTrans_o);
 						}
+
+						const txId = await factomCli.sendTransaction(transaction);
+						actions.setFieldValue('transactionID', txId);
+						updateBalances();
 					} catch (err) {
 						console.log(err);
 						actions.resetForm();
+
+						actions.setFieldValue(
+							'transactionError',
+							'An error occured. Please try again.'
+						);
 					}
 				}}
 				validationSchema={Yup.object().shape({
@@ -177,6 +198,7 @@ class SendFactoidForm extends Component {
 					values,
 					setFieldValue,
 					handleReset,
+					handleChange,
 				}) => (
 					<Form onKeyPress={this.handleKeyPress}>
 						<WalletInfoHeader wallet={activeFctWallet} />
@@ -191,6 +213,10 @@ class SendFactoidForm extends Component {
 											: false
 									}
 									{...field}
+									onChange={(e) => {
+										handleChange(e);
+										setFieldValue('transactionError', null);
+									}}
 									label="Recipient FCT address"
 									fullWidth={true}
 									type="text"
@@ -222,6 +248,7 @@ class SendFactoidForm extends Component {
 									}
 									aria-haspopup="true"
 									onClick={(event) => {
+										setFieldValue('transactionError', null);
 										setFieldValue(myFctWalletAnchorElPath, event.currentTarget);
 									}}
 									className={classes.pointer}
@@ -309,8 +336,12 @@ class SendFactoidForm extends Component {
 						)}
 						<br />
 						<br />
+						{!_isNil(values.transactionError) && (
+							<Typography className={classes.transactionErrorText}>
+								{values.transactionError}
+							</Typography>
+						)}
 						<br />
-
 						{isSubmitting ? (
 							<div>
 								{values.transactionID !== null ? (
@@ -331,7 +362,10 @@ class SendFactoidForm extends Component {
 										</Button>
 									</span>
 								) : (
-									<CircularProgress thickness={7} />
+									<React.Fragment>
+										<CircularProgress thickness={7} />
+										{values.ledgerStatus}
+									</React.Fragment>
 								)}
 							</div>
 						) : (
@@ -400,6 +434,7 @@ const styles = {
 		height: '24px',
 	},
 	errorText: { color: 'red', fontSize: '12px', textAlign: 'left' },
+	transactionErrorText: { color: 'red', fontSize: '16px' },
 	pointer: {
 		cursor: 'pointer',
 	},
@@ -407,6 +442,7 @@ const styles = {
 
 const enhancer = _flowRight(
 	withNetwork,
+	withLedger,
 	withWalletContext,
 	withFactomCli,
 	withStyles(styles)

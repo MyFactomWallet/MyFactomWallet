@@ -29,7 +29,7 @@ class AddWalletModal extends React.Component {
 					variant="outlined"
 					color="primary"
 				>
-					Add Addresses
+					Add Address
 				</Button>
 				<Modal
 					aria-labelledby="modal-title"

@@ -12,6 +12,7 @@ class AddWalletStepContent extends React.Component {
 				return (
 					<WalletTypeForm
 						handleNext={this.props.handleNext}
+						importType={this.props.importType}
 						updateImportType={this.props.updateImportType}
 					/>
 				);

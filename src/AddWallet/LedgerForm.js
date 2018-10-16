@@ -12,7 +12,10 @@ import Typography from '@material-ui/core/Typography';
 import Fct from '@factoid.org/hw-app-fct';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { withNetwork } from '../Context/NetworkContext';
+import { withLedger } from '../Context/LedgerContext';
 import GenerateAddressTable from './GenerateAddressTable';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import _isNil from 'lodash/isNil';
 
 /**
  * Constants
@@ -21,14 +24,43 @@ const ecAddressPath = 'ecAddress';
 const fctAddressPath = 'fctAddress';
 const ecNicknamePath = 'ecNickname';
 const fctNicknamePath = 'fctNickname';
-const loadedPath = 'loaded';
 
 class LedgerForm extends React.Component {
+	state = {
+		ledgerConnected: false,
+		fctAddress: null,
+		ecAddress: null,
+		ledgerStatus: null,
+	};
+
 	handleKeyPress(event) {
 		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
 			event.preventDefault();
 		}
 	}
+
+	componentDidMount() {
+		this.verifyLedger();
+	}
+
+	verifyLedger = async () => {
+		try {
+			const ledgerConnected = await this.props.ledgerController.isLedgerConnected();
+			if (ledgerConnected) {
+				const fctAddress = await this.getFirstFactoidAddress();
+				const ecAddress = await this.getFirstECAddress();
+
+				this.setState({ ledgerConnected, fctAddress, ecAddress });
+			} else {
+				this.setState({
+					ledgerConnected,
+					ledgerStatus: 'Ledger not found. Please go back and try again.',
+				});
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
 	getFirstFactoidAddress = async () => {
 		const transport = await TransportU2F.create();
@@ -74,12 +106,14 @@ class LedgerForm extends React.Component {
 
 		return (
 			<Formik
+				enableReinitialize
 				initialValues={{
-					ecAddress: null,
-					fctAddress: null,
+					ecAddress: this.state.ecAddress,
+					fctAddress: this.state.fctAddress,
 					ecNickname: '',
 					fctNickname: '',
-					loaded: false,
+					ledgerConnected: this.state.ledgerConnected,
+					ledgerStatus: this.state.ledgerStatus,
 				}}
 				onSubmit={async (values, actions) => {
 					const fctAddress_o = newLedgerAddress(
@@ -110,71 +144,71 @@ class LedgerForm extends React.Component {
 				})}
 				render={({ isSubmitting, errors, touched, values, setFieldValue }) => (
 					<Form onKeyPress={this.handleKeyPress}>
-						<Button
-							disabled={_get(values, loadedPath)}
-							onClick={async () => {
-								const fctAddr = await this.getFirstFactoidAddress();
-								const ecAddr = await this.getFirstECAddress();
-
-								setFieldValue(loadedPath, true);
-								setFieldValue(ecAddressPath, ecAddr);
-								setFieldValue(fctAddressPath, fctAddr);
-							}}
-							variant="outlined"
-							color="primary"
-						>
-							Load First Addresses
-						</Button>
-						<GenerateAddressTable />
-						<br />
-						<br />
-						{_get(values, fctAddressPath) && (
+						{values.ledgerConnected ? (
 							<React.Fragment>
-								<Typography>
-									<b>Factoid Address:</b>
-								</Typography>
-								<Typography>{_get(values, fctAddressPath)}</Typography>
-								<FormTextField
-									error={
-										errors[fctNicknamePath] && touched[fctNicknamePath]
-											? true
-											: false
-									}
-									name={fctNicknamePath}
-									label="Factoid address nickname"
-								/>
-								<ErrorMessage
-									name={ecNicknamePath}
-									render={(msg) => (
-										<span className={classes.errorText}>{msg}</span>
-									)}
-								/>
+								{_get(values, fctAddressPath) && (
+									<React.Fragment>
+										<Typography>
+											<b>Ledger Factoid Address:</b>
+										</Typography>
+										<Typography>{_get(values, fctAddressPath)}</Typography>
+										<FormTextField
+											error={
+												errors[fctNicknamePath] && touched[fctNicknamePath]
+													? true
+													: false
+											}
+											name={fctNicknamePath}
+											label="Factoid address nickname"
+										/>
+										<ErrorMessage
+											name={ecNicknamePath}
+											render={(msg) => (
+												<span className={classes.errorText}>{msg}</span>
+											)}
+										/>
+									</React.Fragment>
+								)}
+								<br />
+								<br />
+								<br />
+								{_get(values, ecAddressPath) && (
+									<React.Fragment>
+										<Typography>
+											<b>Ledger Entry Credit Address:</b>
+										</Typography>
+										<Typography>{_get(values, ecAddressPath)}</Typography>
+										<FormTextField
+											error={
+												errors[ecNicknamePath] && touched[ecNicknamePath]
+													? true
+													: false
+											}
+											name={ecNicknamePath}
+											label="Entry Credit address nickname"
+										/>
+										<ErrorMessage
+											name={ecNicknamePath}
+											render={(msg) => (
+												<span className={classes.errorText}>{msg}</span>
+											)}
+										/>
+									</React.Fragment>
+								)}
 							</React.Fragment>
-						)}
-						<br />
-						<br />
-						<br />
-						{_get(values, ecAddressPath) && (
+						) : (
 							<React.Fragment>
-								<Typography>
-									<b>Entry Credit Address:</b>
-								</Typography>
-								<Typography>{_get(values, ecAddressPath)}</Typography>
-								<FormTextField
-									error={
-										errors[ecNicknamePath] && touched[ecNicknamePath]
-											? true
-											: false
-									}
-									name={ecNicknamePath}
-									label="Entry Credit address nickname"
-								/>
-								<ErrorMessage
-									name={ecNicknamePath}
-									render={(msg) => (
-										<span className={classes.errorText}>{msg}</span>
-									)}
-								/>
+								<br />
+								{!_isNil(values.ledgerStatus) ? (
+									values.ledgerStatus
+								) : (
+									<React.Fragment>
+										<Typography>
+											<b>Connect your Ledger</b>
+										</Typography>
+										<CircularProgress thickness={7} />
+									</React.Fragment>
+								)}
 							</React.Fragment>
 						)}
 
@@ -184,7 +218,7 @@ class LedgerForm extends React.Component {
 							<Button onClick={this.props.handleBack}>Back</Button>
 							<Button
 								type="submit"
-								disabled={isSubmitting || !_get(values, loadedPath)}
+								disabled={isSubmitting}
 								variant="raised"
 								color="primary"
 							>
@@ -227,6 +261,11 @@ const styles = (theme) => ({
 	errorText: { color: 'red', fontSize: '12px' },
 });
 
-const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
+const enhancer = _flowRight(
+	withNetwork,
+	withLedger,
+	withWalletContext,
+	withStyles(styles)
+);
 
 export default enhancer(LedgerForm);

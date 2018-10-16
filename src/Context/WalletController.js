@@ -52,31 +52,37 @@ class WalletController extends React.Component {
 	addFactoidAddress = (fctAddress_o) => {
 		const network = this.props.networkController.networkProps.network;
 
-		this.setState((prevState) => ({
-			...prevState,
-			addresses: {
-				...prevState.addresses,
-				[network]: {
-					...prevState.addresses[network],
-					fct: [...prevState.addresses[network].fct, fctAddress_o],
+		this.setState(
+			(prevState) => ({
+				...prevState,
+				addresses: {
+					...prevState.addresses,
+					[network]: {
+						...prevState.addresses[network],
+						fct: [...prevState.addresses[network].fct, fctAddress_o],
+					},
 				},
-			},
-		}));
+			}),
+			this.updateBalances
+		);
 	};
 
 	addECAddress = (ecAddress_o) => {
 		const network = this.props.networkController.networkProps.network;
 
-		this.setState((prevState) => ({
-			...prevState,
-			addresses: {
-				...prevState.addresses,
-				[network]: {
-					...prevState.addresses[network],
-					ec: [...prevState.addresses[network].ec, ecAddress_o],
+		this.setState(
+			(prevState) => ({
+				...prevState,
+				addresses: {
+					...prevState.addresses,
+					[network]: {
+						...prevState.addresses[network],
+						ec: [...prevState.addresses[network].ec, ecAddress_o],
+					},
 				},
-			},
-		}));
+			}),
+			this.updateBalances
+		);
 	};
 
 	selectFactoidAddress = (index) => {

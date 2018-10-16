@@ -41,10 +41,10 @@ class WalletTypeForm extends React.Component {
 		}
 	}
 	render() {
-		const { classes } = this.props;
+		const { classes, importType } = this.props;
 		return (
 			<Formik
-				initialValues={{ type: 'fct' }}
+				initialValues={{ type: importType }}
 				onSubmit={(values, actions) => {
 					// proceed to next page
 					this.props.handleNext();

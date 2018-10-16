@@ -19,7 +19,7 @@ const getLedgerSteps = () => {
 };
 
 const stepMap = {
-	ledger: getLedgerSteps,
+	ledger: getStandardSteps, //getLedgerSteps,
 	fct: getStandardSteps,
 	ec: getStandardSteps,
 };
@@ -31,7 +31,7 @@ class AddWalletStepper extends React.Component {
 
 	static initialState = () => ({
 		activeStep: 0,
-		importType: '',
+		importType: 'fct',
 		getSteps: getStandardSteps,
 	});
 
@@ -69,7 +69,7 @@ class AddWalletStepper extends React.Component {
 
 		return (
 			<Paper className={classes.paper}>
-				<SectionHeader text="Add Addresses" id="modal-title" />
+				<SectionHeader text="Add Address" id="modal-title" />
 				<Stepper activeStep={activeStep} className={classes.stepper}>
 					{steps.map((label, index) => {
 						const props = {};
