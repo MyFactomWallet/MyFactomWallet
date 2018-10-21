@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { withNetwork } from '../Context/NetworkContext';
+import _flowRight from 'lodash/flowRight';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -11,31 +13,42 @@ import SectionHeader from '../Vote/Shared/SectionHeader.js';
 import Paper from '@material-ui/core/Paper';
 
 const getStandardSteps = () => {
-	return ['Address Type', 'Address details'];
+	return ['Import Method', 'Address details'];
 };
 
-const getLedgerSteps = () => {
-	return ['Address Type', 'FCT', 'EC', 'Address details'];
+const getLedgerAddressSteps = ({ networkProps }) => {
+	return [
+		'Import Method',
+		networkProps.factoidAbbreviation,
+		networkProps.ecAbbreviation,
+	];
+};
+//this.props.networkController.networkProps.factoidAbbreviation
+const getSeedAddressSteps = ({ networkProps }) => {
+	return [
+		'Import Method',
+		'Seed Value',
+		networkProps.factoidAbbreviation,
+		networkProps.ecAbbreviation,
+	];
 };
 
 const stepMap = {
-	ledger: getStandardSteps, //getLedgerSteps,
+	importSeed: getSeedAddressSteps,
+	new: getSeedAddressSteps,
+	ledger: getLedgerAddressSteps,
 	fct: getStandardSteps,
 	ec: getStandardSteps,
 };
 
 class AddWalletStepper extends React.Component {
-	static propTypes = {
-		classes: PropTypes.object,
-	};
-
-	static initialState = () => ({
+	initialState = {
 		activeStep: 0,
 		importType: 'fct',
 		getSteps: getStandardSteps,
-	});
+	};
 
-	state = AddWalletStepper.initialState();
+	state = this.initialState;
 
 	updateImportType = (importType) => {
 		this.setState({
@@ -57,15 +70,15 @@ class AddWalletStepper extends React.Component {
 	};
 
 	handleReset = () => {
-		this.setState(AddWalletStepper.initialState());
+		this.setState(this.initialState);
 	};
 
 	render() {
-		const { classes } = this.props;
+		const { classes, handleCloseText } = this.props;
 
 		const { activeStep } = this.state;
 
-		const steps = this.state.getSteps();
+		const steps = this.state.getSteps(this.props.networkController);
 
 		return (
 			<Paper className={classes.paper}>
@@ -85,9 +98,13 @@ class AddWalletStepper extends React.Component {
 				<React.Fragment>
 					{activeStep === steps.length ? (
 						<React.Fragment>
+							<br />
 							<Typography variant="subheading" gutterBottom>
-								Wallet has successfully been added.
+								Address(es) have successfully been added.
 							</Typography>
+							<br />
+							<br />
+							<br />
 							<div>
 								<Button onClick={this.handleReset}>Add Another</Button>
 								<Button
@@ -95,7 +112,7 @@ class AddWalletStepper extends React.Component {
 									variant="raised"
 									color="primary"
 								>
-									Exit
+									{handleCloseText}
 								</Button>
 							</div>
 						</React.Fragment>
@@ -134,12 +151,14 @@ class AddWalletStepper extends React.Component {
 const styles = (theme) => ({
 	stepper: {
 		backgroundColor: '#eeeeee',
-		width: 500,
 	},
 	paper: {
-		width: 575,
+		minWidth: 525,
 		padding: theme.spacing.unit * 4,
+		minHeight: 300,
 	},
 });
 
-export default withStyles(styles)(AddWalletStepper);
+const enhancer = _flowRight(withNetwork, withStyles(styles));
+
+export default enhancer(AddWalletStepper);

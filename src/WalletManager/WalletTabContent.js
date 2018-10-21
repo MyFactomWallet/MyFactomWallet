@@ -6,7 +6,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import SendFactoidForm from './SendFactoidForm.js';
 import ConvertECForm from './ConvertECForm.js';
-import WalletInfo from './WalletInfo';
+import AddressInfo from './AddressInfo';
 
 class WalletTabContent extends React.Component {
 	state = {
@@ -18,12 +18,12 @@ class WalletTabContent extends React.Component {
 	};
 
 	render() {
-		const { classes, hasFactoidWallet } = this.props;
+		const { classes, type } = this.props;
 
 		const { tabValue } = this.state;
 		return (
 			<div className={classes.root}>
-				{hasFactoidWallet && (
+				{type === 'fct' && (
 					<div>
 						<Tabs
 							value={tabValue}
@@ -34,8 +34,6 @@ class WalletTabContent extends React.Component {
 						>
 							<Tab label="Send Factoids" />
 							<Tab label="Address Info" />
-							{/* Use TFA Explorer API /api/v1/address/transactions/ GET Retrieves
-							all factoid transactions related to a given address */}
 							<Tab label="Convert FCT to EC" />
 						</Tabs>
 						{tabValue === 0 && (
@@ -45,12 +43,31 @@ class WalletTabContent extends React.Component {
 						)}
 						{tabValue === 1 && (
 							<TabContainer classes={classes}>
-								<WalletInfo />
+								<AddressInfo />
 							</TabContainer>
 						)}
 						{tabValue === 2 && (
 							<TabContainer classes={classes}>
 								<ConvertECForm />
+							</TabContainer>
+						)}
+					</div>
+				)}
+				{type === 'ec' && (
+					<div>
+						<Tabs
+							value={tabValue}
+							onChange={this.handleChange}
+							indicatorColor="primary"
+							textColor="primary"
+							centered
+						>
+							<Tab label="Address Info" />
+						</Tabs>
+
+						{tabValue === 0 && (
+							<TabContainer classes={classes}>
+								<AddressInfo />
 							</TabContainer>
 						)}
 					</div>

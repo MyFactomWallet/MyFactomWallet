@@ -1,6 +1,19 @@
+import React from 'react';
+
+/**
+ * Constants
+ */
 const FACTOSHI_MULTIPLIER = 0.00000001;
 
-function FormatFCTBalance(props) {
+const FormatBalance = ({ balance, type }) => {
+	if (type === 'fct') {
+		return <FormatFCTBalance balance={balance} />;
+	} else if (type === 'ec') {
+		return <FormatECBalance balance={balance} />;
+	}
+};
+
+const FormatFCTBalance = (props) => {
 	let result = '';
 	const factoshiBalance = props.balance;
 
@@ -12,15 +25,15 @@ function FormatFCTBalance(props) {
 		}) + ' FCT';
 
 	return result;
-}
+};
 
-function FormatECBalance(props) {
+const FormatECBalance = (props) => {
 	let result = '';
 	const entryCreditBalance = props.balance;
 
 	result = parseInt(entryCreditBalance, 10) + ' EC';
 
 	return result;
-}
+};
 
-export { FormatFCTBalance, FormatECBalance };
+export { FormatBalance };

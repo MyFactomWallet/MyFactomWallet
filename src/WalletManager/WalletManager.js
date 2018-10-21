@@ -1,25 +1,24 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
+import _isEmpty from 'lodash/isEmpty';
+import _isNil from 'lodash/isNil';
 import Sidebar from './Sidebar.js';
 import WalletTabContent from './WalletTabContent.js';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import isEmpty from 'lodash/isEmpty';
-import AddWalletStepper from '../AddWallet/AddWalletStepper';
 import { withWalletContext } from '../Context/WalletContext';
 
 class WalletManager extends Component {
 	render() {
-		const { getFctAddresses, getEcAddresses } = this.props.walletController;
-
-		const ecAddresses = getEcAddresses();
-		const factoidAddresses = getFctAddresses();
+		const {
+			walletController: { getActiveAddress, activeAddressIndex_o },
+		} = this.props;
 
 		return (
 			<Grid container>
-				{!isEmpty(ecAddresses) || !isEmpty(factoidAddresses) ? (
+				{!_isNil(getActiveAddress()) && (
 					<Grid container spacing={24} item xs={12}>
 						<Grid item xs={4}>
 							<Sidebar />
@@ -28,18 +27,11 @@ class WalletManager extends Component {
 						<Grid item xs={8}>
 							<Paper>
 								<WalletTabContent
-									hasFactoidWallet={!isEmpty(factoidAddresses)}
+									key={getActiveAddress().address}
+									type={activeAddressIndex_o.type}
 								/>
 							</Paper>
 						</Grid>
-					</Grid>
-				) : (
-					<Grid container item xs={12}>
-						<Grid item xs={2} />
-						<Grid item xs={8}>
-							<AddWalletStepper />
-						</Grid>
-						<Grid item xs={2} />
 					</Grid>
 				)}
 			</Grid>

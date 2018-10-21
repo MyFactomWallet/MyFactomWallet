@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _isNil from 'lodash/isNil';
 import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
@@ -6,10 +7,16 @@ import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import WhereToVote from '@material-ui/icons/WhereToVoteOutlined';
 import AccountBalance from '@material-ui/icons/AccountBalanceOutlined';
+import { withWalletContext } from '../Context/WalletContext';
 
 class LandingPage extends Component {
 	render() {
 		const { classes } = this.props;
+		const { getActiveAddress } = this.props.walletController;
+
+		const walletPath = _isNil(getActiveAddress())
+			? '/wallet/add'
+			: '/wallet/manage';
 
 		return (
 			<div className={classes.body}>
@@ -21,7 +28,7 @@ class LandingPage extends Component {
 				<Button
 					className={classes.button}
 					component={Link}
-					to={'/wallet/manage'}
+					to={walletPath}
 					variant="outlined"
 					color="primary"
 				>
@@ -67,4 +74,4 @@ const styles = (theme) => ({
 	},
 });
 
-export default withStyles(styles)(LandingPage);
+export default withWalletContext(withStyles(styles)(LandingPage));

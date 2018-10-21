@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { isValidFctPublicAddress } from 'factom/dist/factom-struct';
+import { isValidFctPublicAddress } from 'factom/dist/factom';
 import get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
 import { withWalletContext } from '../Context/WalletContext';
@@ -28,12 +28,12 @@ class ImportFctForm extends React.Component {
 	render() {
 		const { classes } = this.props;
 		const {
-			getFctAddresses,
+			getFactoidAddresses,
 			newStandardAddress,
-			addFactoidAddress,
+			addAddress,
 		} = this.props.walletController;
 
-		const factoidAddresses = getFctAddresses();
+		const factoidAddresses = getFactoidAddresses();
 
 		return (
 			<Formik
@@ -44,7 +44,7 @@ class ImportFctForm extends React.Component {
 						get(values, nicknamePath)
 					);
 
-					addFactoidAddress(fctAddress_o);
+					addAddress(fctAddress_o, 'fct');
 
 					// proceed to next page
 					this.props.handleNext();

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { isValidEcPublicAddress } from 'factom/dist/factom-struct';
+import { isValidEcPublicAddress } from 'factom/dist/factom';
 import _get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
 import { withWalletContext } from '../Context/WalletContext';
@@ -28,12 +28,12 @@ class ImportEcForm extends React.Component {
 		const { classes } = this.props;
 
 		const {
-			getEcAddresses,
+			getEntryCreditAddresses,
 			newStandardAddress,
-			addECAddress,
+			addAddress,
 		} = this.props.walletController;
 
-		const ecAddresses = getEcAddresses();
+		const ecAddresses = getEntryCreditAddresses();
 
 		return (
 			<Formik
@@ -44,7 +44,7 @@ class ImportEcForm extends React.Component {
 						_get(values, nicknamePath)
 					);
 
-					addECAddress(ecAddress_o);
+					addAddress(ecAddress_o, 'ec');
 
 					// proceed to next page
 					this.props.handleNext();

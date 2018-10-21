@@ -24,7 +24,7 @@ class NetworkController extends React.Component {
 		testnet: {
 			network: 'testnet',
 			bip32Account: 2147483647,
-			factoidAbbreviation: 'TST',
+			factoidAbbreviation: 'TTS',
 			factoidAbbreviationFull: 'Testoid',
 			ecAbbreviation: 'TC',
 			ecAbbreviationFull: 'Test Credit',

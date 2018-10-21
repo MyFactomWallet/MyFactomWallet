@@ -1,4 +1,5 @@
 import React from 'react';
+import _get from 'lodash/get';
 import { Formik, Form, ErrorMessage } from 'formik';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -21,12 +22,10 @@ const importTypes = [
 	{
 		value: 'new',
 		label: 'Generate new 12-word seed',
-		disabled: true,
 	},
 	{
-		value: 'seed',
+		value: 'importSeed',
 		label: 'Import addresses from 12-word seed',
-		disabled: true,
 	},
 
 	{
@@ -34,7 +33,11 @@ const importTypes = [
 		label: 'Import addresses from Ledger Nano S',
 	},
 ];
-class WalletTypeForm extends React.Component {
+/**
+ * Constants
+ */
+const importTypePath = 'importType';
+class ImportTypeForm extends React.Component {
 	handleKeyPress(event) {
 		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
 			event.preventDefault();
@@ -44,24 +47,28 @@ class WalletTypeForm extends React.Component {
 		const { classes, importType } = this.props;
 		return (
 			<Formik
-				initialValues={{ type: importType }}
+				initialValues={{ [importTypePath]: importType }}
 				onSubmit={(values, actions) => {
 					// proceed to next page
 					this.props.handleNext();
 				}}
 				validationSchema={Yup.object().shape({
-					type: Yup.string().required('Required'),
+					[importTypePath]: Yup.string().required('Required'),
 				})}
 				render={({ values, handleChange, isSubmitting, errors, touched }) => (
 					<Form onKeyPress={this.handleKeyPress}>
 						<FormControl
-							error={errors.type && touched.type ? true : false}
+							error={
+								_get(errors, importTypePath) && _get(touched, importTypePath)
+									? true
+									: false
+							}
 							component="fieldset"
 						>
 							<FormLabel component="legend">
 								How would you like to add a new address?
 								<ErrorMessage
-									name="type"
+									name={importTypePath}
 									render={() => (
 										<span className={classes.errorText}>&nbsp;*</span>
 									)}
@@ -70,8 +77,8 @@ class WalletTypeForm extends React.Component {
 
 							<RadioGroup
 								aria-label="Import Type"
-								name="type"
-								value={values.type}
+								name={importTypePath}
+								value={_get(values, importTypePath)}
 								onChange={(e) => {
 									handleChange(e);
 									this.props.updateImportType(e.target.value);
@@ -108,11 +115,11 @@ class WalletTypeForm extends React.Component {
 	}
 }
 
-WalletTypeForm.propTypes = {
+ImportTypeForm.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
 const styles = (theme) => ({
 	errorText: { color: 'red' },
 });
-export default withStyles(styles)(WalletTypeForm);
+export default withStyles(styles)(ImportTypeForm);

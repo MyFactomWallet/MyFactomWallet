@@ -1,4 +1,5 @@
 import React from 'react';
+import _isNil from 'lodash/isNil';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -14,6 +15,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import CloudDone from '@material-ui/icons/CloudDoneOutlined';
 import CustomNodeForm from './CustomNodeForm';
 import Modal from '@material-ui/core/Modal';
+import { withWalletContext } from '../Context/WalletContext';
 //import CloudOff from '@material-ui/icons/CloudOff';
 
 class ButtonAppBar extends React.Component {
@@ -74,6 +76,11 @@ class ButtonAppBar extends React.Component {
 	render() {
 		const { classes } = this.props;
 		const { voteAnchorEl, networkAnchorEl } = this.state;
+		const { getActiveAddress } = this.props.walletController;
+
+		const walletPath = _isNil(getActiveAddress())
+			? '#/wallet/add'
+			: '#/wallet/manage';
 
 		return (
 			<AppBar position="static" className={classes.root}>
@@ -125,7 +132,7 @@ class ButtonAppBar extends React.Component {
 							</MenuItem>
 						</Menu>
 					</div>
-					<Button href="#/wallet/manage" className={classes.menuText}>
+					<Button href={walletPath} className={classes.menuText}>
 						Wallet
 					</Button>
 					{/* <Button href="#help" className={classes.menuText}>
@@ -229,4 +236,4 @@ const styles = (theme) => ({
 	},
 });
 
-export default withStyles(styles)(ButtonAppBar);
+export default withWalletContext(withStyles(styles)(ButtonAppBar));

@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
+import _isEmpty from 'lodash/isEmpty';
+import _get from 'lodash/get';
+import _isNil from 'lodash/isNil';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import TextField from '@material-ui/core/TextField';
@@ -12,18 +15,24 @@ import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import WalletInfoHeader from './Shared/WalletInfoHeader';
-
+import AddressInfoHeader from './Shared/AddressInfoHeader';
+import { withLedger } from '../Context/LedgerContext';
+import { withWalletContext } from '../Context/WalletContext';
+import factombip44 from 'factombip44/dist/factombip44';
 import {
 	isValidFctPrivateAddress,
 	isValidEcPublicAddress,
-} from 'factom/dist/factom-struct';
-import { withWalletContext } from '../Context/WalletContext';
+} from 'factom/dist/factom';
 
+/**
+ * Constants
+ */
 const entryCreditAmountPath = 'entryCreditAmount';
 const recipientAddressPath = 'recipientAddress';
 const myFctWalletAnchorElPath = 'myFctWalletAnchorEl';
 const privateKeyPath = 'privateKey';
+const walletImportTypePath = 'walletImportType';
+const seedPath = 'seed';
 
 class ConvertECForm extends Component {
 	handleKeyPress(event) {
@@ -33,55 +42,141 @@ class ConvertECForm extends Component {
 	}
 
 	render() {
-		const { classes } = this.props;
 		const {
-			getEcAddresses,
-			getActiveFctAddress,
-			updateBalances,
-			activeFctAddressIndex,
-		} = this.props.walletController;
-		const activeFctWallet = getActiveFctAddress();
-		const ecAddresses = getEcAddresses();
+			classes,
+			walletController: {
+				updateBalances,
+				getEntryCreditAddresses,
+				getActiveAddress,
+				getEntryCreditRate,
+				signWithSeed,
+			},
+			ledgerController: { signWithLedger },
+			factomCliController: { factomCli },
+		} = this.props;
 
-		const { factomCli } = this.props.factomCliController;
+		const activeAddress_o = getActiveAddress();
+		const ecAddresses = getEntryCreditAddresses();
 
 		return (
 			<Formik
-				enableReinitialize
 				initialValues={{
 					entryCreditAmount: '',
 					recipientAddress: '',
 					myFctWalletAnchorEl: null,
 					privateKey: '',
+					[seedPath]: '',
+					[walletImportTypePath]: activeAddress_o.importType,
 					transactionID: null,
-					reinitialize: activeFctAddressIndex,
+					ledgerStatus: null,
+					transactionError: null,
 				}}
 				onSubmit={async (values, actions) => {
-					const { entryCreditAmount, recipientAddress, privateKey } = values;
-
-					const transaction = await factomCli.createEntryCreditPurchaseTransaction(
-						privateKey,
+					const {
+						entryCreditAmount,
 						recipientAddress,
-						entryCreditAmount
-					);
+						privateKey,
+						seed,
+					} = values;
+					let transaction = {};
+					const importType = _get(values, walletImportTypePath);
+					try {
+						if (importType === 'standard') {
+							transaction = await factomCli.createEntryCreditPurchaseTransaction(
+								privateKey,
+								recipientAddress,
+								entryCreditAmount
+							);
+						} else if (importType === 'seed') {
+							const mnemonic = seed;
+							const index = activeAddress_o.index;
+							const toAddr = recipientAddress;
+							const amount = entryCreditAmount;
+							const type = 'convertFCT';
 
-					const txId = await factomCli.sendTransaction(transaction);
-					actions.setFieldValue('transactionID', txId);
+							const seedTrans_o = {
+								mnemonic,
+								index,
+								toAddr,
+								amount,
+								type,
+							};
 
-					updateBalances();
+							transaction = await signWithSeed(seedTrans_o);
+						} else if (importType === 'ledger') {
+							actions.setFieldValue(
+								'ledgerStatus',
+								'Connecting to Ledger Nano S'
+							);
+							const ledgerConnected = await this.props.ledgerController.isLedgerConnected();
+
+							if (ledgerConnected) {
+								actions.setFieldValue(
+									'ledgerStatus',
+									'Waiting for Confirmation'
+								);
+							} else {
+								actions.resetForm();
+								actions.setFieldValue(
+									'transactionError',
+									'Ledger Nano S Not Found. Please connect your Ledger Nano S and try again.'
+								);
+							}
+
+							const fromAddr = activeAddress_o.address;
+							const toAddr = recipientAddress;
+							const amount = (await getEntryCreditRate()) * entryCreditAmount;
+							const index = activeAddress_o.index;
+
+							const ledgerTrans_o = {
+								fromAddr,
+								toAddr,
+								amount,
+								index,
+							};
+
+							transaction = await signWithLedger(ledgerTrans_o);
+						}
+
+						const txId = await factomCli.sendTransaction(transaction);
+						actions.setFieldValue('transactionID', txId);
+						updateBalances();
+					} catch (err) {
+						console.log(err);
+						actions.resetForm();
+
+						actions.setFieldValue(
+							'transactionError',
+							'An error occured. Please try again.'
+						);
+					}
 				}}
 				validationSchema={Yup.object().shape({
-					entryCreditAmount: Yup.string().required('Required'),
-					recipientAddress: Yup.string().test(
+					[entryCreditAmountPath]: Yup.string().required('Required'),
+					[recipientAddressPath]: Yup.string().test(
 						recipientAddressPath,
 						'Invalid Address',
 						isValidEcPublicAddress
 					),
-					privateKey: Yup.string().test(
-						privateKeyPath,
-						'Invalid Key',
-						isValidFctPrivateAddress
-					),
+					[walletImportTypePath]: Yup.string(),
+					[privateKeyPath]: Yup.string().when(walletImportTypePath, {
+						is: 'standard',
+						then: Yup.string().test(
+							privateKeyPath,
+							'Invalid Key',
+							isValidFctPrivateAddress
+						),
+						otherwise: Yup.string().notRequired(),
+					}),
+					[seedPath]: Yup.string().when(walletImportTypePath, {
+						is: 'seed',
+						then: Yup.string().test(
+							seedPath,
+							'Invalid Seed Phrase',
+							factombip44.validMnemonic
+						),
+						otherwise: Yup.string().notRequired(),
+					}),
 				})}
 				render={({
 					isSubmitting,
@@ -90,9 +185,11 @@ class ConvertECForm extends Component {
 					values,
 					setFieldValue,
 					handleReset,
+					handleChange,
 				}) => (
 					<Form onKeyPress={this.handleKeyPress}>
-						<WalletInfoHeader wallet={activeFctWallet} />
+						<AddressInfoHeader />
+
 						<Field name={recipientAddressPath}>
 							{({ field, form }) => (
 								<TextField
@@ -103,6 +200,10 @@ class ConvertECForm extends Component {
 											: false
 									}
 									{...field}
+									onChange={(e) => {
+										handleChange(e);
+										setFieldValue('transactionError', null);
+									}}
 									label="Recipient EC address"
 									fullWidth={true}
 									type="text"
@@ -120,27 +221,32 @@ class ConvertECForm extends Component {
 									)}
 								/>
 							</Grid>
-							<Grid item>
-								<ECAddressMenu
-									values={values}
-									setFieldValue={setFieldValue}
-									ecAddresses={ecAddresses}
-									activeFctWallet={activeFctWallet}
-								/>
-								<Typography
-									variant="caption"
-									aria-owns={
-										values[myFctWalletAnchorElPath] ? 'simple-menu' : null
-									}
-									aria-haspopup="true"
-									onClick={(event) => {
-										setFieldValue(myFctWalletAnchorElPath, event.currentTarget);
-									}}
-									className={classes.pointer}
-								>
-									Send to one of my addresses
-								</Typography>
-							</Grid>
+							{!_isEmpty(ecAddresses) && (
+								<Grid item>
+									<ECAddressMenu
+										values={values}
+										setFieldValue={setFieldValue}
+										ecAddresses={ecAddresses}
+									/>
+									<Typography
+										variant="caption"
+										aria-owns={
+											values[myFctWalletAnchorElPath] ? 'simple-menu' : null
+										}
+										aria-haspopup="true"
+										onClick={(event) => {
+											setFieldValue('transactionError', null);
+											setFieldValue(
+												myFctWalletAnchorElPath,
+												event.currentTarget
+											);
+										}}
+										className={classes.pointer}
+									>
+										Send to one of my addresses
+									</Typography>
+								</Grid>
+							)}
 						</Grid>
 
 						<Field name={entryCreditAmountPath}>
@@ -174,31 +280,70 @@ class ConvertECForm extends Component {
 								<br />
 							</Grid>
 						</Grid>
-						<Field name={privateKeyPath}>
-							{({ field, form }) => (
-								<TextField
-									error={
-										errors[privateKeyPath] && touched[privateKeyPath]
-											? true
-											: false
-									}
-									{...field}
-									placeholder={
-										'Enter Private Key for ' + activeFctWallet.nickname
-									}
-									label="Private Key"
-									fullWidth={true}
-									disabled={isSubmitting}
+						{_get(values, walletImportTypePath) === 'standard' && (
+							<React.Fragment>
+								<Field name={privateKeyPath}>
+									{({ field, form }) => (
+										<TextField
+											error={
+												errors[privateKeyPath] && touched[privateKeyPath]
+													? true
+													: false
+											}
+											{...field}
+											placeholder={
+												'Enter Private Key for ' + activeAddress_o.nickname
+											}
+											label="Private Key"
+											fullWidth={true}
+											disabled={isSubmitting}
+										/>
+									)}
+								</Field>
+								<ErrorMessage
+									name={privateKeyPath}
+									render={(msg) => (
+										<div className={classes.errorText}>{msg}</div>
+									)}
 								/>
-							)}
-						</Field>
-						<ErrorMessage
-							name={privateKeyPath}
-							render={(msg) => <div className={classes.errorText}>{msg}</div>}
-						/>
+							</React.Fragment>
+						)}
+						{_get(values, walletImportTypePath) === 'seed' && (
+							<React.Fragment>
+								<Field name={seedPath}>
+									{({ field, form }) => (
+										<TextField
+											error={
+												_get(errors, seedPath) && _get(touched, seedPath)
+													? true
+													: false
+											}
+											{...field}
+											placeholder={
+												'Enter Seed Phrase for ' + activeAddress_o.nickname
+											}
+											label="Seed Phrase"
+											fullWidth={true}
+											disabled={isSubmitting}
+										/>
+									)}
+								</Field>
+								<ErrorMessage
+									name={seedPath}
+									render={(msg) => (
+										<div className={classes.errorText}>{msg}</div>
+									)}
+								/>
+							</React.Fragment>
+						)}
 
 						<br />
 						<br />
+						{!_isNil(values.transactionError) && (
+							<Typography className={classes.transactionErrorText}>
+								{values.transactionError}
+							</Typography>
+						)}
 						<br />
 
 						{isSubmitting ? (
@@ -221,7 +366,10 @@ class ConvertECForm extends Component {
 										</Button>
 									</span>
 								) : (
-									<CircularProgress thickness={7} />
+									<React.Fragment>
+										<CircularProgress thickness={7} />
+										{values.ledgerStatus}
+									</React.Fragment>
 								)}
 							</div>
 						) : (
@@ -251,21 +399,19 @@ class ConvertECForm extends Component {
 }
 
 function ECAddressMenu(props) {
-	const { values, setFieldValue, ecAddresses, activeFctWallet } = props;
+	const { values, setFieldValue, ecAddresses } = props;
 
-	const addressList = ecAddresses
-		.filter((address_o) => address_o.address !== activeFctWallet.address)
-		.map((address_o, index) => (
-			<MenuItem
-				key={index}
-				onClick={() => {
-					setFieldValue(myFctWalletAnchorElPath, null);
-					setFieldValue(recipientAddressPath, address_o.address);
-				}}
-			>
-				{address_o.nickname}
-			</MenuItem>
-		));
+	const addressList = ecAddresses.map((address_o, index) => (
+		<MenuItem
+			key={index}
+			onClick={() => {
+				setFieldValue(myFctWalletAnchorElPath, null);
+				setFieldValue(recipientAddressPath, address_o.address);
+			}}
+		>
+			{address_o.nickname}
+		</MenuItem>
+	));
 	return (
 		<Menu
 			id="simple-menu"
@@ -293,9 +439,11 @@ const styles = {
 	pointer: {
 		cursor: 'pointer',
 	},
+	transactionErrorText: { color: 'red', fontSize: '16px' },
 };
 
 const enhancer = _flowRight(
+	withLedger,
 	withWalletContext,
 	withFactomCli,
 	withStyles(styles)

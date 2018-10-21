@@ -37,7 +37,10 @@ class AddWalletModal extends React.Component {
 					onClose={this.handleClose}
 				>
 					<div className={classes.modalContent}>
-						<AddWalletStepper handleClose={this.handleClose} />
+						<AddWalletStepper
+							handleClose={this.handleClose}
+							handleCloseText="Exit"
+						/>
 					</div>
 				</Modal>
 			</div>
@@ -55,6 +58,7 @@ const styles = (theme) => ({
 		top: `50%`,
 		left: `50%`,
 		transform: `translate(-50%, -50%)`,
+		minWidth: '490px',
 	},
 	button: {
 		width: '275px;',

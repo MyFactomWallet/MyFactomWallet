@@ -7,16 +7,11 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import AddWalletModal from '../AddWallet/AddWalletModal.js';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import {
-	FormatFCTBalance,
-	FormatECBalance,
-} from './Shared/BalanceFormatter.js';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { FormatBalance } from './Shared/BalanceFormatter.js';
 import { withWalletContext } from '../Context/WalletContext';
 import _isEmpty from 'lodash/isEmpty';
 
@@ -25,25 +20,26 @@ class Sidebar extends Component {
 		const { classes } = this.props;
 
 		const {
-			getFctAddresses,
-			getEcAddresses,
-			activeFctAddressIndex,
-			selectFactoidAddress,
+			getEntryCreditAddresses,
+			getFactoidAddresses,
+			activeAddressIndex_o,
+			selectAddress,
 		} = this.props.walletController;
 
-		const ecAddresses = getEcAddresses();
-
-		const factoidAddresses = getFctAddresses();
+		const ecAddresses = getEntryCreditAddresses();
+		const factoidAddresses = getFactoidAddresses();
 
 		const listfactoidAddresses = factoidAddresses.map(function(wallet, index) {
-			const expanded = activeFctAddressIndex === index;
+			const expanded =
+				activeAddressIndex_o.index === index &&
+				activeAddressIndex_o.type === 'fct';
 			const nicknameStyle = expanded ? { fontWeight: 500 } : {};
 
 			return (
 				<ExpansionPanel
 					key={index}
 					expanded={expanded}
-					onClick={() => selectFactoidAddress(index)}
+					onClick={() => selectAddress(index, 'fct')}
 					className={expanded ? classes.expanded : ''}
 				>
 					<ExpansionPanelSummary>
@@ -56,98 +52,98 @@ class Sidebar extends Component {
 							{!_isNil(wallet.balance) && (
 								<Grid item>
 									<Typography className={classes.break}>
-										<FormatFCTBalance balance={wallet.balance} />
+										<FormatBalance balance={wallet.balance} type="fct" />
 									</Typography>
 								</Grid>
 							)}
 						</Grid>
 					</ExpansionPanelSummary>
-
-					{/* 	<ExpansionPanelDetails>
-						<Grid container>
-							<Grid item xs={12}>
-								<Typography className={classes.break}>
-									{wallet.address}
-								</Typography>
-							</Grid>
-						</Grid>
-					</ExpansionPanelDetails> */}
 				</ExpansionPanel>
 			);
 		});
 
 		const listecAddresses = ecAddresses.map(function(wallet, index) {
+			const expanded =
+				activeAddressIndex_o.index === index &&
+				activeAddressIndex_o.type === 'ec';
+
+			const nicknameStyle = expanded ? { fontWeight: 500 } : {};
+
 			return (
-				<ListItem divider dense key={index}>
-					<Grid container>
+				<ExpansionPanel
+					key={index}
+					expanded={expanded}
+					onClick={() => selectAddress(index, 'ec')}
+					className={expanded ? classes.expanded : ''}
+				>
+					<ExpansionPanelSummary>
 						<Grid container item xs={12} justify="space-between">
-							<Grid item>{wallet.nickname}</Grid>
+							<Grid item>
+								<Typography className={classes.break} style={nicknameStyle}>
+									{wallet.nickname}
+								</Typography>
+							</Grid>
 							{!_isNil(wallet.balance) && (
 								<Grid item>
-									<FormatECBalance balance={wallet.balance} />
+									<Typography className={classes.break}>
+										<FormatBalance balance={wallet.balance} type="ec" />
+									</Typography>
 								</Grid>
 							)}
 						</Grid>
-						<Grid item xs={12}>
-							<br />
-							<Typography className={classes.break}>
-								{wallet.address}
-							</Typography>
-						</Grid>
-					</Grid>
-				</ListItem>
+					</ExpansionPanelSummary>
+				</ExpansionPanel>
 			);
 		});
 
 		return (
-			<span>
-				<Paper className={classes.noPadding}>
-					<List className={classes.addressList}>
-						<ListItem className={classes.walletListHeader}>
-							<Typography
-								className={classes.addressHeading}
-								variant="subheading"
-							>
-								Factoid Addresses
-							</Typography>
-						</ListItem>
-						{!_isEmpty(factoidAddresses) ? (
-							<ListItem disableGutters className={classes.walletList}>
-								<div className={classes.fctRoot}> {listfactoidAddresses}</div>
-							</ListItem>
-						) : (
-							<ListItem>
-								<Typography color="secondary">
-									Please add a Factoid wallet
-								</Typography>
-							</ListItem>
-						)}
-					</List>
-				</Paper>
-				{!_isEmpty(ecAddresses) && (
-					<span>
-						<br />
-						<ExpansionPanel defaultExpanded className={classes.addressList}>
-							<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+			<React.Fragment>
+				{!_isEmpty(factoidAddresses) && (
+					<Paper className={classes.noPadding}>
+						<List className={classes.addressList}>
+							<ListItem className={classes.walletListHeader}>
 								<Typography
 									className={classes.addressHeading}
 									variant="subheading"
 								>
-									Entry Credit Addresses
+									Factoid Addresses
 								</Typography>
-							</ExpansionPanelSummary>
-							<ExpansionPanelDetails className={classes.ecList}>
-								<List className={classes.ecRoot}>{listecAddresses}</List>
-							</ExpansionPanelDetails>
-						</ExpansionPanel>
-					</span>
+							</ListItem>
+
+							<ListItem disableGutters className={classes.walletList}>
+								<div className={classes.listAddrRoot}>
+									{listfactoidAddresses}
+								</div>
+							</ListItem>
+						</List>
+					</Paper>
+				)}
+				{!_isEmpty(ecAddresses) && (
+					<React.Fragment>
+						{!_isEmpty(factoidAddresses) && <br />}
+						<Paper className={classes.noPadding}>
+							<List className={classes.addressList}>
+								<ListItem className={classes.walletListHeader}>
+									<Typography
+										className={classes.addressHeading}
+										variant="subheading"
+									>
+										Entry Credit Addresses
+									</Typography>
+								</ListItem>
+								<ListItem disableGutters className={classes.walletList}>
+									<div className={classes.listAddrRoot}>{listecAddresses}</div>
+								</ListItem>
+							</List>
+						</Paper>
+					</React.Fragment>
 				)}
 				<br />
 				<div className={classes.flex}>
 					<br />
 					<AddWalletModal />
 				</div>
-			</span>
+			</React.Fragment>
 		);
 	}
 }
@@ -159,36 +155,22 @@ const styles = (theme) => ({
 	noPadding: {
 		padding: '0px',
 	},
-	ecList: {
-		padding: '0px',
-		backgroundColor: 'white',
-	},
+
 	break: {
 		wordWrap: 'break-word',
 	},
 	expanded: {
 		backgroundColor: 'aliceblue',
 	},
-	fctRoot: {
+	listAddrRoot: {
 		width: '100%',
 		position: 'relative',
 		overflow: 'auto',
 		maxHeight: 270,
 	},
-	ecRoot: {
-		width: '100%',
-		position: 'relative',
-		overflow: 'auto',
-		maxHeight: 200,
-		paddingBottom: '0px',
-	},
+
 	addressHeading: {
 		fontWeight: 500,
-	},
-	headingDivider: {
-		borderBottomWidth: '1px',
-		borderBottomStyle: 'solid',
-		borderBottomColor: theme.palette.primary.light,
 	},
 	flex: {
 		display: 'flex',

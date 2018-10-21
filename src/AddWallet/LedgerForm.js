@@ -1,36 +1,65 @@
 import React from 'react';
+import { Formik, Form } from 'formik';
+import _isNil from 'lodash/isNil';
 import _flowRight from 'lodash/flowRight';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
 import _get from 'lodash/get';
+import _isEmpty from 'lodash/isEmpty';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import { withWalletContext } from '../Context/WalletContext';
 import Typography from '@material-ui/core/Typography';
-import Fct from '@factoid.org/hw-app-fct';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
-import { withNetwork } from '../Context/NetworkContext';
 import { withLedger } from '../Context/LedgerContext';
 import GenerateAddressTable from './GenerateAddressTable';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import _isNil from 'lodash/isNil';
 
 /**
  * Constants
  */
-const ecAddressPath = 'ecAddress';
-const fctAddressPath = 'fctAddress';
-const ecNicknamePath = 'ecNickname';
-const fctNicknamePath = 'fctNickname';
+const addressesPath = 'addresses';
+const TITLE_CONSTANTS = {
+	fct: 'Ledger Nano S Factoid Addresses',
+	ec: 'Ledger Nano S Entry Credit Addresses',
+};
 
 class LedgerForm extends React.Component {
-	state = {
-		ledgerConnected: false,
-		fctAddress: null,
-		ecAddress: null,
-		ledgerStatus: null,
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			generatedAddressList: [],
+			ledgerConnected: false,
+			ledgerStatus: null,
+		};
+	}
+
+	componentDidMount() {
+		this.getNextFive(0);
+	}
+
+	getNextFive = async (startIndex) => {
+		try {
+			const generatedAddressList = await this.props.ledgerController.getLedgerAddresses(
+				startIndex,
+				5,
+				this.props.type
+			);
+
+			this.setState((prevState) => ({
+				generatedAddressList: [
+					...prevState.generatedAddressList,
+					...generatedAddressList,
+				],
+				ledgerConnected: true, //delete
+			}));
+		} catch (err) {
+			console.log(err);
+			this.setState({
+				ledgerStatus: 'Ledger Nano S not found. Please go back and try again.',
+				ledgerConnected: false,
+			});
+		}
 	};
 
 	handleKeyPress(event) {
@@ -39,162 +68,70 @@ class LedgerForm extends React.Component {
 		}
 	}
 
-	componentDidMount() {
-		this.verifyLedger();
-	}
-
-	verifyLedger = async () => {
-		try {
-			const ledgerConnected = await this.props.ledgerController.isLedgerConnected();
-			if (ledgerConnected) {
-				const fctAddress = await this.getFirstFactoidAddress();
-				const ecAddress = await this.getFirstECAddress();
-
-				this.setState({ ledgerConnected, fctAddress, ecAddress });
-			} else {
-				this.setState({
-					ledgerConnected,
-					ledgerStatus: 'Ledger not found. Please go back and try again.',
-				});
-			}
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	getFirstFactoidAddress = async () => {
-		const transport = await TransportU2F.create();
-
-		const ledger = new Fct(transport);
-		const bip32Account = this.props.networkController.networkProps.bip32Account;
-
-		const fctAddr = await ledger.getAddress(
-			"44'/131'/" + bip32Account + "'/0'/0'"
-		);
-
-		transport.close();
-		return fctAddr.address;
-	};
-
-	getFirstECAddress = async () => {
-		const transport = await TransportU2F.create();
-
-		const ledger = new Fct(transport);
-		const bip32Account = this.props.networkController.networkProps.bip32Account;
-
-		const ecAddr = await ledger.getAddress(
-			"44'/132'/" + bip32Account + "'/0'/0'"
-		);
-
-		transport.close();
-		return ecAddr.address;
-	};
+	hasAddressSelected = (formValues) =>
+		Object.keys(formValues)
+			.filter((key) => key.startsWith('checkbox'))
+			.some((key) => formValues[key]);
 
 	render() {
-		const { classes } = this.props;
-
 		const {
-			getEcAddresses,
-			getFctAddresses,
-			addECAddress,
-			addFactoidAddress,
-			newLedgerAddress,
-		} = this.props.walletController;
+			type,
+			walletController: { getAddresses, addAddresses, newLedgerAddress },
+		} = this.props;
 
-		//const ecAddresses = getEcAddresses();
-		//const factoidAddresses = getFctAddresses();
+		let userAddressList = getAddresses(type);
 
 		return (
 			<Formik
 				enableReinitialize
 				initialValues={{
-					ecAddress: this.state.ecAddress,
-					fctAddress: this.state.fctAddress,
-					ecNickname: '',
-					fctNickname: '',
+					addresses: [],
 					ledgerConnected: this.state.ledgerConnected,
 					ledgerStatus: this.state.ledgerStatus,
 				}}
 				onSubmit={async (values, actions) => {
-					const fctAddress_o = newLedgerAddress(
-						_get(values, fctAddressPath),
-						_get(values, fctNicknamePath),
-						0
-					);
+					let validAddresses = [];
+					for (let value of _get(values, addressesPath)) {
+						if (!_isNil(value)) {
+							validAddresses.push(value);
+						}
+					}
 
-					const ecAddress_o = newLedgerAddress(
-						_get(values, ecAddressPath),
-						_get(values, ecNicknamePath),
-						0
-					);
-					addFactoidAddress(fctAddress_o);
-
-					addECAddress(ecAddress_o);
+					// add addresses
+					addAddresses(validAddresses, this.props.type);
 
 					// proceed to next page
 					this.props.handleNext();
 				}}
 				validationSchema={Yup.object().shape({
-					[ecNicknamePath]: Yup.string()
-						.trim()
-						.required('Required'),
-					[fctNicknamePath]: Yup.string()
-						.trim()
-						.required('Required'),
+					/* 	[addressesPath]: Yup.array()
+						.compact()
+						.required('* You must add an Address'), */
 				})}
-				render={({ isSubmitting, errors, touched, values, setFieldValue }) => (
+				render={({
+					isSubmitting,
+					errors,
+					touched,
+					values,
+					setFieldValue,
+					handleChange,
+				}) => (
 					<Form onKeyPress={this.handleKeyPress}>
 						{values.ledgerConnected ? (
 							<React.Fragment>
-								{_get(values, fctAddressPath) && (
-									<React.Fragment>
-										<Typography>
-											<b>Ledger Factoid Address:</b>
-										</Typography>
-										<Typography>{_get(values, fctAddressPath)}</Typography>
-										<FormTextField
-											error={
-												errors[fctNicknamePath] && touched[fctNicknamePath]
-													? true
-													: false
-											}
-											name={fctNicknamePath}
-											label="Factoid address nickname"
-										/>
-										<ErrorMessage
-											name={ecNicknamePath}
-											render={(msg) => (
-												<span className={classes.errorText}>{msg}</span>
-											)}
-										/>
-									</React.Fragment>
-								)}
-								<br />
-								<br />
-								<br />
-								{_get(values, ecAddressPath) && (
-									<React.Fragment>
-										<Typography>
-											<b>Ledger Entry Credit Address:</b>
-										</Typography>
-										<Typography>{_get(values, ecAddressPath)}</Typography>
-										<FormTextField
-											error={
-												errors[ecNicknamePath] && touched[ecNicknamePath]
-													? true
-													: false
-											}
-											name={ecNicknamePath}
-											label="Entry Credit address nickname"
-										/>
-										<ErrorMessage
-											name={ecNicknamePath}
-											render={(msg) => (
-												<span className={classes.errorText}>{msg}</span>
-											)}
-										/>
-									</React.Fragment>
-								)}
+								<GenerateAddressTable
+									title={TITLE_CONSTANTS[type]}
+									type={type}
+									generatedAddressList={this.state.generatedAddressList}
+									userAddressList={userAddressList}
+									getNextFive={this.getNextFive}
+									newAddress={newLedgerAddress}
+									values={values}
+									errors={errors}
+									touched={touched}
+									setFieldValue={setFieldValue}
+									handleChange={handleChange}
+								/>
 							</React.Fragment>
 						) : (
 							<React.Fragment>
@@ -222,7 +159,7 @@ class LedgerForm extends React.Component {
 								variant="raised"
 								color="primary"
 							>
-								Next
+								{this.hasAddressSelected(values) ? 'Add and Continue' : 'Skip'}
 							</Button>
 						</div>
 					</Form>
@@ -232,27 +169,6 @@ class LedgerForm extends React.Component {
 	}
 }
 
-const FormTextField = (props) => {
-	return (
-		<Field name={props.name}>
-			{({ field }) => (
-				<TextField
-					inputProps={{
-						spellCheck: false,
-						maxLength: props.maxLength,
-					}}
-					{...field}
-					label={props.label + ' ' + (props.error ? '*' : '')}
-					margin="dense"
-					fullWidth
-					multiline
-					error={props.error}
-				/>
-			)}
-		</Field>
-	);
-};
-
 LedgerForm.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
@@ -261,11 +177,6 @@ const styles = (theme) => ({
 	errorText: { color: 'red', fontSize: '12px' },
 });
 
-const enhancer = _flowRight(
-	withNetwork,
-	withLedger,
-	withWalletContext,
-	withStyles(styles)
-);
+const enhancer = _flowRight(withLedger, withWalletContext, withStyles(styles));
 
 export default enhancer(LedgerForm);

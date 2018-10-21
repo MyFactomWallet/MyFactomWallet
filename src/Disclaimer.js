@@ -24,7 +24,7 @@ class ConfirmationDialogRaw extends React.Component {
 		}
 	}
 
-	handleOk = () => {
+	handleAgree = () => {
 		this.props.onClose(this.state.value);
 	};
 
@@ -159,8 +159,8 @@ class ConfirmationDialogRaw extends React.Component {
 					</ul>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={this.handleOk} color="primary">
-						Ok
+					<Button onClick={this.handleAgree} color="primary">
+						Agree
 					</Button>
 				</DialogActions>
 			</Dialog>

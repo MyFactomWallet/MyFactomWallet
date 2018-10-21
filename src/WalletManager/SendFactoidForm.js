@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
 import _isNil from 'lodash/isNil';
+import _get from 'lodash/get';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import TextField from '@material-ui/core/TextField';
@@ -12,32 +13,39 @@ import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import WalletInfoHeader from './Shared/WalletInfoHeader';
+import AddressInfoHeader from './Shared/AddressInfoHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withWalletContext } from '../Context/WalletContext';
 import TransactionPreview from './TransactionPreview';
-import Fct from '@factoid.org/hw-app-fct';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import factombip44 from 'factombip44/dist/factombip44';
 import { withNetwork } from '../Context/NetworkContext';
 import { withLedger } from '../Context/LedgerContext';
 import {
 	isValidFctPrivateAddress,
 	isValidFctPublicAddress,
-	Transaction,
 } from 'factom/dist/factom';
 
 /**
- * CONSTANTS
+ * Constants
  */
 const sendFactoidAmountPath = 'sendFactoidAmount';
 const recipientAddressPath = 'recipientAddress';
 const myFctWalletAnchorElPath = 'myFctWalletAnchorEl';
 const privateKeyPath = 'privateKey';
+const seedPath = 'seed';
+const walletImportTypePath = 'walletImportType';
 
 const FACTOSHI_MULTIPLIER = 0.00000001;
 const FACTOID_MULTIPLIER = 100000000;
 
 class SendFactoidForm extends Component {
+	state = { sendFactoidFee: null };
+
+	async componentDidMount() {
+		const sendFactoidFee = await this.props.walletController.getFactoidFee();
+		this.setState({ sendFactoidFee });
+	}
+
 	handleKeyPress(event) {
 		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
 			event.preventDefault();
@@ -48,86 +56,72 @@ class SendFactoidForm extends Component {
 		return balance * FACTOSHI_MULTIPLIER - fee;
 	}
 
-	signWithLedger = async ({ fromAddr, toAddr, amount, fee, index }) => {
-		try {
-			let signedTX = {};
-			let transport = await TransportU2F.create();
-
-			const bip32Account = this.props.networkController.networkProps
-				.bip32Account;
-			const path = "44'/131'/" + bip32Account + "'/0'/" + index + "'";
-
-			const ledger = new Fct(transport);
-
-			const unsignedTX = Transaction.builder()
-				.input(fromAddr, amount + fee)
-				.output(toAddr, amount)
-				.build();
-
-			const result = await ledger.signTransaction(
-				path,
-				unsignedTX.marshalBinarySig.toString('hex')
-			);
-
-			if (result) {
-				signedTX = Transaction.builder(unsignedTX)
-					.rcdSignature(
-						Buffer.from(result['r'], 'hex'),
-						Buffer.from(result['s'], 'hex')
-					)
-					.build();
-			}
-			transport.close();
-			return signedTX;
-		} catch (err) {
-			console.error('Failed signTx from Ledger :', err);
-			throw err;
-		}
-	};
-
 	render() {
-		const { classes } = this.props;
-		const { factomCli } = this.props.factomCliController;
-
 		const {
-			getFctAddresses,
-			getActiveFctAddress,
-			updateBalances,
-			getFactoshiFee,
-			activeFctAddressIndex,
-			getFactoidFee,
-		} = this.props.walletController;
+			classes,
+			factomCliController: { factomCli },
+			walletController: {
+				getFactoidAddresses,
+				getActiveAddress,
+				updateBalances,
+				signWithSeed,
+			},
+			ledgerController: { signWithLedger },
+		} = this.props;
 
-		const factoidAddresses = getFctAddresses();
-		const sendFactoidFee = getFactoidFee();
-		const activeFctWallet = getActiveFctAddress();
+		const factoidAddresses = getFactoidAddresses();
+		const activeAddress_o = getActiveAddress();
 
 		return (
 			<Formik
-				enableReinitialize
 				initialValues={{
 					sendFactoidAmount: '',
 					recipientAddress: '',
 					myFctWalletAnchorEl: null,
 					privateKey: '',
+					[seedPath]: '',
+					[walletImportTypePath]: activeAddress_o.importType,
 					transactionID: null,
-					reinitialize: activeFctAddressIndex,
-					walletType: activeFctWallet.type,
 					ledgerStatus: null,
 					transactionError: null,
 				}}
 				onSubmit={async (values, actions) => {
-					const { sendFactoidAmount, recipientAddress, privateKey } = values;
+					const {
+						sendFactoidAmount,
+						recipientAddress,
+						privateKey,
+						seed,
+					} = values;
 					let transaction = {};
+					const importType = _get(values, walletImportTypePath);
 					try {
-						if (values.walletType === 'standard') {
+						if (importType === 'standard') {
 							transaction = await factomCli.createFactoidTransaction(
 								privateKey,
 								recipientAddress,
 								FACTOID_MULTIPLIER * sendFactoidAmount
 							);
-						} else if (values.walletType === 'ledger') {
-							actions.setFieldValue('ledgerStatus', 'Connecting to Ledger');
+						} else if (importType === 'seed') {
+							const mnemonic = seed;
+							const index = activeAddress_o.index;
+							const toAddr = recipientAddress;
+							const amount = sendFactoidAmount * FACTOID_MULTIPLIER;
+							const type = 'sendFCT';
+
+							const seedTrans_o = {
+								mnemonic,
+								index,
+								toAddr,
+								amount,
+								type,
+							};
+
+							transaction = await signWithSeed(seedTrans_o);
+						} else if (importType === 'ledger') {
+							actions.setFieldValue(
+								'ledgerStatus',
+								'Connecting to Ledger Nano S'
+							);
 							const ledgerConnected = await this.props.ledgerController.isLedgerConnected();
 
 							if (ledgerConnected) {
@@ -139,25 +133,23 @@ class SendFactoidForm extends Component {
 								actions.resetForm();
 								actions.setFieldValue(
 									'transactionError',
-									'Ledger Not Found. Please connect your ledger and try again.'
+									'Ledger Nano S Not Found. Please connect your Ledger Nano S and try again.'
 								);
 							}
 
-							const fromAddr = activeFctWallet.address;
+							const fromAddr = activeAddress_o.address;
 							const toAddr = recipientAddress;
 							const amount = sendFactoidAmount * FACTOID_MULTIPLIER;
-							const fee = getFactoshiFee();
-							const index = activeFctWallet.index;
+							const index = activeAddress_o.index;
 
 							const ledgerTrans_o = {
 								fromAddr,
 								toAddr,
 								amount,
-								fee,
 								index,
 							};
 
-							transaction = await this.signWithLedger(ledgerTrans_o);
+							transaction = await signWithLedger(ledgerTrans_o);
 						}
 
 						const txId = await factomCli.sendTransaction(transaction);
@@ -174,19 +166,28 @@ class SendFactoidForm extends Component {
 					}
 				}}
 				validationSchema={Yup.object().shape({
-					sendFactoidAmount: Yup.string().required('Required'),
-					recipientAddress: Yup.string().test(
+					[sendFactoidAmountPath]: Yup.string().required('Required'),
+					[recipientAddressPath]: Yup.string().test(
 						recipientAddressPath,
 						'Invalid Address',
 						isValidFctPublicAddress
 					),
-					walletType: Yup.string(),
-					privateKey: Yup.string().when('walletType', {
+					[walletImportTypePath]: Yup.string(),
+					[privateKeyPath]: Yup.string().when(walletImportTypePath, {
 						is: 'standard',
 						then: Yup.string().test(
 							privateKeyPath,
 							'Invalid Key',
 							isValidFctPrivateAddress
+						),
+						otherwise: Yup.string().notRequired(),
+					}),
+					[seedPath]: Yup.string().when(walletImportTypePath, {
+						is: 'seed',
+						then: Yup.string().test(
+							seedPath,
+							'Invalid Seed Phrase',
+							factombip44.validMnemonic
 						),
 						otherwise: Yup.string().notRequired(),
 					}),
@@ -201,7 +202,7 @@ class SendFactoidForm extends Component {
 					handleChange,
 				}) => (
 					<Form onKeyPress={this.handleKeyPress}>
-						<WalletInfoHeader wallet={activeFctWallet} />
+						<AddressInfoHeader />
 
 						<Field name={recipientAddressPath}>
 							{({ field, form }) => (
@@ -239,7 +240,6 @@ class SendFactoidForm extends Component {
 									values={values}
 									setFieldValue={setFieldValue}
 									factoidAddresses={factoidAddresses}
-									activeFctWallet={activeFctWallet}
 								/>
 								<Typography
 									variant="caption"
@@ -291,7 +291,10 @@ class SendFactoidForm extends Component {
 									onClick={(event) => {
 										setFieldValue(
 											sendFactoidAmountPath,
-											this.getMax(activeFctWallet.balance, sendFactoidFee)
+											this.getMax(
+												activeAddress_o.balance,
+												this.state.sendFactoidFee
+											)
 										);
 									}}
 									className={classes.pointer}
@@ -300,7 +303,7 @@ class SendFactoidForm extends Component {
 								</Typography>
 							</Grid>
 						</Grid>
-						{values.walletType === 'standard' && (
+						{_get(values, walletImportTypePath) === 'standard' && (
 							<React.Fragment>
 								<Field name={privateKeyPath}>
 									{({ field, form }) => (
@@ -312,7 +315,7 @@ class SendFactoidForm extends Component {
 											}
 											{...field}
 											placeholder={
-												'Enter Private Key for ' + activeFctWallet.nickname
+												'Enter Private Key for ' + activeAddress_o.nickname
 											}
 											label="Private Key"
 											fullWidth={true}
@@ -328,9 +331,40 @@ class SendFactoidForm extends Component {
 								/>
 							</React.Fragment>
 						)}
+						{_get(values, walletImportTypePath) === 'seed' && (
+							<React.Fragment>
+								<Field name={seedPath}>
+									{({ field, form }) => (
+										<TextField
+											error={
+												_get(errors, seedPath) && _get(touched, seedPath)
+													? true
+													: false
+											}
+											{...field}
+											placeholder={
+												'Enter Seed Phrase for ' + activeAddress_o.nickname
+											}
+											label="Seed Phrase"
+											fullWidth={true}
+											disabled={isSubmitting}
+										/>
+									)}
+								</Field>
+								<ErrorMessage
+									name={seedPath}
+									render={(msg) => (
+										<div className={classes.errorText}>{msg}</div>
+									)}
+								/>
+							</React.Fragment>
+						)}
 
 						{values.sendFactoidAmount ? (
-							<TransactionPreview factoidAmount={values.sendFactoidAmount} />
+							<TransactionPreview
+								factoidAmount={values.sendFactoidAmount}
+								sendFactoidFee={this.state.sendFactoidFee}
+							/>
 						) : (
 							''
 						)}
@@ -395,21 +429,19 @@ class SendFactoidForm extends Component {
 }
 
 function FactoidAddressMenu(props) {
-	const { values, setFieldValue, factoidAddresses, activeFctWallet } = props;
+	const { values, setFieldValue, factoidAddresses } = props;
 
-	const addressList = factoidAddresses
-		.filter((address_o) => address_o.address !== activeFctWallet.address)
-		.map((address_o, index) => (
-			<MenuItem
-				key={index}
-				onClick={() => {
-					setFieldValue(myFctWalletAnchorElPath, null);
-					setFieldValue(recipientAddressPath, address_o.address);
-				}}
-			>
-				{address_o.nickname}
-			</MenuItem>
-		));
+	const addressList = factoidAddresses.map((address_o, index) => (
+		<MenuItem
+			key={index}
+			onClick={() => {
+				setFieldValue(myFctWalletAnchorElPath, null);
+				setFieldValue(recipientAddressPath, address_o.address);
+			}}
+		>
+			{address_o.nickname}
+		</MenuItem>
+	));
 	return (
 		<Menu
 			id="simple-menu"

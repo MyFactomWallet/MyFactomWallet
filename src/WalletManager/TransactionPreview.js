@@ -3,12 +3,10 @@ import _flowRight from 'lodash/flowRight';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { withWalletContext } from '../Context/WalletContext';
 
 const TransactionPreview = (props) => {
 	const { factoidAmount, classes } = props;
-	const { getFactoidFee } = props.walletController;
-	const sendFactoidFee = getFactoidFee();
+	const sendFactoidFee = props.sendFactoidFee;
 
 	// total send amount
 	const totalFactoidAmount = factoidAmount + sendFactoidFee;
@@ -92,6 +90,6 @@ const styles = {
 	},
 };
 
-const enhancer = _flowRight(withWalletContext, withStyles(styles));
+const enhancer = _flowRight(withStyles(styles));
 
 export default enhancer(TransactionPreview);
