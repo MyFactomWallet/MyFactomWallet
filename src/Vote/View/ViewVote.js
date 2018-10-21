@@ -129,15 +129,14 @@ class ViewVote extends React.Component {
 					<Paper className={classes.pad}>
 						<Grid container>
 							<Grid item xs={12}>
-								<Typography align="center" gutterBottom variant="title">
+								<Typography align="center" gutterBottom variant="h6">
 									Poll: {this.state.poll.pollJSON.proposal.title}
 								</Typography>
 							</Grid>
 							<Grid item xs={12}>
 								<Paper className={classes.pad}>
 									<Typography
-										style={{ display: 'inline' }}
-										variant="body2"
+										style={{ display: 'inline', fontWeight: 500 }}
 										gutterBottom
 									>
 										Status:&nbsp;
@@ -324,7 +323,7 @@ class ViewVote extends React.Component {
 											<Grid item xs={12}>
 												<br />
 												<Button
-													variant="raised"
+													variant="contained"
 													color="primary"
 													onClick={this.handleNext}
 												>

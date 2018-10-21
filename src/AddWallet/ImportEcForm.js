@@ -10,6 +10,7 @@ import { isValidEcPublicAddress } from 'factom/dist/factom';
 import _get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
 import { withWalletContext } from '../Context/WalletContext';
+import { withNetwork } from '../Context/NetworkContext';
 
 /**
  * Constants
@@ -25,13 +26,15 @@ class ImportEcForm extends React.Component {
 		}
 	}
 	render() {
-		const { classes } = this.props;
-
 		const {
-			getEntryCreditAddresses,
-			newStandardAddress,
-			addAddress,
-		} = this.props.walletController;
+			classes,
+			walletController: {
+				getEntryCreditAddresses,
+				newStandardAddress,
+				addAddress,
+			},
+			networkController: { networkProps },
+		} = this.props;
 
 		const ecAddresses = getEntryCreditAddresses();
 
@@ -75,7 +78,7 @@ class ImportEcForm extends React.Component {
 									: false
 							}
 							name={ecAddrNamePath}
-							label="Public Entry Credit Address"
+							label={'Public ' + networkProps.ecAbbreviationFull + ' Address'}
 							helperText="test"
 							maxLength={EC_ADDRESS_LENGTH}
 						/>
@@ -102,7 +105,7 @@ class ImportEcForm extends React.Component {
 							<Button
 								type="submit"
 								disabled={isSubmitting}
-								variant="raised"
+								variant="contained"
 								color="primary"
 							>
 								Submit
@@ -144,6 +147,6 @@ const styles = (theme) => ({
 	errorText: { color: 'red', fontSize: '12px' },
 });
 
-const enhancer = _flowRight(withWalletContext, withStyles(styles));
+const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
 
 export default enhancer(ImportEcForm);

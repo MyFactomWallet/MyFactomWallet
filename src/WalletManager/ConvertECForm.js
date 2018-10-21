@@ -18,6 +18,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import AddressInfoHeader from './Shared/AddressInfoHeader';
 import { withLedger } from '../Context/LedgerContext';
 import { withWalletContext } from '../Context/WalletContext';
+import { withNetwork } from '../Context/NetworkContext';
 import factombip44 from 'factombip44/dist/factombip44';
 import {
 	isValidFctPrivateAddress,
@@ -53,6 +54,7 @@ class ConvertECForm extends Component {
 			},
 			ledgerController: { signWithLedger },
 			factomCliController: { factomCli },
+			networkController: { networkProps },
 		} = this.props;
 
 		const activeAddress_o = getActiveAddress();
@@ -204,10 +206,14 @@ class ConvertECForm extends Component {
 										handleChange(e);
 										setFieldValue('transactionError', null);
 									}}
-									label="Recipient EC address"
+									label={
+										'Recipient ' + networkProps.ecAbbreviation + ' address'
+									}
 									fullWidth={true}
 									type="text"
-									placeholder="Enter Entry Credit address"
+									placeholder={
+										'Enter ' + networkProps.ecAbbreviationFull + ' address'
+									}
 									disabled={isSubmitting}
 								/>
 							)}
@@ -260,7 +266,9 @@ class ConvertECForm extends Component {
 											: false
 									}
 									{...field}
-									placeholder="Enter Amount (EC)"
+									placeholder={
+										'Enter Amount (' + networkProps.ecAbbreviation + ')'
+									}
 									label="Amount"
 									fullWidth={true}
 									disabled={isSubmitting}
@@ -358,7 +366,7 @@ class ConvertECForm extends Component {
 											type="button"
 											className="outline"
 											color="primary"
-											variant="raised"
+											variant="contained"
 											onClick={handleReset}
 											//disabled={!dirty || isSubmitting}
 										>
@@ -375,12 +383,15 @@ class ConvertECForm extends Component {
 						) : (
 							<Button
 								className={classes.sendButton}
-								variant="raised"
+								variant="contained"
 								color="primary"
 								type="submit"
 								disabled={isSubmitting}
 							>
-								Convert FCT to EC
+								{'Convert ' +
+									networkProps.factoidAbbreviation +
+									' to ' +
+									networkProps.ecAbbreviation}
 							</Button>
 						)}
 
@@ -443,6 +454,7 @@ const styles = {
 };
 
 const enhancer = _flowRight(
+	withNetwork,
 	withLedger,
 	withWalletContext,
 	withFactomCli,

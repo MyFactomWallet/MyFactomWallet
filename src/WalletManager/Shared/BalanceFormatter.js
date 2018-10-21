@@ -1,15 +1,22 @@
 import React from 'react';
-
+import { withNetwork } from '../../Context/NetworkContext';
+import _flowRight from 'lodash/flowRight';
 /**
  * Constants
  */
 const FACTOSHI_MULTIPLIER = 0.00000001;
 
-const FormatBalance = ({ balance, type }) => {
+const FormatBalance = (props) => {
+	const {
+		balance,
+		type,
+		networkController: { networkProps },
+	} = props;
+
 	if (type === 'fct') {
-		return <FormatFCTBalance balance={balance} />;
+		return <FormatFCTBalance balance={balance} networkProps={networkProps} />;
 	} else if (type === 'ec') {
-		return <FormatECBalance balance={balance} />;
+		return <FormatECBalance balance={balance} networkProps={networkProps} />;
 	}
 };
 
@@ -22,7 +29,9 @@ const FormatFCTBalance = (props) => {
 	result =
 		factoidBalance.toLocaleString(undefined, {
 			maximumFractionDigits: 8,
-		}) + ' FCT';
+		}) +
+		' ' +
+		props.networkProps.factoidAbbreviation;
 
 	return result;
 };
@@ -31,9 +40,11 @@ const FormatECBalance = (props) => {
 	let result = '';
 	const entryCreditBalance = props.balance;
 
-	result = parseInt(entryCreditBalance, 10) + ' EC';
+	result =
+		parseInt(entryCreditBalance, 10) + ' ' + props.networkProps.ecAbbreviation;
 
 	return result;
 };
 
-export { FormatBalance };
+const enhancer = _flowRight(withNetwork);
+export default enhancer(FormatBalance);

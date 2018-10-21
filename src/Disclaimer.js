@@ -51,7 +51,7 @@ class ConfirmationDialogRaw extends React.Component {
 				</DialogTitle>
 				<DialogContent>
 					<br />
-					<Typography variant="headline" align="center">
+					<Typography variant="h5" align="center">
 						Important
 					</Typography>
 					<br />
@@ -70,7 +70,7 @@ class ConfirmationDialogRaw extends React.Component {
 						wallet though MyFactomWallet.com or by clicking 'accept' at the
 						bottom, you agree to the following notices.
 					</Typography>
-					<Typography variant="headline" align="center">
+					<Typography variant="h5" align="center">
 						Notices
 					</Typography>
 

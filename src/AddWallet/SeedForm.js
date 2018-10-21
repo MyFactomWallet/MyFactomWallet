@@ -3,21 +3,24 @@ import { Formik, Form } from 'formik';
 import _isNil from 'lodash/isNil';
 import _flowRight from 'lodash/flowRight';
 import _get from 'lodash/get';
-import _isEmpty from 'lodash/isEmpty';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
 import { withWalletContext } from '../Context/WalletContext';
+import { withNetwork } from '../Context/NetworkContext';
 import GenerateAddressTable from './GenerateAddressTable';
 
 /**
  * Constants
  */
 const addressesPath = 'addresses';
-const TITLE_CONSTANTS = {
-	fct: 'Factoid Addresses',
-	ec: 'Entry Credit Addresses',
+
+const getTitle = (networkProps) => {
+	return {
+		fct: networkProps.factoidAbbreviationFull + ' Addresses',
+		ec: networkProps.ecAbbreviationFull + ' Addresses',
+	};
 };
 
 class SeedForm extends React.Component {
@@ -64,6 +67,7 @@ class SeedForm extends React.Component {
 		const {
 			type,
 			walletController: { getAddresses, addAddresses, newSeedAddress },
+			networkController: { networkProps },
 		} = this.props;
 
 		let userAddressList = getAddresses(type);
@@ -99,7 +103,7 @@ class SeedForm extends React.Component {
 				}) => (
 					<Form onKeyPress={this.handleKeyPress}>
 						<GenerateAddressTable
-							title={TITLE_CONSTANTS[type]}
+							title={getTitle(networkProps)[type]}
 							type={type}
 							generatedAddressList={this.state.generatedAddressList}
 							userAddressList={userAddressList}
@@ -121,7 +125,7 @@ class SeedForm extends React.Component {
 							<Button
 								type="submit"
 								disabled={isSubmitting}
-								variant="raised"
+								variant="contained"
 								color="primary"
 							>
 								{this.hasAddressSelected(values) ? 'Add and Continue' : 'Skip'}
@@ -142,6 +146,6 @@ const styles = (theme) => ({
 	errorText: { color: 'red', fontSize: '12px' },
 });
 
-const enhancer = _flowRight(withWalletContext, withStyles(styles));
+const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
 
 export default enhancer(SeedForm);

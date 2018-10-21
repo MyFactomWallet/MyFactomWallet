@@ -20,7 +20,7 @@ class LandingPage extends Component {
 
 		return (
 			<div className={classes.body}>
-				<Typography variant="headline">
+				<Typography variant="h5">
 					Choose from the options below to get started
 				</Typography>
 				<br />

@@ -15,7 +15,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
-import { FormatBalance } from '../WalletManager/Shared/BalanceFormatter.js';
+import FormatBalance from '../WalletManager/Shared/BalanceFormatter.js';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
@@ -63,7 +63,7 @@ class GenerateAddressTable extends React.Component {
 
 		return (
 			<React.Fragment>
-				<Typography variant="title">{this.props.title}</Typography>
+				<Typography variant="h6">{this.props.title}</Typography>
 				<ErrorMessage
 					name={addressesPath}
 					render={(msg) => (
@@ -237,7 +237,7 @@ const CustomCell = withStyles((theme) => ({
 const styles = (theme) => ({
 	root: {
 		width: '800px',
-		marginTop: theme.spacing.unit * 3,
+		marginTop: 12,
 		overflowX: 'auto',
 		maxHeight: 405,
 	},

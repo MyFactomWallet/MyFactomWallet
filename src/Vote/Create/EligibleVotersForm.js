@@ -105,7 +105,10 @@ class SelectParticipants extends React.Component {
 												</Grid>
 												{get(values, selectedListPath) === 'custom' ? (
 													<Grid item xs={4} className={classes.borders}>
-														<Typography variant="body2" gutterBottom>
+														<Typography
+															style={{ fontWeight: 500 }}
+															gutterBottom
+														>
 															Add Voter
 														</Typography>
 														<Typography gutterBottom>
@@ -139,7 +142,10 @@ class SelectParticipants extends React.Component {
 												{get(values, selectedListPath) === 'custom' ? (
 													<Grid item xs={4} className={classes.padLoadVoters}>
 														<div>
-															<Typography variant="body2" gutterBottom>
+															<Typography
+																style={{ fontWeight: 500 }}
+																gutterBottom
+															>
 																Load Voters
 															</Typography>
 															<Typography gutterBottom>
@@ -168,7 +174,7 @@ class SelectParticipants extends React.Component {
 														elevation={10}
 														className={classes.listContainer}
 													>
-														<Typography variant="subheading">
+														<Typography variant="subtitle1">
 															Eligible Voter List
 														</Typography>
 														<List className={classes.list} dense>
@@ -210,7 +216,7 @@ class SelectParticipants extends React.Component {
 											{get(values, selectedListPath) === 'standing' && (
 												<Grid item xs={12}>
 													{/* 	<Paper elevation={10} className={classes.listContainer}>
-									<Typography variant="subheading">
+									<Typography variant="subtitle1">
 										Standing Party List
 									</Typography>
 	
@@ -226,7 +232,7 @@ class SelectParticipants extends React.Component {
 													Back
 												</Button>
 												<Button
-													variant="raised"
+													variant="contained"
 													color="primary"
 													type="submit"
 													disabled={isSubmitting}

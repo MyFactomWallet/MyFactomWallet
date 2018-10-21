@@ -26,6 +26,7 @@ function FinalStep(props) {
 					You're poll is pending confirmation on the Factom blockchain.&nbsp;
 					<Link
 						target="_blank"
+						rel="noopener noreferrer"
 						to={
 							'/viewVote?id=e62aeaad853809e0a6901faa7698d305b5927fe9aeffff9fa233f3367629f098'
 						}
@@ -38,12 +39,13 @@ function FinalStep(props) {
 				</Typography>
 			</Grid>
 			<Grid item xs={12}>
-				<Typography style={{ display: 'inline' }} variant="body2" gutterBottom>
+				<Typography style={{ display: 'inline', fontWeight: 500 }} gutterBottom>
 					Voter Chain ID:&nbsp;
-					<Typography style={{ display: 'inline' }} variant="body1">
+					<Typography style={{ display: 'inline' }}>
 						df3ade9eec4b08d5379cc64270c30ea7315d8a8a1a69efe2b98a60ecdd69e604&nbsp;
 						<a
 							target="_blank"
+							rel="noopener noreferrer"
 							href={
 								'https://explorer.factom.com/eblocks/0e5570917c25c6b35dbf67c802958d802e43fd9f48dd0c35a01feec1235de267'
 							}
@@ -54,13 +56,14 @@ function FinalStep(props) {
 				</Typography>
 
 				<br />
-				<Typography style={{ display: 'inline' }} variant="body2" gutterBottom>
+				<Typography style={{ display: 'inline', fontWeight: 500 }} gutterBottom>
 					Poll Chain ID:&nbsp;
 				</Typography>
-				<Typography style={{ display: 'inline' }} variant="body1">
+				<Typography style={{ display: 'inline' }}>
 					e5783ef44313a678d489b6917ef96d971156615ae71a671fdf638af403146ab7&nbsp;
 					<a
 						target="_blank"
+						rel="noopener noreferrer"
 						href={
 							'https://explorer.factom.com/eblocks/0e5570917c25c6b35dbf67c802958d802e43fd9f48dd0c35a01feec1235de267'
 						}

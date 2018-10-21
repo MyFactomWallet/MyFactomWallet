@@ -55,13 +55,18 @@ class NewSeedForm extends React.Component {
 					<Form onKeyPress={this.handleKeyPress} style={{ width: '500px' }}>
 						{this.state.step === 1 && (
 							<React.Fragment>
-								<Typography variant="body2" className={classes.warningText}>
+								<Typography
+									style={{ fontWeight: 500 }}
+									className={classes.warningText}
+								>
 									Write down your seed carefully on a piece of paper. If you
 									lose this seed, you will lose access to your addresses
 									forever!
 								</Typography>
 								<br />
-								<Typography variant="body2">Seed Phrase:</Typography>
+								<Typography style={{ fontWeight: 500 }}>
+									Seed Phrase:
+								</Typography>
 								<Typography>{this.props.mnemonic}</Typography>
 							</React.Fragment>
 						)}
@@ -99,7 +104,7 @@ class NewSeedForm extends React.Component {
 							{this.state.step === 1 && (
 								<Button
 									onClick={this.nextStep}
-									variant="raised"
+									variant="contained"
 									color="primary"
 								>
 									Verify Seed
@@ -109,7 +114,7 @@ class NewSeedForm extends React.Component {
 								<Button
 									type="submit"
 									disabled={isSubmitting}
-									variant="raised"
+									variant="contained"
 									color="primary"
 								>
 									Next

@@ -41,7 +41,7 @@ class VoteListing extends Component {
 							</Typography>
 						</Grid>
 						<Grid item xs={6}>
-							<Typography variant="headline" gutterBottom>
+							<Typography variant="h5" gutterBottom>
 								Welcome to Factom's On-Chain Voting
 							</Typography>
 						</Grid>

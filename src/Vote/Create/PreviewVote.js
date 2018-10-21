@@ -42,7 +42,7 @@ function PreviewVote(props) {
 			<Grid item xs={12} className={classes.stepperButtons}>
 				<br />
 				<Button onClick={props.handleBack}>Back</Button>
-				<Button variant="raised" color="primary" onClick={props.handleNext}>
+				<Button variant="contained" color="primary" onClick={props.handleNext}>
 					Submit Poll
 				</Button>
 			</Grid>

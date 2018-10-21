@@ -16,7 +16,7 @@ const getStandardSteps = () => {
 	return ['Import Method', 'Address details'];
 };
 
-const getLedgerAddressSteps = ({ networkProps }) => {
+const getLedgerAddressSteps = (networkProps) => {
 	return [
 		'Import Method',
 		networkProps.factoidAbbreviation,
@@ -24,7 +24,7 @@ const getLedgerAddressSteps = ({ networkProps }) => {
 	];
 };
 //this.props.networkController.networkProps.factoidAbbreviation
-const getSeedAddressSteps = ({ networkProps }) => {
+const getSeedAddressSteps = (networkProps) => {
 	return [
 		'Import Method',
 		'Seed Value',
@@ -74,11 +74,15 @@ class AddWalletStepper extends React.Component {
 	};
 
 	render() {
-		const { classes, handleCloseText } = this.props;
+		const {
+			classes,
+			handleCloseText,
+			networkController: { networkProps },
+		} = this.props;
 
 		const { activeStep } = this.state;
 
-		const steps = this.state.getSteps(this.props.networkController);
+		const steps = this.state.getSteps(networkProps);
 
 		return (
 			<Paper className={classes.paper}>
@@ -99,7 +103,7 @@ class AddWalletStepper extends React.Component {
 					{activeStep === steps.length ? (
 						<React.Fragment>
 							<br />
-							<Typography variant="subheading" gutterBottom>
+							<Typography variant="subtitle1" gutterBottom>
 								Address(es) have successfully been added.
 							</Typography>
 							<br />
@@ -109,7 +113,7 @@ class AddWalletStepper extends React.Component {
 								<Button onClick={this.handleReset}>Add Another</Button>
 								<Button
 									onClick={this.props.handleClose}
-									variant="raised"
+									variant="contained"
 									color="primary"
 								>
 									{handleCloseText}
@@ -126,20 +130,6 @@ class AddWalletStepper extends React.Component {
 								handleBack={this.handleBack}
 								importType={this.state.importType}
 							/>
-
-							{/*
-							<div>
-								<Button disabled={activeStep === 0} onClick={this.handleBack}>
-									Back
-								</Button>
-								<Button
-									onClick={this.handleNext}
-									variant="raised"
-									color="primary"
-								>
-									{activeStep === steps.length - 1 ? 'Add Wallet' : 'Next'}
-								</Button>
-							</div>*/}
 						</React.Fragment>
 					)}
 				</React.Fragment>
@@ -147,6 +137,9 @@ class AddWalletStepper extends React.Component {
 		);
 	}
 }
+AddWalletStepper.propTypes = {
+	classes: PropTypes.object.isRequired,
+};
 
 const styles = (theme) => ({
 	stepper: {

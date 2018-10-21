@@ -88,14 +88,14 @@ class ManageVoterList extends React.Component {
 					<Paper elevation={3} className={classes.paper}>
 						<Grid container>
 							<Grid item xs={12}>
-								<Typography align="center" gutterBottom variant="title">
+								<Typography align="center" gutterBottom variant="h6">
 									Manage Eligible Voters
 								</Typography>
 								<br />
 							</Grid>
 							<Grid item xs={4}>
 								<div className={classes.paper}>
-									<Typography variant="body2" gutterBottom>
+									<Typography style={{ fontWeight: 500 }} gutterBottom>
 										Voter Chain ID:&nbsp;
 										<input
 											type="text"
@@ -127,7 +127,7 @@ class ManageVoterList extends React.Component {
 											<br />
 											<Divider />
 											<br />
-											<Typography variant="body2" gutterBottom>
+											<Typography style={{ fontWeight: 500 }} gutterBottom>
 												Add Voter
 											</Typography>
 											<Typography gutterBottom>
@@ -146,7 +146,7 @@ class ManageVoterList extends React.Component {
 												Signature:&nbsp;
 												<input type="password" />
 											</Typography>
-											<Button variant="raised" color="primary">
+											<Button variant="contained" color="primary">
 												Submit Changes
 											</Button>
 											<br />
@@ -159,15 +159,11 @@ class ManageVoterList extends React.Component {
 									<Paper elevation={1} className={classes.paper}>
 										<Typography
 											style={{ display: 'inline' }}
-											variant="body2"
+											style={{ fontWeight: 500 }}
 											gutterBottom
 										>
 											Voter Chain ID:&nbsp;
-											<Typography
-												style={{ display: 'inline' }}
-												variant="body1"
-												gutterBottom
-											>
+											<Typography style={{ display: 'inline' }} gutterBottom>
 												{this.state.voterChainID}
 											</Typography>
 											&nbsp;

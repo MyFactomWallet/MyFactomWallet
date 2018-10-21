@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
-import _isEmpty from 'lodash/isEmpty';
 import _isNil from 'lodash/isNil';
 import Sidebar from './Sidebar.js';
 import WalletTabContent from './WalletTabContent.js';

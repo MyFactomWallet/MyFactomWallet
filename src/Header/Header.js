@@ -1,5 +1,6 @@
 import React from 'react';
 import _isNil from 'lodash/isNil';
+import _flowRight from 'lodash/flowRight';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -16,6 +17,8 @@ import CloudDone from '@material-ui/icons/CloudDoneOutlined';
 import CustomNodeForm from './CustomNodeForm';
 import Modal from '@material-ui/core/Modal';
 import { withWalletContext } from '../Context/WalletContext';
+import { withNetwork } from '../Context/NetworkContext';
+
 //import CloudOff from '@material-ui/icons/CloudOff';
 
 class ButtonAppBar extends React.Component {
@@ -74,9 +77,14 @@ class ButtonAppBar extends React.Component {
 	};
 
 	render() {
-		const { classes } = this.props;
+		const {
+			classes,
+			walletController: { getActiveAddress },
+			networkController: { networkProps },
+		} = this.props;
 		const { voteAnchorEl, networkAnchorEl } = this.state;
-		const { getActiveAddress } = this.props.walletController;
+
+		const testnetActive = networkProps.network === 'testnet';
 
 		const walletPath = _isNil(getActiveAddress())
 			? '#/wallet/add'
@@ -95,9 +103,14 @@ class ButtonAppBar extends React.Component {
 						</Link>
 					</IconButton>
 
-					<Typography variant="title" className={classes.flex}>
+					<Typography variant="h6" className={classes.flex}>
 						<Link className={classes.menuText} to="/">
 							MyFactomWallet
+							{testnetActive && (
+								<span className={classes.testnetHeader}>
+									&nbsp;&nbsp;TESTNET
+								</span>
+							)}
 						</Link>
 					</Typography>
 					<div>
@@ -234,6 +247,8 @@ const styles = (theme) => ({
 		left: `50%`,
 		transform: `translate(-50%, -50%)`,
 	},
+	testnetHeader: { color: '#f50057' },
 });
 
-export default withWalletContext(withStyles(styles)(ButtonAppBar));
+const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
+export default enhancer(ButtonAppBar);

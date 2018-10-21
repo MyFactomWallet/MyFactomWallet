@@ -11,20 +11,23 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import { FormatBalance } from './Shared/BalanceFormatter.js';
+import FormatBalance from './Shared/BalanceFormatter.js';
 import { withWalletContext } from '../Context/WalletContext';
+import { withNetwork } from '../Context/NetworkContext';
 import _isEmpty from 'lodash/isEmpty';
 
 class Sidebar extends Component {
 	render() {
-		const { classes } = this.props;
-
 		const {
-			getEntryCreditAddresses,
-			getFactoidAddresses,
-			activeAddressIndex_o,
-			selectAddress,
-		} = this.props.walletController;
+			classes,
+			walletController: {
+				getEntryCreditAddresses,
+				getFactoidAddresses,
+				activeAddressIndex_o,
+				selectAddress,
+			},
+			networkController: { networkProps },
+		} = this.props;
 
 		const ecAddresses = getEntryCreditAddresses();
 		const factoidAddresses = getFactoidAddresses();
@@ -104,9 +107,9 @@ class Sidebar extends Component {
 							<ListItem className={classes.walletListHeader}>
 								<Typography
 									className={classes.addressHeading}
-									variant="subheading"
+									variant="subtitle1"
 								>
-									Factoid Addresses
+									{networkProps.factoidAbbreviationFull + ' Addresses'}
 								</Typography>
 							</ListItem>
 
@@ -126,9 +129,9 @@ class Sidebar extends Component {
 								<ListItem className={classes.walletListHeader}>
 									<Typography
 										className={classes.addressHeading}
-										variant="subheading"
+										variant="subtitle1"
 									>
-										Entry Credit Addresses
+										{networkProps.ecAbbreviationFull + ' Addresses'}
 									</Typography>
 								</ListItem>
 								<ListItem disableGutters className={classes.walletList}>
@@ -189,6 +192,6 @@ const styles = (theme) => ({
 	},
 });
 
-const enhancer = _flowRight(withWalletContext, withStyles(styles));
+const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
 
 export default enhancer(Sidebar);

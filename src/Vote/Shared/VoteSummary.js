@@ -118,6 +118,7 @@ class VoteSummary extends React.Component {
 								&nbsp;
 								<a
 									target="_blank"
+									rel="noopener noreferrer"
 									href={
 										'https://explorer.factom.com/eblocks/0e5570917c25c6b35dbf67c802958d802e43fd9f48dd0c35a01feec1235de267'
 									}
@@ -139,6 +140,7 @@ class VoteSummary extends React.Component {
 								&nbsp;
 								<a
 									target="_blank"
+									rel="noopener noreferrer"
 									href={
 										'https://explorer.factom.com/eblocks/0e5570917c25c6b35dbf67c802958d802e43fd9f48dd0c35a01feec1235de267'
 									}
@@ -235,7 +237,7 @@ class VoteSummary extends React.Component {
 				{get(poll, voteTypePath) && (
 					<Grid item xs={12}>
 						<Paper elevation={1} className={classes.pad}>
-							<Typography variant="subheading">Options</Typography>
+							<Typography variant="subtitle1">Options</Typography>
 							<List dense>
 								{get(poll, optionsPath) &&
 									get(poll, optionsPath).map((option, index) => (

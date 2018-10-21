@@ -575,7 +575,7 @@ class ConfigureVoteForm extends React.Component {
 															name={optionsPath}
 															render={(arrayHelpers) => (
 																<div>
-																	<Typography variant="subheading">
+																	<Typography variant="subtitle1">
 																		Options&nbsp;&nbsp;
 																		<Field
 																			name={workingOptionPath}
@@ -908,7 +908,7 @@ class ConfigureVoteForm extends React.Component {
 									<br />
 									<Button onClick={this.props.handleBack}>Back</Button>
 									<Button
-										variant="raised"
+										variant="contained"
 										color="primary"
 										type="submit"
 										disabled={isSubmitting}

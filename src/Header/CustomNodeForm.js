@@ -55,7 +55,7 @@ class CustomNodeForm extends React.Component {
 						<Button
 							type="submit"
 							disabled={isSubmitting}
-							variant="raised"
+							variant="contained"
 							color="primary"
 						>
 							Submit

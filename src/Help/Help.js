@@ -8,7 +8,7 @@ class Help extends Component {
 				<br />
 				<br />
 				<br />
-				<Typography variant="headline">
+				<Typography variant="h5">
 					<a href="https://support.mycrypto.com/getting-started/getting-started-new.html">
 						MyCrypto's Getting Started
 					</a>

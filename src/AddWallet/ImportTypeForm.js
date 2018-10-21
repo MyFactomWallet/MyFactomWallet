@@ -2,6 +2,8 @@ import React from 'react';
 import _get from 'lodash/get';
 import { Formik, Form, ErrorMessage } from 'formik';
 import { withStyles } from '@material-ui/core/styles';
+import { withNetwork } from '../Context/NetworkContext';
+import _flowRight from 'lodash/flowRight';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Radio from '@material-ui/core/Radio';
@@ -10,33 +12,37 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
-const importTypes = [
-	{
-		value: 'fct',
-		label: 'Import FCT Address',
-	},
-	{
-		value: 'ec',
-		label: 'Import EC Address',
-	},
-	{
-		value: 'new',
-		label: 'Generate new 12-word seed',
-	},
-	{
-		value: 'importSeed',
-		label: 'Import addresses from 12-word seed',
-	},
 
-	{
-		value: 'ledger',
-		label: 'Import addresses from Ledger Nano S',
-	},
-];
+const getImportTypes = (networkProps) => {
+	return [
+		{
+			value: 'fct',
+			label: 'Import ' + networkProps.factoidAbbreviationFull + ' Address',
+		},
+		{
+			value: 'ec',
+			label: 'Import ' + networkProps.ecAbbreviationFull + ' Address',
+		},
+		{
+			value: 'new',
+			label: 'Generate new 12-word seed',
+		},
+		{
+			value: 'importSeed',
+			label: 'Import addresses from 12-word seed',
+		},
+		{
+			value: 'ledger',
+			label: 'Import addresses from Ledger Nano S',
+		},
+	];
+};
+
 /**
  * Constants
  */
 const importTypePath = 'importType';
+
 class ImportTypeForm extends React.Component {
 	handleKeyPress(event) {
 		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
@@ -44,7 +50,12 @@ class ImportTypeForm extends React.Component {
 		}
 	}
 	render() {
-		const { classes, importType } = this.props;
+		const {
+			classes,
+			importType,
+			networkController: { networkProps },
+		} = this.props;
+
 		return (
 			<Formik
 				initialValues={{ [importTypePath]: importType }}
@@ -84,7 +95,7 @@ class ImportTypeForm extends React.Component {
 									this.props.updateImportType(e.target.value);
 								}}
 							>
-								{importTypes.map((option, index) => (
+								{getImportTypes(networkProps).map((option, index) => (
 									<FormControlLabel
 										key={index}
 										value={option.value}
@@ -102,7 +113,7 @@ class ImportTypeForm extends React.Component {
 							<Button
 								type="submit"
 								disabled={isSubmitting}
-								variant="raised"
+								variant="contained"
 								color="primary"
 							>
 								Next
@@ -122,4 +133,6 @@ ImportTypeForm.propTypes = {
 const styles = (theme) => ({
 	errorText: { color: 'red' },
 });
-export default withStyles(styles)(ImportTypeForm);
+
+const enhancer = _flowRight(withNetwork, withStyles(styles));
+export default enhancer(ImportTypeForm);

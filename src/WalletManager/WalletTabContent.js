@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import _flowRight from 'lodash/flowRight';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import SendFactoidForm from './SendFactoidForm.js';
 import ConvertECForm from './ConvertECForm.js';
 import AddressInfo from './AddressInfo';
+import { withNetwork } from '../Context/NetworkContext';
 
 class WalletTabContent extends React.Component {
 	state = {
@@ -18,7 +20,11 @@ class WalletTabContent extends React.Component {
 	};
 
 	render() {
-		const { classes, type } = this.props;
+		const {
+			classes,
+			type,
+			networkController: { networkProps },
+		} = this.props;
 
 		const { tabValue } = this.state;
 		return (
@@ -32,9 +38,16 @@ class WalletTabContent extends React.Component {
 							textColor="primary"
 							centered
 						>
-							<Tab label="Send Factoids" />
+							<Tab label={'Send ' + networkProps.factoidAbbreviationFull} />
 							<Tab label="Address Info" />
-							<Tab label="Convert FCT to EC" />
+							<Tab
+								label={
+									'Convert ' +
+									networkProps.factoidAbbreviation +
+									' to ' +
+									networkProps.ecAbbreviation
+								}
+							/>
 						</Tabs>
 						{tabValue === 0 && (
 							<TabContainer classes={classes}>
@@ -101,4 +114,5 @@ const styles = {
 	},
 };
 
-export default withStyles(styles)(WalletTabContent);
+const enhancer = _flowRight(withNetwork, withStyles(styles));
+export default enhancer(WalletTabContent);

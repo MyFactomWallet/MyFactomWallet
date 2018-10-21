@@ -3,7 +3,6 @@ import { Formik, Form } from 'formik';
 import _isNil from 'lodash/isNil';
 import _flowRight from 'lodash/flowRight';
 import _get from 'lodash/get';
-import _isEmpty from 'lodash/isEmpty';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
@@ -11,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import { withWalletContext } from '../Context/WalletContext';
 import Typography from '@material-ui/core/Typography';
 import { withLedger } from '../Context/LedgerContext';
+import { withNetwork } from '../Context/NetworkContext';
 import GenerateAddressTable from './GenerateAddressTable';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -18,9 +18,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
  * Constants
  */
 const addressesPath = 'addresses';
-const TITLE_CONSTANTS = {
-	fct: 'Ledger Nano S Factoid Addresses',
-	ec: 'Ledger Nano S Entry Credit Addresses',
+
+const getTitle = (networkProps) => {
+	return {
+		fct: 'Ledger Nano S ' + networkProps.factoidAbbreviationFull + ' Addresses',
+		ec: 'Ledger Nano S ' + networkProps.ecAbbreviationFull + ' Addresses',
+	};
 };
 
 class LedgerForm extends React.Component {
@@ -77,6 +80,7 @@ class LedgerForm extends React.Component {
 		const {
 			type,
 			walletController: { getAddresses, addAddresses, newLedgerAddress },
+			networkController: { networkProps },
 		} = this.props;
 
 		let userAddressList = getAddresses(type);
@@ -120,7 +124,7 @@ class LedgerForm extends React.Component {
 						{values.ledgerConnected ? (
 							<React.Fragment>
 								<GenerateAddressTable
-									title={TITLE_CONSTANTS[type]}
+									title={getTitle(networkProps)[type]}
 									type={type}
 									generatedAddressList={this.state.generatedAddressList}
 									userAddressList={userAddressList}
@@ -156,7 +160,7 @@ class LedgerForm extends React.Component {
 							<Button
 								type="submit"
 								disabled={isSubmitting}
-								variant="raised"
+								variant="contained"
 								color="primary"
 							>
 								{this.hasAddressSelected(values) ? 'Add and Continue' : 'Skip'}
@@ -177,6 +181,11 @@ const styles = (theme) => ({
 	errorText: { color: 'red', fontSize: '12px' },
 });
 
-const enhancer = _flowRight(withLedger, withWalletContext, withStyles(styles));
+const enhancer = _flowRight(
+	withNetwork,
+	withLedger,
+	withWalletContext,
+	withStyles(styles)
+);
 
 export default enhancer(LedgerForm);

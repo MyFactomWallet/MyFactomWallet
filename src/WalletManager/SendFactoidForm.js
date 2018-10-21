@@ -67,6 +67,7 @@ class SendFactoidForm extends Component {
 				signWithSeed,
 			},
 			ledgerController: { signWithLedger },
+			networkController: { networkProps },
 		} = this.props;
 
 		const factoidAddresses = getFactoidAddresses();
@@ -218,10 +219,14 @@ class SendFactoidForm extends Component {
 										handleChange(e);
 										setFieldValue('transactionError', null);
 									}}
-									label="Recipient FCT address"
+									label={
+										'Recipient ' + networkProps.factoidAbbreviation + ' address'
+									}
 									fullWidth={true}
 									type="text"
-									placeholder="Enter Factoid Address"
+									placeholder={
+										'Enter ' + networkProps.factoidAbbreviationFull + ' Address'
+									}
 									disabled={isSubmitting}
 								/>
 							)}
@@ -269,7 +274,9 @@ class SendFactoidForm extends Component {
 											: false
 									}
 									{...field}
-									placeholder="Enter Amount (FCT)"
+									placeholder={
+										'Enter Amount (' + networkProps.factoidAbbreviation + ')'
+									}
 									label="Amount"
 									fullWidth={true}
 									disabled={isSubmitting}
@@ -388,7 +395,7 @@ class SendFactoidForm extends Component {
 											type="button"
 											className="outline"
 											color="primary"
-											variant="raised"
+											variant="contained"
 											onClick={handleReset}
 											//disabled={!dirty || isSubmitting}
 										>
@@ -405,12 +412,12 @@ class SendFactoidForm extends Component {
 						) : (
 							<Button
 								className={classes.sendButton}
-								variant="raised"
+								variant="contained"
 								color="primary"
 								type="submit"
 								disabled={isSubmitting}
 							>
-								Send Factoids
+								{'Send ' + networkProps.factoidAbbreviationFull + 's'}
 							</Button>
 						)}
 
