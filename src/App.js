@@ -38,13 +38,13 @@ class App extends Component {
 											<Route exact path="/" component={LandingPage} />
 											<Route path="/wallet/manage/" component={WalletManager} />
 											<Route path="/wallet/add/" component={AddInitialWallet} />
-											<Route exact path="/vote" component={Vote} />
+											{/* <Route exact path="/vote" component={Vote} />
 											<Route exact path="/viewVote" component={ViewVote} />
 											<Route
 												exact
 												path="/createVote"
 												component={CreateVoteStepper}
-											/>
+											/> */}
 											{/* <Route exact path="/manageVoters" component={ManageVoterList} /> 
 											<Route exact path="/help" component={Help} />*/}
 										</div>

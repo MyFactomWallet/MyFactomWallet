@@ -16,7 +16,6 @@ import factombip44 from 'factombip44/dist/factombip44';
  * Constants
  */
 const FACTOSHI_MULTIPLIER = 0.00000001;
-const BIP_32_COIN_TYPES = { fct: 131, ec: 132 };
 
 class WalletController extends React.Component {
 	constructor(props) {
@@ -120,7 +119,7 @@ class WalletController extends React.Component {
 		for (let index = startIndex; index < startIndex + amount; index++) {
 			let key = null;
 			let address = null;
-			console.log('Index: ' + index);
+
 			if (type === 'fct') {
 				key = wallet.generateFactoidPrivateKey(bip32Account, 0, index);
 				address = this.keyToFctAddress(key);

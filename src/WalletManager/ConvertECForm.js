@@ -191,7 +191,6 @@ class ConvertECForm extends Component {
 				}) => (
 					<Form onKeyPress={this.handleKeyPress}>
 						<AddressInfoHeader />
-
 						<Field name={recipientAddressPath}>
 							{({ field, form }) => (
 								<TextField
