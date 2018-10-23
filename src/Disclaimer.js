@@ -157,6 +157,72 @@ class ConfirmationDialogRaw extends React.Component {
 							</Typography>
 						</li>
 					</ul>
+					<Typography variant="h5" align="center">
+						Important Tips
+					</Typography>
+
+					<ul>
+						<li>
+							<Typography>
+								Never hand-type your public or private address.
+							</Typography>
+						</li>
+						<li>
+							<Typography>
+								Always send a small amount of Factoids first to ensure that the
+								transaction is processed correctly and the Factoids end up in
+								the correct address. After verifying this, you may send the full
+								amount of Factoids.
+							</Typography>
+						</li>
+						<li>
+							<Typography>
+								If you generated a new Factoid or Entry Credit address in
+								MyFactomWallet.com; save and back up the associated SEED BEFORE
+								you send any funds to it.
+							</Typography>
+						</li>
+						<li>
+							<Typography>
+								Do not post your private key or seed on any social media,
+								chat-platforms, email/sms it, or store it in any cloud storage
+								service (Google Drive, Dropbox etc).
+							</Typography>
+						</li>
+						<li>
+							<Typography>
+								Use a Hardware wallet for added protection (Ledger Nano S
+								supported at this time).
+							</Typography>
+						</li>
+						<li>
+							<Typography>
+								Regularly monitor the security of your computer operating system
+								to ensure that it is not compromised by malicious software
+								whereby unauthorized third parties may obtain your private key
+								or seed.
+							</Typography>
+						</li>
+						<li>
+							<Typography>
+								Ensure that you are not on a phishing site, but have landed on
+								the correct page (verify that you are on
+								https://www.myfactomwallet.com in the browser, and also check
+								that the “lock” symbol is displayed in the Chrome address bar).
+							</Typography>
+						</li>
+						<li>
+							<Typography>
+								The user must understand that MyFactomWallet.com/we CANNOT:
+							</Typography>
+							<ul>
+								<li>Access your wallet or send your funds for you</li>
+								<li>Recover or change your private key or seed</li>
+								<li>Reverse, cancel, or refund any transactions</li>
+								<li>Freeze FCT or Entry Credit addresses</li>
+							</ul>
+						</li>
+					</ul>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={this.handleAgree} color="primary">

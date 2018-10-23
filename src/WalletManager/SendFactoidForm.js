@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
 import _isNil from 'lodash/isNil';
 import _get from 'lodash/get';
-import _debounce from 'lodash/debounce';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import TextField from '@material-ui/core/TextField';
@@ -17,7 +16,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import AddressInfoHeader from './Shared/AddressInfoHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withWalletContext } from '../Context/WalletContext';
-import TransactionPreview from './TransactionPreview';
+import SendTransactionPreview from './SendTransactionPreview';
 import { withNetwork } from '../Context/NetworkContext';
 import { withLedger } from '../Context/LedgerContext';
 import { isValidFctPublicAddress } from 'factom/dist/factom';
@@ -79,6 +78,8 @@ class SendFactoidForm extends Component {
 				getActiveAddress,
 				updateBalances,
 				signWithSeed,
+				activeAddressIndex_o,
+				addAddressTransaction,
 			},
 			ledgerController: { signWithLedger },
 			networkController: { networkProps },
@@ -105,6 +106,7 @@ class SendFactoidForm extends Component {
 					transactionID: null,
 					ledgerStatus: null,
 					transactionError: null,
+					addressToReinitialize: activeAddress_o.address,
 				}}
 				onSubmit={async (values, actions) => {
 					const {
@@ -174,6 +176,8 @@ class SendFactoidForm extends Component {
 						}
 
 						const txId = await factomCli.sendTransaction(transaction);
+						await addAddressTransaction(activeAddressIndex_o, txId);
+
 						actions.setFieldValue('transactionID', txId);
 						updateBalances();
 					} catch (err) {
@@ -210,11 +214,7 @@ class SendFactoidForm extends Component {
 						is: 'seed',
 						then: Yup.string()
 							.required('Required')
-							.test(
-								seedPath,
-								'Invalid Seed Phrase',
-								_debounce(this.verifySeed, 50)
-							),
+							.test(seedPath, 'Invalid Seed Phrase', this.verifySeed),
 						otherwise: Yup.string().notRequired(),
 					}),
 				})}
@@ -282,8 +282,13 @@ class SendFactoidForm extends Component {
 									}
 									aria-haspopup="true"
 									onClick={(event) => {
-										setFieldValue('transactionError', null);
-										setFieldValue(myFctWalletAnchorElPath, event.currentTarget);
+										if (!isSubmitting) {
+											setFieldValue('transactionError', null);
+											setFieldValue(
+												myFctWalletAnchorElPath,
+												event.currentTarget
+											);
+										}
 									}}
 									className={classes.pointer}
 								>
@@ -325,7 +330,9 @@ class SendFactoidForm extends Component {
 								<Typography
 									variant="caption"
 									onClick={() => {
-										setFieldValue(sendFactoidAmountPath, maxAmount);
+										if (!isSubmitting) {
+											setFieldValue(sendFactoidAmountPath, maxAmount);
+										}
 									}}
 									className={classes.pointer}
 								>
@@ -395,14 +402,15 @@ class SendFactoidForm extends Component {
 						)}
 
 						{values.sendFactoidAmount ? (
-							<TransactionPreview
+							<SendTransactionPreview
+								networkProps={networkProps}
 								factoidAmount={values.sendFactoidAmount}
 								sendFactoidFee={this.state.sendFactoidFee}
 							/>
 						) : (
 							''
 						)}
-						<br />
+
 						<br />
 						{!_isNil(values.transactionError) && (
 							<Typography className={classes.transactionErrorText}>

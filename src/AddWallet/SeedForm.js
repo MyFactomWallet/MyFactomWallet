@@ -36,10 +36,10 @@ class SeedForm extends React.Component {
 		this.getNextFive(0);
 	}
 
-	getNextFive = async (startIndex) => {
+	getNextFive = async () => {
 		const generatedAddressList = await this.props.walletController.getSeedAddresses(
 			this.props.mnemonic,
-			startIndex,
+			this.state.generatedAddressList.length,
 			5,
 			this.props.type
 		);
@@ -85,7 +85,6 @@ class SeedForm extends React.Component {
 							validAddresses.push(value);
 						}
 					}
-
 					// add addresses
 					addAddresses(validAddresses, this.props.type);
 

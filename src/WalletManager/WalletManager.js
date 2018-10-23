@@ -10,6 +10,10 @@ import { withStyles } from '@material-ui/core/styles';
 import { withWalletContext } from '../Context/WalletContext';
 
 class WalletManager extends Component {
+	componentDidMount() {
+		this.props.walletController.updateBalances();
+	}
+
 	render() {
 		const {
 			walletController: { getActiveAddress, activeAddressIndex_o },
@@ -25,10 +29,7 @@ class WalletManager extends Component {
 
 						<Grid item xs={8}>
 							<Paper>
-								<WalletTabContent
-									key={getActiveAddress().address}
-									type={activeAddressIndex_o.type}
-								/>
+								<WalletTabContent type={activeAddressIndex_o.type} />
 							</Paper>
 						</Grid>
 					</Grid>

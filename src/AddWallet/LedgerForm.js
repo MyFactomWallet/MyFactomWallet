@@ -44,7 +44,7 @@ class LedgerForm extends React.Component {
 	getNextFive = async (startIndex) => {
 		try {
 			const generatedAddressList = await this.props.ledgerController.getLedgerAddresses(
-				startIndex,
+				this.state.generatedAddressList.length,
 				5,
 				this.props.type
 			);
@@ -159,7 +159,7 @@ class LedgerForm extends React.Component {
 							<Button onClick={this.props.handleBack}>Back</Button>
 							<Button
 								type="submit"
-								disabled={isSubmitting}
+								disabled={isSubmitting || !this.state.ledgerConnected}
 								variant="contained"
 								color="primary"
 							>

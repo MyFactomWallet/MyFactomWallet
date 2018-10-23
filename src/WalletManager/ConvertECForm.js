@@ -20,7 +20,7 @@ import { withLedger } from '../Context/LedgerContext';
 import { withWalletContext } from '../Context/WalletContext';
 import { withNetwork } from '../Context/NetworkContext';
 import { isValidEcPublicAddress } from 'factom/dist/factom';
-import _debounce from 'lodash/debounce';
+import ConvertTransactionPreview from './ConvertTransactionPreview';
 
 /**
  * Constants
@@ -32,6 +32,7 @@ const privateKeyPath = 'privateKey';
 const walletImportTypePath = 'walletImportType';
 const seedPath = 'seed';
 
+const FACTOSHI_MULTIPLIER = 0.00000001;
 const EC_ADDRESS_LENGTH = 52;
 
 class ConvertECForm extends Component {
@@ -79,6 +80,8 @@ class ConvertECForm extends Component {
 				getActiveAddress,
 				getEntryCreditRate,
 				signWithSeed,
+				activeAddressIndex_o,
+				addAddressTransaction,
 			},
 			ledgerController: { signWithLedger },
 			factomCliController: { factomCli },
@@ -99,13 +102,14 @@ class ConvertECForm extends Component {
 				initialValues={{
 					entryCreditAmount: '',
 					recipientAddress: '',
-					myFctWalletAnchorEl: null,
+					[myFctWalletAnchorElPath]: null,
 					privateKey: '',
 					[seedPath]: '',
 					[walletImportTypePath]: activeAddress_o.importType,
 					transactionID: null,
 					ledgerStatus: null,
 					transactionError: null,
+					addressToReinitialize: activeAddress_o.address,
 				}}
 				onSubmit={async (values, actions) => {
 					const {
@@ -161,7 +165,7 @@ class ConvertECForm extends Component {
 
 							const fromAddr = activeAddress_o.address;
 							const toAddr = recipientAddress;
-							const amount = (await getEntryCreditRate()) * entryCreditAmount;
+							const amount = this.state.ecRate * entryCreditAmount;
 							const index = activeAddress_o.index;
 
 							const ledgerTrans_o = {
@@ -175,6 +179,8 @@ class ConvertECForm extends Component {
 						}
 
 						const txId = await factomCli.sendTransaction(transaction);
+						await addAddressTransaction(activeAddressIndex_o, txId);
+
 						actions.setFieldValue('transactionID', txId);
 						updateBalances();
 					} catch (err) {
@@ -211,11 +217,7 @@ class ConvertECForm extends Component {
 						is: 'seed',
 						then: Yup.string()
 							.required('Required')
-							.test(
-								seedPath,
-								'Invalid Seed Phrase',
-								_debounce(this.verifySeed, 50)
-							),
+							.test(seedPath, 'Invalid Seed Phrase', this.verifySeed),
 						otherwise: Yup.string().notRequired(),
 					}),
 				})}
@@ -283,11 +285,13 @@ class ConvertECForm extends Component {
 										}
 										aria-haspopup="true"
 										onClick={(event) => {
-											setFieldValue('transactionError', null);
-											setFieldValue(
-												myFctWalletAnchorElPath,
-												event.currentTarget
-											);
+											if (!isSubmitting) {
+												setFieldValue('transactionError', null);
+												setFieldValue(
+													myFctWalletAnchorElPath,
+													event.currentTarget
+												);
+											}
 										}}
 										className={classes.pointer}
 									>
@@ -391,7 +395,22 @@ class ConvertECForm extends Component {
 							</React.Fragment>
 						)}
 
-						<br />
+						{_get(values, entryCreditAmountPath) ? (
+							<ConvertTransactionPreview
+								networkProps={networkProps}
+								ecAmount={_get(values, entryCreditAmountPath)}
+								factoidAmount={
+									this.state.ecRate *
+									_get(values, entryCreditAmountPath) *
+									FACTOSHI_MULTIPLIER
+								}
+								sendFactoidFee={
+									this.state.sendFactoshiFee * FACTOSHI_MULTIPLIER
+								}
+							/>
+						) : (
+							''
+						)}
 						<br />
 						{!_isNil(values.transactionError) && (
 							<Typography className={classes.transactionErrorText}>

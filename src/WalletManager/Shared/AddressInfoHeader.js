@@ -66,7 +66,10 @@ const AddressInfoHeader = (props) => {
 					</Grid>
 					<Grid item>
 						{activeAddress_o.importType === 'ledger' && (
-							<Tooltip title="Verify Ledger Nano S Address">
+							<Tooltip
+								title="Verify Ledger Nano S Address"
+								className={classes.pointer}
+							>
 								<VerifiedUser
 									onClick={async () => {
 										await checkAddress(
@@ -85,7 +88,10 @@ const AddressInfoHeader = (props) => {
 };
 const styles = (theme) => ({
 	root: { textAlign: 'left' },
-	paper: { backgroundColor: 'aliceblue', padding: '16px' },
+	paper: { backgroundColor: 'aliceblue', padding: '16px', marginBottom: '3px' },
+	pointer: {
+		cursor: 'pointer',
+	},
 });
 
 const enhancer = _flowRight(withWalletContext, withLedger, withStyles(styles));

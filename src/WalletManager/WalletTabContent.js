@@ -7,7 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import SendFactoidForm from './SendFactoidForm.js';
 import ConvertECForm from './ConvertECForm.js';
-import AddressInfoForm from './AddressInfoForm';
+import AddressInfoTab from './AddressInfoTab';
 import { withNetwork } from '../Context/NetworkContext';
 
 class WalletTabContent extends React.Component {
@@ -51,7 +51,7 @@ class WalletTabContent extends React.Component {
 						</Tabs>
 						{tabValue === 0 && (
 							<TabContainer classes={classes}>
-								<AddressInfoForm />
+								<AddressInfoTab />
 							</TabContainer>
 						)}
 						{tabValue === 1 && (
@@ -78,11 +78,9 @@ class WalletTabContent extends React.Component {
 							<Tab label="Address Info" />
 						</Tabs>
 
-						{tabValue === 0 && (
-							<TabContainer classes={classes}>
-								<AddressInfoForm />
-							</TabContainer>
-						)}
+						<TabContainer classes={classes}>
+							<AddressInfoTab />
+						</TabContainer>
 					</div>
 				)}
 			</div>

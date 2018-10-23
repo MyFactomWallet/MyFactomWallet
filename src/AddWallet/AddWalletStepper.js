@@ -108,7 +108,6 @@ class AddWalletStepper extends React.Component {
 							</Typography>
 							<br />
 							<br />
-							<br />
 							<div>
 								<Button onClick={this.handleReset}>Add Another</Button>
 								<Button

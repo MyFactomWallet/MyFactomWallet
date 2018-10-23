@@ -25,6 +25,7 @@ class Sidebar extends Component {
 				getFactoidAddresses,
 				activeAddressIndex_o,
 				selectAddress,
+				updateBalances,
 			},
 			networkController: { networkProps },
 		} = this.props;
@@ -42,7 +43,10 @@ class Sidebar extends Component {
 				<ExpansionPanel
 					key={index}
 					expanded={expanded}
-					onClick={() => selectAddress(index, 'fct')}
+					onClick={async () => {
+						await selectAddress(index, 'fct');
+						updateBalances();
+					}}
 					className={expanded ? classes.expanded : ''}
 				>
 					<ExpansionPanelSummary>

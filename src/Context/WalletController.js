@@ -1,6 +1,8 @@
 import React from 'react';
 import _flowRight from 'lodash/flowRight';
+import _flow from 'lodash/flow';
 import _isEmpty from 'lodash/isEmpty';
+import _noop from 'lodash/noop';
 import { WalletContext } from './WalletContext';
 import { withFactomCli } from './FactomCliContext';
 import { withNetwork } from './NetworkContext';
@@ -17,11 +19,13 @@ import _pick from 'lodash/pick';
  * Constants
  */
 const FACTOSHI_MULTIPLIER = 0.00000001;
+const LOCAL_STORAGE_KEY = 'storageAddresses';
 const LOCAL_STORAGE_PROPERTY_WHITELIST = [
 	'importType',
 	'address',
 	'nickname',
 	'index',
+	'saveLocally',
 ];
 
 class WalletController extends React.Component {
@@ -31,28 +35,30 @@ class WalletController extends React.Component {
 		this.state = {
 			addresses: {
 				mainnet: {
-					//mainnetFCTAddresses, mainnetECAddresses
-					fct: this.mainnetFCTAddresses,
-					ec: this.mainnetECAddresses,
+					fct: [],
+					ec: [],
 				},
 				testnet: {
-					//testnetFCTAddresses, testnetECAddresses
-					fct: this.testnetFCTAddresses,
-					ec: this.testnetECAddresses,
+					fct: [],
+					ec: [],
 				},
 			},
 			//===================================================
+			isStateHydrated: false,
+			activeAddressIndex_o: null,
 			signWithSeed: this.signWithSeed,
 			getSeedAddresses: this.getSeedAddresses,
 			getRandomMnemonic: this.getRandomMnemonic,
 			verifySeed: this.verifySeed,
 			verifyKey: this.verifyKey,
+			updateAddress: this.updateAddress,
+			addAddressTransaction: this.addAddressTransaction,
+			deleteAddress: this.deleteAddress,
 			getAddresses: this.getAddresses,
 			getFactoidAddresses: this.getFactoidAddresses,
 			getEntryCreditAddresses: this.getEntryCreditAddresses,
 			addAddresses: this.addAddresses,
 			addAddress: this.addAddress,
-			activeAddressIndex_o: null,
 			selectAddress: this.selectAddress,
 			getActiveAddress: this.getActiveAddress,
 			updateWalletBalance: this.updateWalletBalance,
@@ -66,83 +72,147 @@ class WalletController extends React.Component {
 		};
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		//get from storage
-		//this.hydrateStateWithLocalStorage();
-		this.saveStateToLocalStorage(); // testing
-		this.updateBalances();
-		this.setDefaultIndex();
+		this.hydrateStateWithLocalStorage();
 	}
 
-	deleteAddress(address, type) {
-		const { network } = this.props.networkController.networkProps;
+	smartSetState = (newState, afterSetState = _noop) =>
+		new Promise((resolve) =>
+			this.setState(newState, _flow([afterSetState, resolve]))
+		);
 
-		//delete from local state
-
-		//save to local storage
-		this.saveStateToLocalStorage();
-	}
-
-	saveStateToLocalStorage() {
+	saveStateToLocalStorage = () => {
 		const filterArray = (addressArray) =>
 			addressArray
 				.filter((address) => address.saveLocally)
 				.map((address) => _pick(address, LOCAL_STORAGE_PROPERTY_WHITELIST));
 
-		const { mainnet, testnet } = this.state.addresses;
+		const { mainnet, testnet } = { ...this.state.addresses };
 
 		const storageAddresses = {
+			mainnet: { fct: filterArray(mainnet.fct), ec: filterArray(mainnet.ec) },
+			testnet: { fct: filterArray(testnet.fct), ec: filterArray(testnet.ec) },
+		};
+
+		localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(storageAddresses));
+	};
+
+	hydrateStateWithLocalStorage = async () => {
+		// get local
+		const localStorageAddresses = JSON.parse(
+			localStorage.getItem(LOCAL_STORAGE_KEY)
+		);
+
+		const prepareArray = (addressArray) =>
+			addressArray.map((addr_o) => ({
+				...addr_o,
+				balance: null,
+				transactions: [],
+			}));
+
+		const { mainnet, testnet } = localStorageAddresses;
+
+		const storageAddresses = {
+			mainnet: { fct: prepareArray(mainnet.fct), ec: prepareArray(mainnet.ec) },
+			testnet: { fct: prepareArray(testnet.fct), ec: prepareArray(testnet.ec) },
+		};
+
+		await this.smartSetState((prevState) => ({
+			addresses: storageAddresses,
+		}));
+
+		await this.setDefaultIndex();
+		await this.updateBalances({ force: true });
+		await this.smartSetState({ isStateHydrated: true });
+	};
+
+	deleteAddress = async (activeAddressIndex_o) => {
+		const type = activeAddressIndex_o.type;
+		const { network } = this.props.networkController.networkProps;
+
+		// create copy of current addressList
+		const addressList = [...this.state.addresses[network][type]];
+
+		//remove address
+		addressList.splice(activeAddressIndex_o.index, 1);
+
+		// overwrite addresses
+		await this.smartSetState((prevState) => ({
 			addresses: {
-				mainnet: { fct: filterArray(mainnet.fct), ec: filterArray(mainnet.ec) },
-				testnet: { fct: filterArray(testnet.fct), ec: filterArray(testnet.ec) },
+				...prevState.addresses,
+				[network]: {
+					...prevState.addresses[network],
+					[type]: [...addressList],
+				},
 			},
-		};
+		}));
 
-		//console.log(storageAddresses);
-	}
-	/* 
-	hydrateStateWithLocalStorage() {
-		// for all items in state
-		for (let key in this.state) {
-		  // if the key exists in localStorage
-		  if (localStorage.hasOwnProperty(key)) {
-			// get the key's value from localStorage
-			let value = localStorage.getItem(key);
-	
-			// parse the localStorage string and setState
-			try {
-			  value = JSON.parse(value);
-			  this.setState({ [key]: value });
-			} catch (e) {
-			  // handle empty string
-			  this.setState({ [key]: value });
-			}
-		  }
-		}
-	  } */
+		await this.setDefaultIndex();
+		this.saveStateToLocalStorage();
+	};
 
-	hydrateStateWithLocalStorage() {
-		const storageAddresses = {};
+	addAddressTransaction = (activeAddressIndex_o, transactionID) => {
+		const type = activeAddressIndex_o.type;
+		const index = activeAddressIndex_o.index;
+		const { network } = this.props.networkController.networkProps;
 
-		const address_o = {
-			importType: 'ledger',
-			address: 'FA2nS1ueCTKuLXoZuXnGChU24D4VLs13McSSwdcWYbxwnpMkAHzw',
-			nickname: 'Ledger Wallet D',
-			balance: null,
-			transactions: [],
-			index: 0,
-		};
+		// get address transaction list to update
+		const addressList = [...this.state.addresses[network][type]];
+		const addr_o = addressList[index];
 
-		const storageAddress_o = _pick(address_o, LOCAL_STORAGE_PROPERTY_WHITELIST);
-		console.log(storageAddress_o);
-		//lodash omit
-	}
+		// add transaction
+		addr_o.transactions.push(transactionID);
+
+		// replace address
+		addressList[activeAddressIndex_o.index] = addr_o;
+
+		// overwrite addresses
+		return this.smartSetState((prevState) => ({
+			addresses: {
+				...prevState.addresses,
+				[network]: {
+					...prevState.addresses[network],
+					[type]: [...addressList],
+				},
+			},
+		}));
+	};
+
+	updateAddress = async (activeAddressIndex_o, nickname, saveLocally) => {
+		const type = activeAddressIndex_o.type;
+		const { network } = this.props.networkController.networkProps;
+
+		// create copy of current addressList
+		const addressList = [...this.state.addresses[network][type]];
+
+		// create and update copy of current address
+		const addr_o = { ...addressList[activeAddressIndex_o.index] };
+		addr_o.nickname = nickname;
+		addr_o.saveLocally = saveLocally;
+
+		// replace address
+		addressList[activeAddressIndex_o.index] = addr_o;
+
+		// overwrite addresses
+		await this.smartSetState((prevState) => ({
+			addresses: {
+				...prevState.addresses,
+				[network]: {
+					...prevState.addresses[network],
+					[type]: [...addressList],
+				},
+			},
+		}));
+
+		this.saveStateToLocalStorage();
+	};
 
 	setDefaultIndex = () => {
 		if (!_isEmpty(this.getFactoidAddresses())) {
-			this.selectAddress(0, 'fct');
+			return this.selectAddress(0, 'fct');
 		} else if (!_isEmpty(this.getEntryCreditAddresses())) {
-			this.selectAddress(0, 'ec');
+			return this.selectAddress(0, 'ec');
 		}
 	};
 
@@ -205,7 +275,7 @@ class WalletController extends React.Component {
 				wallet.generateFactoidPrivateKey(bip32Account, 0, index)
 			);
 
-			return derivedAddress.valueOf() === address.valueOf();
+			return derivedAddress.valueOf() === address.valueOf(); // memoize
 		} catch (err) {
 			return false;
 		}
@@ -244,25 +314,20 @@ class WalletController extends React.Component {
 		this.selectAddress(this.getNextIndex(type), type);
 	};
 
-	addAddresses = (addressList, type) => {
+	addAddresses = async (addressList, type) => {
 		const { network } = this.props.networkController.networkProps;
 
-		this.setState(
-			(prevState) => ({
-				...prevState,
-				addresses: {
-					...prevState.addresses,
-					[network]: {
-						...prevState.addresses[network],
-						[type]: [...prevState.addresses[network][type], ...addressList],
-					},
+		await this.smartSetState((prevState) => ({
+			addresses: {
+				...prevState.addresses,
+				[network]: {
+					...prevState.addresses[network],
+					[type]: [...prevState.addresses[network][type], ...addressList],
 				},
-			}),
-			() => {
-				this.setDefaultIndex();
-				this.updateBalances();
-			}
-		);
+			},
+		}));
+		await this.setDefaultIndex();
+		await this.updateBalances();
 	};
 
 	getNextIndex = (type) => {
@@ -276,7 +341,7 @@ class WalletController extends React.Component {
 	};
 
 	selectAddress = (index, type) => {
-		this.setState({
+		return this.smartSetState({
 			activeAddressIndex_o: { index, type },
 		});
 	};
@@ -315,29 +380,30 @@ class WalletController extends React.Component {
 		return { ...wallet, balance };
 	};
 
-	updateBalances = async () => {
-		const { network } = this.props.networkController.networkProps;
+	updateBalances = async ({ force = false } = {}) => {
+		if (this.state.isStateHydrated || force) {
+			const { network } = this.props.networkController.networkProps;
 
-		const [factoidAddresses, ecAddresses] = await Promise.all([
-			Promise.all(
-				this.state.addresses[network].fct.map(this.updateWalletBalance)
-			),
-			Promise.all(
-				this.state.addresses[network].ec.map(this.updateWalletBalance)
-			),
-		]);
+			const [factoidAddresses, ecAddresses] = await Promise.all([
+				Promise.all(
+					this.state.addresses[network].fct.map(this.updateWalletBalance)
+				),
+				Promise.all(
+					this.state.addresses[network].ec.map(this.updateWalletBalance)
+				),
+			]);
 
-		this.setState((prevState) => ({
-			...prevState,
-			addresses: {
-				...prevState.addresses,
-				[network]: {
-					...prevState.addresses[network],
-					ec: ecAddresses,
-					fct: factoidAddresses,
+			return this.smartSetState((prevState) => ({
+				addresses: {
+					...prevState.addresses,
+					[network]: {
+						...prevState.addresses[network],
+						ec: ecAddresses,
+						fct: factoidAddresses,
+					},
 				},
-			},
-		}));
+			}));
+		}
 	};
 
 	getEntryCreditRate = async () => {
@@ -396,162 +462,16 @@ class WalletController extends React.Component {
 	});
 
 	render() {
-		return (
-			<WalletContext.Provider value={this.state}>
-				{this.props.children}
-			</WalletContext.Provider>
-		);
+		if (this.state.isStateHydrated) {
+			return (
+				<WalletContext.Provider value={this.state}>
+					{this.props.children}
+				</WalletContext.Provider>
+			);
+		} else {
+			return null;
+		}
 	}
-
-	testnetFCTAddresses = [
-		{
-			importType: 'seed',
-			address: 'FA26xe6wDQv3jWgddnywfcCugFgKm86uZT6r8HpK44YtVWhRipN1',
-			nickname: 'Wallet D',
-			balance: null,
-			transactions: [],
-			index: 0,
-			saveLocally: true,
-		},
-		{
-			importType: 'standard', //standard, seed, ledger
-			address: 'FA2FSkSgGnZu7kF8nw5Sj1GYBt1BvSR1wpKY4JVMtCn3hPZnaXiT',
-			nickname: 'Testnet Wallet A',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-		{
-			importType: 'standard',
-			address: 'FA3mqYWmgmFdwfqkR9avyR1a78XW6rvVVh2qGm28tUKs7fTm2o6x',
-			nickname: 'Testnet Wallet B',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-		{
-			importType: 'standard',
-			address: 'FA211akgFTpra5n7MbEg6YMPDMh9JitQxQshBASB5A2ecKtx1Q3q',
-			nickname: 'Testnet Wallet C',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-	];
-	mainnetFCTAddresses = [
-		{
-			importType: 'standard',
-			address: 'FA2MZs5wASMo9cCiKezdiQKCd8KA6Zbg2xKXKGmYEZBqon9J3ZKv',
-			nickname: 'My Wallet',
-			balance: null,
-			transactions: [],
-			saveLocally: true,
-		},
-		{
-			importType: 'standard',
-			address: 'FA2MZs5wASMo9cCiKezdiQKCd8KA6Zbg2xKXKGmYEZBqon9J3ZKv',
-			nickname: 'Standard Wallet',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-
-		{
-			importType: 'standard',
-			address: 'FA2MZs5wASMo9cCiKezdiQKCd8KA6Zbg2xKXKGmYEZBqon9J3ZKv',
-			nickname: 'Standard Wallet',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-		{
-			importType: 'standard',
-			address: 'FA3pmaLxeLVypHij9WRyaqxruhdkNiPe4VML6FPBheuAhN6Mebtm',
-			nickname: 'Exchange Wallet',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-		{
-			importType: 'standard',
-			address: 'FA2HnDrH4KUygYvD9aZ1yBBDnkYA9tdaDiZjWZqFpJgYMhvimo8p',
-			nickname: 'Work Wallet',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-		{
-			importType: 'standard',
-			address: 'FA3foTbdFEkEyvjeUEZ6PDPddrtntsB3xoRm9qNdLHLSVtu2mpwy',
-			nickname: 'Wallet #4',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-	];
-	testnetECAddresses = [
-		{
-			importType: 'seed',
-			address: 'EC27kDNpFcJQwvdpFXaXjPqhtDSf6VK8kRN8Fv7EkhvS9tVkuAfX',
-			nickname: 'EC Wallet A',
-			balance: null,
-			transactions: [],
-			saveLocally: true,
-			index: 0,
-		},
-		{
-			importType: 'ledger',
-			address: 'EC2TuKK9byegSGiGtcD8DYa15s6vZRrv2UWRmUf7rKfsUGjcxA4h',
-			nickname: 'EC Wallet B',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-			index: 0,
-		},
-		{
-			importType: 'standard',
-			address: 'EC3QVDcZ88chcKxHnatyigwq4nSZbsY56B6Q7HuyL9yUEFSoSf6Q',
-			nickname: 'EC Wallet C',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-	];
-	mainnetECAddresses = [
-		{
-			importType: 'standard',
-			address: 'EC27kDNpFcJQwvdpFXaXjPqhtDSf6VK8kRN8Fv7EkhvS9tVkuAfX',
-			nickname: 'EC Wallet C',
-			balance: null,
-			transactions: [],
-			saveLocally: true,
-		},
-
-		{
-			importType: 'standard',
-			address: 'EC3QVDcZ88chcKxHnatyigwq4nSZbsY56B6Q7HuyL9yUEFSoSf6Q',
-			nickname: 'EC3',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-		{
-			importType: 'standard',
-			address: 'EC3QVDcZ88chcKxHnatyigwq4nSZbsY56B6Q7HuyL9yUEFSoSf6Q',
-			nickname: 'EC4',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-		{
-			importType: 'standard',
-			address: 'EC3QVDcZ88chcKxHnatyigwq4nSZbsY56B6Q7HuyL9yUEFSoSf6Q',
-			nickname: 'EC5',
-			balance: null,
-			transactions: [],
-			saveLocally: false,
-		},
-	];
 }
 
 const enhancer = _flowRight(withNetwork, withFactomCli);

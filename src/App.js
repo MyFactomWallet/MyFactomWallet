@@ -16,8 +16,9 @@ import FactomCliController from './Context/FactomCliController';
 import NetworkController from './Context/NetworkController';
 import LedgerController from './Context/LedgerController';
 //import Help from './Help/Help';
-//import Disclaimer from './Disclaimer';
+import Disclaimer from './Disclaimer';
 //import ManageVoterList from './Vote/VoterList/ManageVoterList.js';
+import Typography from '@material-ui/core/Typography';
 
 class App extends Component {
 	render() {
@@ -29,15 +30,16 @@ class App extends Component {
 					<NetworkController>
 						<FactomCliController>
 							<React.Fragment>
-								{/* <Disclaimer /> */}
+								<Disclaimer />
 								<WalletController>
 									<Header />
-
 									<LedgerController>
 										<div className={classes.body}>
 											<Route exact path="/" component={LandingPage} />
 											<Route path="/wallet/manage/" component={WalletManager} />
 											<Route path="/wallet/add/" component={AddInitialWallet} />
+											<Route exact path="/vote" component={ComingSoon} />
+											<Route exact path="/createVote" component={ComingSoon} />
 											{/* <Route exact path="/vote" component={Vote} />
 											<Route exact path="/viewVote" component={ViewVote} />
 											<Route
@@ -60,6 +62,14 @@ class App extends Component {
 }
 App.propTypes = {
 	classes: PropTypes.object.isRequired,
+};
+
+const ComingSoon = () => {
+	return (
+		<Typography variant="h5" align="center">
+			Coming soon...
+		</Typography>
+	);
 };
 
 const styles = (theme) => ({

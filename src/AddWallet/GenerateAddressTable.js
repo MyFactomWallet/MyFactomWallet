@@ -18,6 +18,7 @@ import Button from '@material-ui/core/Button';
 import FormatBalance from '../WalletManager/Shared/BalanceFormatter.js';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 /**
  * Constants
@@ -25,6 +26,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 const addressesPath = 'addresses';
 
 class GenerateAddressTable extends React.Component {
+	state = { loading: false };
+
 	addGeneratedAddress = _debounce((value, address_o, arrayHelpers) => {
 		if (value) {
 			const addr_o = this.props.newAddress(
@@ -53,12 +56,17 @@ class GenerateAddressTable extends React.Component {
 		return error;
 	};
 
+	getNext = async () => {
+		this.setState({ loading: true });
+		await this.props.getNextFive();
+		this.setState({ loading: false });
+	};
+
 	render() {
 		const {
 			classes,
 			generatedAddressList,
 			userAddressList, // existing addresses
-			getNextFive,
 			values,
 			errors,
 			touched,
@@ -218,11 +226,18 @@ class GenerateAddressTable extends React.Component {
 				<br />
 				<Button
 					type="button"
-					onClick={() => getNextFive(generatedAddressList.length)}
+					onClick={this.getNext}
 					variant="outlined"
 					color="primary"
+					disabled={this.state.loading}
 				>
 					Load Five More
+					{(this.state.loading || _isEmpty(generatedAddressList)) && (
+						<React.Fragment>
+							&nbsp;
+							<CircularProgress thickness={7} />
+						</React.Fragment>
+					)}
 				</Button>
 			</React.Fragment>
 		);
