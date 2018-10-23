@@ -19,11 +19,8 @@ import AddressInfoHeader from './Shared/AddressInfoHeader';
 import { withLedger } from '../Context/LedgerContext';
 import { withWalletContext } from '../Context/WalletContext';
 import { withNetwork } from '../Context/NetworkContext';
-import factombip44 from 'factombip44/dist/factombip44';
-import {
-	isValidFctPrivateAddress,
-	isValidEcPublicAddress,
-} from 'factom/dist/factom';
+import { isValidEcPublicAddress } from 'factom/dist/factom';
+import _debounce from 'lodash/debounce';
 
 /**
  * Constants
@@ -35,12 +32,43 @@ const privateKeyPath = 'privateKey';
 const walletImportTypePath = 'walletImportType';
 const seedPath = 'seed';
 
+const EC_ADDRESS_LENGTH = 52;
+
 class ConvertECForm extends Component {
+	state = { sendFactoshiFee: null, ecRate: null };
+
+	async componentDidMount() {
+		const sendFactoshiFee = await this.props.walletController.getFactoshiFee();
+		const ecRate = await this.props.walletController.getEntryCreditRate();
+		this.setState({ sendFactoshiFee, ecRate });
+	}
+
 	handleKeyPress(event) {
 		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
 			event.preventDefault();
 		}
 	}
+
+	getMaxEC(balance, fee) {
+		const maxFactoshis = balance - fee;
+		let maxEntryCredits = maxFactoshis / this.state.ecRate;
+		if (maxEntryCredits < 0) {
+			return 0;
+		}
+		return maxEntryCredits;
+	}
+
+	verifyKey = (privateKey) => {
+		const activeAddress_o = this.props.walletController.getActiveAddress();
+
+		return this.props.walletController.verifyKey(privateKey, activeAddress_o);
+	};
+
+	verifySeed = (seed) => {
+		const activeAddress_o = this.props.walletController.getActiveAddress();
+
+		return this.props.walletController.verifySeed(seed, activeAddress_o);
+	};
 
 	render() {
 		const {
@@ -60,8 +88,14 @@ class ConvertECForm extends Component {
 		const activeAddress_o = getActiveAddress();
 		const ecAddresses = getEntryCreditAddresses();
 
+		const maxAmount = this.getMaxEC(
+			activeAddress_o.balance,
+			this.state.sendFactoshiFee
+		);
+
 		return (
 			<Formik
+				enableReinitialize
 				initialValues={{
 					entryCreditAmount: '',
 					recipientAddress: '',
@@ -154,29 +188,34 @@ class ConvertECForm extends Component {
 					}
 				}}
 				validationSchema={Yup.object().shape({
-					[entryCreditAmountPath]: Yup.string().required('Required'),
-					[recipientAddressPath]: Yup.string().test(
-						recipientAddressPath,
-						'Invalid Address',
-						isValidEcPublicAddress
-					),
+					[recipientAddressPath]: Yup.string()
+						.required('Required')
+						.test(
+							recipientAddressPath,
+							'Invalid Address',
+							isValidEcPublicAddress
+						),
+					[entryCreditAmountPath]: Yup.number()
+						.required('Required')
+						.positive('Must be a positive number')
+						.max(maxAmount, 'Insufficient Funds'),
 					[walletImportTypePath]: Yup.string(),
 					[privateKeyPath]: Yup.string().when(walletImportTypePath, {
 						is: 'standard',
-						then: Yup.string().test(
-							privateKeyPath,
-							'Invalid Key',
-							isValidFctPrivateAddress
-						),
+						then: Yup.string()
+							.required('Required')
+							.test(privateKeyPath, 'Invalid Key', this.verifyKey),
 						otherwise: Yup.string().notRequired(),
 					}),
 					[seedPath]: Yup.string().when(walletImportTypePath, {
 						is: 'seed',
-						then: Yup.string().test(
-							seedPath,
-							'Invalid Seed Phrase',
-							factombip44.validMnemonic
-						),
+						then: Yup.string()
+							.required('Required')
+							.test(
+								seedPath,
+								'Invalid Seed Phrase',
+								_debounce(this.verifySeed, 50)
+							),
 						otherwise: Yup.string().notRequired(),
 					}),
 				})}
@@ -214,6 +253,10 @@ class ConvertECForm extends Component {
 										'Enter ' + networkProps.ecAbbreviationFull + ' address'
 									}
 									disabled={isSubmitting}
+									inputProps={{
+										spellCheck: false,
+										maxLength: EC_ADDRESS_LENGTH,
+									}}
 								/>
 							)}
 						</Field>
@@ -304,6 +347,10 @@ class ConvertECForm extends Component {
 											label="Private Key"
 											fullWidth={true}
 											disabled={isSubmitting}
+											inputProps={{
+												spellCheck: false,
+												maxLength: EC_ADDRESS_LENGTH,
+											}}
 										/>
 									)}
 								</Field>

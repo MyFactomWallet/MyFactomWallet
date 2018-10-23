@@ -16,6 +16,7 @@ import { withNetwork } from '../Context/NetworkContext';
  * Constants
  */
 const EC_ADDRESS_LENGTH = 52;
+const NICKNAME_MAX_LENGTH = 25;
 const ecAddrNamePath = 'entryCreditAddress';
 const nicknamePath = 'nickname';
 
@@ -54,6 +55,7 @@ class ImportEcForm extends React.Component {
 				}}
 				validationSchema={Yup.object().shape({
 					[ecAddrNamePath]: Yup.string()
+						.required('Required')
 						.test(ecAddrNamePath, 'Invalid Address', isValidEcPublicAddress)
 						.test(
 							ecAddrNamePath,
@@ -92,6 +94,7 @@ class ImportEcForm extends React.Component {
 							}
 							name={nicknamePath}
 							label="Nickname"
+							maxLength={NICKNAME_MAX_LENGTH}
 						/>
 						<ErrorMessage
 							name={nicknamePath}

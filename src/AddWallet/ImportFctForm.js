@@ -16,6 +16,7 @@ import { withNetwork } from '../Context/NetworkContext';
  * Constants
  */
 const FCT_ADDRESS_LENGTH = 52;
+const NICKNAME_MAX_LENGTH = 25;
 const fctAddrPath = 'factoidAddress';
 const nicknamePath = 'nickname';
 
@@ -51,6 +52,7 @@ class ImportFctForm extends React.Component {
 				}}
 				validationSchema={Yup.object().shape({
 					[fctAddrPath]: Yup.string()
+						.required('Required')
 						.test(fctAddrPath, 'Invalid Address', isValidFctPublicAddress)
 						.test(
 							fctAddrPath,
@@ -89,6 +91,7 @@ class ImportFctForm extends React.Component {
 							}
 							name={nicknamePath}
 							label="Nickname"
+							maxLength={NICKNAME_MAX_LENGTH}
 						/>
 						<ErrorMessage
 							name={nicknamePath}

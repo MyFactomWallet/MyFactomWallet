@@ -39,9 +39,16 @@ class GenerateAddressTable extends React.Component {
 	}, 150);
 
 	validateNickname = (value) => {
+		const { userAddressList } = this.props;
+		const userAddressNicknames = userAddressList.map(
+			(addr_o) => addr_o.nickname
+		);
+
 		let error;
 		if (!value) {
 			error = 'Required';
+		} else if (userAddressNicknames.indexOf(value) !== -1) {
+			error = 'Enter unique nickname';
 		}
 		return error;
 	};

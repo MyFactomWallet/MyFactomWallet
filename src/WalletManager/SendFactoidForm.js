@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
 import _isNil from 'lodash/isNil';
 import _get from 'lodash/get';
+import _debounce from 'lodash/debounce';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import TextField from '@material-ui/core/TextField';
@@ -17,13 +18,9 @@ import AddressInfoHeader from './Shared/AddressInfoHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withWalletContext } from '../Context/WalletContext';
 import TransactionPreview from './TransactionPreview';
-import factombip44 from 'factombip44/dist/factombip44';
 import { withNetwork } from '../Context/NetworkContext';
 import { withLedger } from '../Context/LedgerContext';
-import {
-	isValidFctPrivateAddress,
-	isValidFctPublicAddress,
-} from 'factom/dist/factom';
+import { isValidFctPublicAddress } from 'factom/dist/factom';
 
 /**
  * Constants
@@ -37,6 +34,7 @@ const walletImportTypePath = 'walletImportType';
 
 const FACTOSHI_MULTIPLIER = 0.00000001;
 const FACTOID_MULTIPLIER = 100000000;
+const FCT_ADDRESS_LENGTH = 52;
 
 class SendFactoidForm extends Component {
 	state = { sendFactoidFee: null };
@@ -52,9 +50,25 @@ class SendFactoidForm extends Component {
 		}
 	}
 
-	getMax(balance, fee) {
-		return balance * FACTOSHI_MULTIPLIER - fee;
+	getMaxFCT(balance, fee) {
+		const maxFactoids = balance * FACTOSHI_MULTIPLIER - fee;
+		if (maxFactoids < 0) {
+			return 0;
+		}
+		return maxFactoids;
 	}
+
+	verifyKey = (privateKey) => {
+		const activeAddress_o = this.props.walletController.getActiveAddress();
+
+		return this.props.walletController.verifyKey(privateKey, activeAddress_o);
+	};
+
+	verifySeed = (seed) => {
+		const activeAddress_o = this.props.walletController.getActiveAddress();
+
+		return this.props.walletController.verifySeed(seed, activeAddress_o);
+	};
 
 	render() {
 		const {
@@ -73,13 +87,19 @@ class SendFactoidForm extends Component {
 		const factoidAddresses = getFactoidAddresses();
 		const activeAddress_o = getActiveAddress();
 
+		const maxAmount = this.getMaxFCT(
+			activeAddress_o.balance,
+			this.state.sendFactoidFee
+		);
+
 		return (
 			<Formik
+				enableReinitialize
 				initialValues={{
 					sendFactoidAmount: '',
 					recipientAddress: '',
 					myFctWalletAnchorEl: null,
-					privateKey: '',
+					[privateKeyPath]: '',
 					[seedPath]: '',
 					[walletImportTypePath]: activeAddress_o.importType,
 					transactionID: null,
@@ -167,29 +187,34 @@ class SendFactoidForm extends Component {
 					}
 				}}
 				validationSchema={Yup.object().shape({
-					[sendFactoidAmountPath]: Yup.string().required('Required'),
-					[recipientAddressPath]: Yup.string().test(
-						recipientAddressPath,
-						'Invalid Address',
-						isValidFctPublicAddress
-					),
+					[recipientAddressPath]: Yup.string()
+						.required('Required')
+						.test(
+							recipientAddressPath,
+							'Invalid Address',
+							isValidFctPublicAddress
+						),
+					[sendFactoidAmountPath]: Yup.number()
+						.required('Required')
+						.positive('Must be a positive number')
+						.max(maxAmount, 'Insufficient Funds'),
 					[walletImportTypePath]: Yup.string(),
 					[privateKeyPath]: Yup.string().when(walletImportTypePath, {
 						is: 'standard',
-						then: Yup.string().test(
-							privateKeyPath,
-							'Invalid Key',
-							isValidFctPrivateAddress
-						),
+						then: Yup.string()
+							.required('Required')
+							.test(privateKeyPath, 'Invalid Key', this.verifyKey),
 						otherwise: Yup.string().notRequired(),
 					}),
 					[seedPath]: Yup.string().when(walletImportTypePath, {
 						is: 'seed',
-						then: Yup.string().test(
-							seedPath,
-							'Invalid Seed Phrase',
-							factombip44.validMnemonic
-						),
+						then: Yup.string()
+							.required('Required')
+							.test(
+								seedPath,
+								'Invalid Seed Phrase',
+								_debounce(this.verifySeed, 50)
+							),
 						otherwise: Yup.string().notRequired(),
 					}),
 				})}
@@ -228,6 +253,10 @@ class SendFactoidForm extends Component {
 										'Enter ' + networkProps.factoidAbbreviationFull + ' Address'
 									}
 									disabled={isSubmitting}
+									inputProps={{
+										spellCheck: false,
+										maxLength: FCT_ADDRESS_LENGTH,
+									}}
 								/>
 							)}
 						</Field>
@@ -295,14 +324,8 @@ class SendFactoidForm extends Component {
 							<Grid item>
 								<Typography
 									variant="caption"
-									onClick={(event) => {
-										setFieldValue(
-											sendFactoidAmountPath,
-											this.getMax(
-												activeAddress_o.balance,
-												this.state.sendFactoidFee
-											)
-										);
+									onClick={() => {
+										setFieldValue(sendFactoidAmountPath, maxAmount);
 									}}
 									className={classes.pointer}
 								>
@@ -327,6 +350,10 @@ class SendFactoidForm extends Component {
 											label="Private Key"
 											fullWidth={true}
 											disabled={isSubmitting}
+											inputProps={{
+												spellCheck: false,
+												maxLength: FCT_ADDRESS_LENGTH,
+											}}
 										/>
 									)}
 								</Field>

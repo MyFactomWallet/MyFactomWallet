@@ -34,8 +34,7 @@ class LedgerController extends React.Component {
 		const ledger = new Fct(transport);
 
 		for (let index = startIndex; index < startIndex + amount; index++) {
-			const path =
-				"44'/" + coinType + "'/" + bip32Account + "'/0'/" + index + "'";
+			const path = "44'/" + coinType + "'/" + bip32Account + "'/0/" + index;
 			const address_o = await ledger.getAddress(path);
 
 			result.push({ address: address_o.address, index });
@@ -55,7 +54,7 @@ class LedgerController extends React.Component {
 		let transport = await TransportU2F.create();
 
 		const bip32Account = this.props.networkController.networkProps.bip32Account;
-		const path = "44'/131'/" + bip32Account + "'/0'/" + index + "'";
+		const path = "44'/131'/" + bip32Account + "'/0/" + index;
 
 		const ledger = new Fct(transport);
 
@@ -89,13 +88,7 @@ class LedgerController extends React.Component {
 		const coinType = BIP_32_COIN_TYPES[type];
 
 		const path =
-			"44'/" +
-			coinType +
-			"'/" +
-			bip32Account +
-			"'/0'/" +
-			activeFctWallet.index +
-			"'";
+			"44'/" + coinType + "'/" + bip32Account + "'/0/" + activeFctWallet.index;
 
 		try {
 			var transport = await TransportU2F.create();

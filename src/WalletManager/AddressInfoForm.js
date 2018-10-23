@@ -74,15 +74,8 @@ class AddressInfoForm extends React.Component {
 						<Form onKeyPress={this.handleKeyPress}>
 							<Grid container spacing={8}>
 								<Grid item xs={6}>
-									<Grid container item xs={12} justify="space-between">
-										<Grid item>
-											<Typography variant="h6">Update Address</Typography>
-										</Grid>
-										<Grid item>
-											<Button variant="outlined" color="secondary">
-												Delete
-											</Button>
-										</Grid>
+									<Grid item xs={12}>
+										<Typography variant="h6">Edit Address</Typography>
 									</Grid>
 
 									<Grid container item xs={12}>
@@ -116,7 +109,7 @@ class AddressInfoForm extends React.Component {
 																color="default"
 															/>
 														}
-														label="Save to Cache"
+														label="Save to Cache" // Save to Browser Storage
 													/>
 												)}
 											/>
@@ -128,13 +121,24 @@ class AddressInfoForm extends React.Component {
 												variant="contained"
 												color="primary"
 											>
-												Update
+												Save
+											</Button>
+											<Button
+												className={classes.deleteButton}
+												variant="outlined"
+												color="secondary"
+											>
+												Delete
 											</Button>
 										</Grid>
 									</Grid>
 								</Grid>
 								<Grid item xs={6}>
-									{/* {!_isEmpty(activeAddress_o.transactions) ? (
+									{/*<Grid item>
+										<Typography variant="h6">Transactions</Typography>
+									</Grid>
+
+									 {!_isEmpty(activeAddress_o.transactions) ? (
 										<div className={classes.root}>
 											<Typography variant="h6">Recent Transactions</Typography>
 											{activeAddress_o.transactions.map(function(transaction, index) {
@@ -185,6 +189,7 @@ AddressInfoForm.propTypes = {
 const styles = (theme) => ({
 	errorText: { color: 'red', fontSize: '12px' },
 	root: { textAlign: 'left' },
+	deleteButton: { marginLeft: 10 },
 });
 
 const enhancer = _flowRight(

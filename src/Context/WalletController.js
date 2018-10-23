@@ -7,15 +7,22 @@ import { withNetwork } from './NetworkContext';
 import {
 	Transaction,
 	keyToPrivateFctAddress,
-	getPublicAddress,
 	keyToPrivateEcAddress,
+	getPublicAddress,
 } from 'factom/dist/factom';
 import factombip44 from 'factombip44/dist/factombip44';
+import _pick from 'lodash/pick';
 
 /**
  * Constants
  */
 const FACTOSHI_MULTIPLIER = 0.00000001;
+const LOCAL_STORAGE_PROPERTY_WHITELIST = [
+	'importType',
+	'address',
+	'nickname',
+	'index',
+];
 
 class WalletController extends React.Component {
 	constructor(props) {
@@ -38,6 +45,8 @@ class WalletController extends React.Component {
 			signWithSeed: this.signWithSeed,
 			getSeedAddresses: this.getSeedAddresses,
 			getRandomMnemonic: this.getRandomMnemonic,
+			verifySeed: this.verifySeed,
+			verifyKey: this.verifyKey,
 			getAddresses: this.getAddresses,
 			getFactoidAddresses: this.getFactoidAddresses,
 			getEntryCreditAddresses: this.getEntryCreditAddresses,
@@ -58,8 +67,75 @@ class WalletController extends React.Component {
 	}
 
 	componentDidMount() {
+		//get from storage
+		//this.hydrateStateWithLocalStorage();
+		this.saveStateToLocalStorage(); // testing
 		this.updateBalances();
 		this.setDefaultIndex();
+	}
+
+	deleteAddress(address, type) {
+		const { network } = this.props.networkController.networkProps;
+
+		//delete from local state
+
+		//save to local storage
+		this.saveStateToLocalStorage();
+	}
+
+	saveStateToLocalStorage() {
+		const filterArray = (addressArray) =>
+			addressArray
+				.filter((address) => address.saveLocally)
+				.map((address) => _pick(address, LOCAL_STORAGE_PROPERTY_WHITELIST));
+
+		const { mainnet, testnet } = this.state.addresses;
+
+		const storageAddresses = {
+			addresses: {
+				mainnet: { fct: filterArray(mainnet.fct), ec: filterArray(mainnet.ec) },
+				testnet: { fct: filterArray(testnet.fct), ec: filterArray(testnet.ec) },
+			},
+		};
+
+		//console.log(storageAddresses);
+	}
+	/* 
+	hydrateStateWithLocalStorage() {
+		// for all items in state
+		for (let key in this.state) {
+		  // if the key exists in localStorage
+		  if (localStorage.hasOwnProperty(key)) {
+			// get the key's value from localStorage
+			let value = localStorage.getItem(key);
+	
+			// parse the localStorage string and setState
+			try {
+			  value = JSON.parse(value);
+			  this.setState({ [key]: value });
+			} catch (e) {
+			  // handle empty string
+			  this.setState({ [key]: value });
+			}
+		  }
+		}
+	  } */
+
+	hydrateStateWithLocalStorage() {
+		const storageAddresses = {};
+
+		const address_o = {
+			importType: 'ledger',
+			address: 'FA2nS1ueCTKuLXoZuXnGChU24D4VLs13McSSwdcWYbxwnpMkAHzw',
+			nickname: 'Ledger Wallet D',
+			balance: null,
+			transactions: [],
+			index: 0,
+		};
+
+		const storageAddress_o = _pick(address_o, LOCAL_STORAGE_PROPERTY_WHITELIST);
+		console.log(storageAddress_o);
+		//lodash omit
 	}
 
 	setDefaultIndex = () => {
@@ -109,6 +185,32 @@ class WalletController extends React.Component {
 		return signedTX;
 	};
 
+	verifyKey = (privateKey, { address }) => {
+		try {
+			// for factom addresses
+			return getPublicAddress(privateKey).valueOf() === address.valueOf();
+		} catch (err) {
+			return false;
+		}
+	};
+
+	verifySeed = (mnemonic, { address, index }) => {
+		try {
+			// for factom addresses
+			const wallet = new factombip44.FactomBIP44(mnemonic);
+			const bip32Account = this.props.networkController.networkProps
+				.bip32Account;
+
+			const derivedAddress = this.keyToFctAddress(
+				wallet.generateFactoidPrivateKey(bip32Account, 0, index)
+			);
+
+			return derivedAddress.valueOf() === address.valueOf();
+		} catch (err) {
+			return false;
+		}
+	};
+
 	getSeedAddresses = async (mnemonic, startIndex, amount, type) => {
 		let result = [];
 
@@ -143,7 +245,7 @@ class WalletController extends React.Component {
 	};
 
 	addAddresses = (addressList, type) => {
-		const network = this.props.networkController.networkProps.network;
+		const { network } = this.props.networkController.networkProps;
 
 		this.setState(
 			(prevState) => ({
@@ -181,7 +283,7 @@ class WalletController extends React.Component {
 
 	getActiveAddress = () => {
 		if (this.state.activeAddressIndex_o !== null) {
-			const network = this.props.networkController.networkProps.network;
+			const { network } = this.props.networkController.networkProps;
 
 			return this.state.addresses[network][
 				this.state.activeAddressIndex_o.type
@@ -200,7 +302,7 @@ class WalletController extends React.Component {
 	};
 
 	getAddresses = (type) => {
-		const network = this.props.networkController.networkProps.network;
+		const { network } = this.props.networkController.networkProps;
 
 		return this.state.addresses[network][type];
 	};
@@ -214,7 +316,7 @@ class WalletController extends React.Component {
 	};
 
 	updateBalances = async () => {
-		const network = this.props.networkController.networkProps.network;
+		const { network } = this.props.networkController.networkProps;
 
 		const [factoidAddresses, ecAddresses] = await Promise.all([
 			Promise.all(
@@ -270,6 +372,7 @@ class WalletController extends React.Component {
 		nickname,
 		balance: null,
 		transactions: [],
+		saveLocally: false,
 	});
 
 	newSeedAddress = (address, nickname, index) => ({
@@ -279,6 +382,7 @@ class WalletController extends React.Component {
 		balance: null,
 		transactions: [],
 		index,
+		saveLocally: false,
 	});
 
 	newLedgerAddress = (address, nickname, index) => ({
@@ -288,6 +392,7 @@ class WalletController extends React.Component {
 		balance: null,
 		transactions: [],
 		index,
+		saveLocally: false,
 	});
 
 	render() {
@@ -300,11 +405,21 @@ class WalletController extends React.Component {
 
 	testnetFCTAddresses = [
 		{
+			importType: 'seed',
+			address: 'FA26xe6wDQv3jWgddnywfcCugFgKm86uZT6r8HpK44YtVWhRipN1',
+			nickname: 'Wallet D',
+			balance: null,
+			transactions: [],
+			index: 0,
+			saveLocally: true,
+		},
+		{
 			importType: 'standard', //standard, seed, ledger
 			address: 'FA2FSkSgGnZu7kF8nw5Sj1GYBt1BvSR1wpKY4JVMtCn3hPZnaXiT',
 			nickname: 'Testnet Wallet A',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 		{
 			importType: 'standard',
@@ -312,6 +427,7 @@ class WalletController extends React.Component {
 			nickname: 'Testnet Wallet B',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 		{
 			importType: 'standard',
@@ -319,6 +435,7 @@ class WalletController extends React.Component {
 			nickname: 'Testnet Wallet C',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 	];
 	mainnetFCTAddresses = [
@@ -328,6 +445,7 @@ class WalletController extends React.Component {
 			nickname: 'My Wallet',
 			balance: null,
 			transactions: [],
+			saveLocally: true,
 		},
 		{
 			importType: 'standard',
@@ -335,6 +453,7 @@ class WalletController extends React.Component {
 			nickname: 'Standard Wallet',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 
 		{
@@ -343,6 +462,7 @@ class WalletController extends React.Component {
 			nickname: 'Standard Wallet',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 		{
 			importType: 'standard',
@@ -350,6 +470,7 @@ class WalletController extends React.Component {
 			nickname: 'Exchange Wallet',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 		{
 			importType: 'standard',
@@ -357,6 +478,7 @@ class WalletController extends React.Component {
 			nickname: 'Work Wallet',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 		{
 			importType: 'standard',
@@ -364,22 +486,27 @@ class WalletController extends React.Component {
 			nickname: 'Wallet #4',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 	];
 	testnetECAddresses = [
 		{
-			importType: 'standard',
+			importType: 'seed',
 			address: 'EC27kDNpFcJQwvdpFXaXjPqhtDSf6VK8kRN8Fv7EkhvS9tVkuAfX',
 			nickname: 'EC Wallet A',
 			balance: null,
 			transactions: [],
+			saveLocally: true,
+			index: 0,
 		},
 		{
-			importType: 'standard',
+			importType: 'ledger',
 			address: 'EC2TuKK9byegSGiGtcD8DYa15s6vZRrv2UWRmUf7rKfsUGjcxA4h',
 			nickname: 'EC Wallet B',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
+			index: 0,
 		},
 		{
 			importType: 'standard',
@@ -387,6 +514,7 @@ class WalletController extends React.Component {
 			nickname: 'EC Wallet C',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 	];
 	mainnetECAddresses = [
@@ -396,6 +524,7 @@ class WalletController extends React.Component {
 			nickname: 'EC Wallet C',
 			balance: null,
 			transactions: [],
+			saveLocally: true,
 		},
 
 		{
@@ -404,6 +533,7 @@ class WalletController extends React.Component {
 			nickname: 'EC3',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 		{
 			importType: 'standard',
@@ -411,6 +541,7 @@ class WalletController extends React.Component {
 			nickname: 'EC4',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 		{
 			importType: 'standard',
@@ -418,6 +549,7 @@ class WalletController extends React.Component {
 			nickname: 'EC5',
 			balance: null,
 			transactions: [],
+			saveLocally: false,
 		},
 	];
 }
