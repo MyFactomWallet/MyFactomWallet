@@ -45,7 +45,7 @@ class ImportEcForm extends React.Component {
 				onSubmit={(values, actions) => {
 					const ecAddress_o = newStandardAddress(
 						_get(values, ecAddrNamePath),
-						_get(values, nicknamePath)
+						_get(values, nicknamePath).trim()
 					);
 
 					addAddress(ecAddress_o, 'ec');
@@ -129,6 +129,7 @@ const FormTextField = (props) => {
 					inputProps={{
 						spellCheck: false,
 						maxLength: props.maxLength,
+						autoComplete: 'nope',
 					}}
 					{...field}
 					label={props.label + ' ' + (props.error ? '*' : '')}

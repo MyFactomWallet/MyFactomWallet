@@ -48,11 +48,16 @@ class NewSeedForm extends React.Component {
 				}}
 				validationSchema={Yup.object().shape({
 					[mnemonicPath]: Yup.string()
+						.trim()
 						.required('Required')
 						.oneOf([this.props.mnemonic], 'Seed does not match'),
 				})}
 				render={({ isSubmitting, errors, touched }) => (
-					<Form onKeyPress={this.handleKeyPress} style={{ width: '500px' }}>
+					<Form
+						onKeyPress={this.handleKeyPress}
+						style={{ width: '500px' }}
+						autoComplete="nope"
+					>
 						{this.state.step === 1 && (
 							<React.Fragment>
 								<Typography
@@ -133,6 +138,9 @@ const FormTextField = (props) => {
 		<Field name={props.name}>
 			{({ field }) => (
 				<TextField
+					inputProps={{
+						autoComplete: 'nope',
+					}}
 					{...field}
 					label={props.label + ' ' + (props.error ? '*' : '')}
 					margin="dense"

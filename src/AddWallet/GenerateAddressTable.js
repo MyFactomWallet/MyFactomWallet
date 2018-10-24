@@ -4,7 +4,6 @@ import { Field, ErrorMessage, FieldArray } from 'formik';
 import { withStyles } from '@material-ui/core/styles';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
-import _debounce from 'lodash/debounce';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -24,22 +23,23 @@ import CircularProgress from '@material-ui/core/CircularProgress';
  * Constants
  */
 const addressesPath = 'addresses';
+const NICKNAME_MAX_LENGTH = 25;
 
 class GenerateAddressTable extends React.Component {
 	state = { loading: false };
 
-	addGeneratedAddress = _debounce((value, address_o, arrayHelpers) => {
-		if (value) {
+	addGeneratedAddress = (nickname, address_o, arrayHelpers) => {
+		if (nickname) {
 			const addr_o = this.props.newAddress(
 				address_o.address,
-				value.trim(),
+				nickname.trim(),
 				address_o.index
 			);
 			arrayHelpers.replace(address_o.index, addr_o);
 		} else {
 			arrayHelpers.replace(address_o.index, null);
 		}
-	}, 150);
+	};
 
 	validateNickname = (value) => {
 		const { userAddressList } = this.props;
@@ -50,7 +50,7 @@ class GenerateAddressTable extends React.Component {
 		let error;
 		if (!value) {
 			error = 'Required';
-		} else if (userAddressNicknames.indexOf(value) !== -1) {
+		} else if (userAddressNicknames.indexOf(value.trim()) !== -1) {
 			error = 'Enter unique nickname';
 		}
 		return error;
@@ -195,6 +195,9 @@ class GenerateAddressTable extends React.Component {
 																								? true
 																								: false
 																						}
+																						inputProps={{
+																							maxLength: NICKNAME_MAX_LENGTH,
+																						}}
 																					/>
 																				)}
 																			</Field>

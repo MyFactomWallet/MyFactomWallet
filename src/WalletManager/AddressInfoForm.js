@@ -14,6 +14,8 @@ import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 /**
  * Constants
  */
@@ -64,12 +66,14 @@ class AddressInfoForm extends React.Component {
 					[deleteAnchorElPath]: null,
 				}}
 				onSubmit={(values, actions) => {
-					updateAddress(
-						activeAddressIndex_o,
-						_get(values, nicknamePath),
-						_get(values, saveLocallyPath)
-					);
-					actions.resetForm();
+					window.setTimeout(() => {
+						updateAddress(
+							activeAddressIndex_o,
+							_get(values, nicknamePath).trim(),
+							_get(values, saveLocallyPath)
+						);
+						actions.resetForm();
+					}, 500);
 				}}
 				validationSchema={Yup.object().shape({
 					[nicknamePath]: Yup.string()
@@ -122,7 +126,7 @@ class AddressInfoForm extends React.Component {
 													color="default"
 												/>
 											}
-											label="Save to Browser" // Save to Browser Storage
+											label="Saved to local browser storage"
 										/>
 									)}
 								/>
@@ -134,7 +138,13 @@ class AddressInfoForm extends React.Component {
 									variant="contained"
 									color="primary"
 								>
-									Save
+									Submit{' '}
+									{isSubmitting && (
+										<React.Fragment>
+											&nbsp;
+											<CircularProgress size={20} />
+										</React.Fragment>
+									)}
 								</Button>
 								<Button
 									aria-owns={values[deleteAnchorElPath] ? 'simple-menu' : null}
@@ -183,6 +193,7 @@ const FormTextField = (props) => {
 					inputProps={{
 						spellCheck: false,
 						maxLength: props.maxLength,
+						autoComplete: 'nope',
 					}}
 					{...field}
 					label={props.label + ' ' + (props.error ? '*' : '')}
@@ -202,7 +213,7 @@ AddressInfoForm.propTypes = {
 
 const styles = (theme) => ({
 	errorText: { color: 'red', fontSize: '12px' },
-	deleteButton: { marginLeft: 10 },
+	deleteButton: { marginLeft: 15 },
 	deleteConfirmationText: { color: 'red' },
 });
 

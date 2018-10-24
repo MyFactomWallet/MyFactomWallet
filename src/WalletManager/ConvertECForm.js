@@ -21,6 +21,8 @@ import { withWalletContext } from '../Context/WalletContext';
 import { withNetwork } from '../Context/NetworkContext';
 import { isValidEcPublicAddress } from 'factom/dist/factom';
 import ConvertTransactionPreview from './ConvertTransactionPreview';
+import Paper from '@material-ui/core/Paper';
+import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
 
 /**
  * Constants
@@ -128,7 +130,7 @@ class ConvertECForm extends Component {
 								entryCreditAmount
 							);
 						} else if (importType === 'seed') {
-							const mnemonic = seed;
+							const mnemonic = seed.trim();
 							const index = activeAddress_o.index;
 							const toAddr = recipientAddress;
 							const amount = entryCreditAmount;
@@ -216,6 +218,7 @@ class ConvertECForm extends Component {
 					[seedPath]: Yup.string().when(walletImportTypePath, {
 						is: 'seed',
 						then: Yup.string()
+							.trim()
 							.required('Required')
 							.test(seedPath, 'Invalid Seed Phrase', this.verifySeed),
 						otherwise: Yup.string().notRequired(),
@@ -230,7 +233,7 @@ class ConvertECForm extends Component {
 					handleReset,
 					handleChange,
 				}) => (
-					<Form onKeyPress={this.handleKeyPress}>
+					<Form onKeyPress={this.handleKeyPress} autoComplete="nope">
 						<AddressInfoHeader />
 						<Field name={recipientAddressPath}>
 							{({ field, form }) => (
@@ -354,6 +357,7 @@ class ConvertECForm extends Component {
 											inputProps={{
 												spellCheck: false,
 												maxLength: EC_ADDRESS_LENGTH,
+												autoComplete: 'nope',
 											}}
 										/>
 									)}
@@ -383,6 +387,9 @@ class ConvertECForm extends Component {
 											label="Seed Phrase"
 											fullWidth={true}
 											disabled={isSubmitting}
+											inputProps={{
+												autoComplete: 'nope',
+											}}
 										/>
 									)}
 								</Field>
@@ -420,12 +427,19 @@ class ConvertECForm extends Component {
 						<br />
 
 						{isSubmitting ? (
-							<div>
+							<React.Fragment>
 								{values.transactionID !== null ? (
-									<span>
-										<Typography>
-											<b>Transaction ID:</b> {values.transactionID}
-										</Typography>
+									<div>
+										<Paper className={classes.transaction}>
+											<CheckCircle
+												nativeColor="#6fbf73"
+												className={classes.successIcon}
+											/>
+											&nbsp;
+											<Typography style={{ display: 'inline' }}>
+												<b>Transaction ID:</b> {values.transactionID}
+											</Typography>
+										</Paper>
 										<br />
 										<Button
 											type="button"
@@ -433,18 +447,17 @@ class ConvertECForm extends Component {
 											color="primary"
 											variant="contained"
 											onClick={handleReset}
-											//disabled={!dirty || isSubmitting}
 										>
 											New Transaction
 										</Button>
-									</span>
+									</div>
 								) : (
 									<React.Fragment>
 										<CircularProgress thickness={7} />
 										{values.ledgerStatus}
 									</React.Fragment>
 								)}
-							</div>
+							</React.Fragment>
 						) : (
 							<Button
 								className={classes.sendButton}
@@ -516,6 +529,17 @@ const styles = {
 		cursor: 'pointer',
 	},
 	transactionErrorText: { color: 'red', fontSize: '16px' },
+	transaction: {
+		borderColor: '#6fbf73',
+		borderStyle: 'solid',
+
+		paddingTop: 3,
+		paddingBottom: 8,
+	},
+	successIcon: {
+		position: 'relative',
+		top: '5px',
+	},
 };
 
 const enhancer = _flowRight(

@@ -31,12 +31,13 @@ class ImportSeedForm extends React.Component {
 					[mnemonicPath]: '',
 				}}
 				onSubmit={(values, actions) => {
-					this.props.setMnemonic(_get(values, mnemonicPath));
+					this.props.setMnemonic(_get(values, mnemonicPath).trim());
 					// proceed to next page
 					this.props.handleNext();
 				}}
 				validationSchema={Yup.object().shape({
 					[mnemonicPath]: Yup.string()
+						.trim()
 						.required('Required')
 						.test(
 							mnemonicPath,
@@ -45,7 +46,11 @@ class ImportSeedForm extends React.Component {
 						),
 				})}
 				render={({ isSubmitting, errors, touched }) => (
-					<Form onKeyPress={this.handleKeyPress} style={{ width: '500px' }}>
+					<Form
+						onKeyPress={this.handleKeyPress}
+						style={{ width: '500px' }}
+						autoComplete="nope"
+					>
 						<React.Fragment>
 							<FormTextField
 								error={
@@ -98,6 +103,9 @@ const FormTextField = (props) => {
 		<Field name={props.name}>
 			{({ field }) => (
 				<TextField
+					inputProps={{
+						autoComplete: 'nope',
+					}}
 					{...field}
 					label={props.label + ' ' + (props.error ? '*' : '')}
 					margin="dense"

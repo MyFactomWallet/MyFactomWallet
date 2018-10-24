@@ -20,6 +20,8 @@ import SendTransactionPreview from './SendTransactionPreview';
 import { withNetwork } from '../Context/NetworkContext';
 import { withLedger } from '../Context/LedgerContext';
 import { isValidFctPublicAddress } from 'factom/dist/factom';
+import Paper from '@material-ui/core/Paper';
+import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
 
 /**
  * Constants
@@ -125,7 +127,7 @@ class SendFactoidForm extends Component {
 								FACTOID_MULTIPLIER * sendFactoidAmount
 							);
 						} else if (importType === 'seed') {
-							const mnemonic = seed;
+							const mnemonic = seed.trim();
 							const index = activeAddress_o.index;
 							const toAddr = recipientAddress;
 							const amount = sendFactoidAmount * FACTOID_MULTIPLIER;
@@ -213,6 +215,7 @@ class SendFactoidForm extends Component {
 					[seedPath]: Yup.string().when(walletImportTypePath, {
 						is: 'seed',
 						then: Yup.string()
+							.trim()
 							.required('Required')
 							.test(seedPath, 'Invalid Seed Phrase', this.verifySeed),
 						otherwise: Yup.string().notRequired(),
@@ -227,7 +230,7 @@ class SendFactoidForm extends Component {
 					handleReset,
 					handleChange,
 				}) => (
-					<Form onKeyPress={this.handleKeyPress}>
+					<Form onKeyPress={this.handleKeyPress} autoComplete="nope">
 						<AddressInfoHeader />
 
 						<Field name={recipientAddressPath}>
@@ -360,6 +363,7 @@ class SendFactoidForm extends Component {
 											inputProps={{
 												spellCheck: false,
 												maxLength: FCT_ADDRESS_LENGTH,
+												autoComplete: 'nope',
 											}}
 										/>
 									)}
@@ -377,6 +381,9 @@ class SendFactoidForm extends Component {
 								<Field name={seedPath}>
 									{({ field, form }) => (
 										<TextField
+											inputProps={{
+												autoComplete: 'nope',
+											}}
 											error={
 												_get(errors, seedPath) && _get(touched, seedPath)
 													? true
@@ -419,12 +426,19 @@ class SendFactoidForm extends Component {
 						)}
 						<br />
 						{isSubmitting ? (
-							<div>
+							<React.Fragment>
 								{values.transactionID !== null ? (
-									<span>
-										<Typography>
-											<b>Transaction ID:</b> {values.transactionID}
-										</Typography>
+									<div>
+										<Paper className={classes.transaction}>
+											<CheckCircle
+												nativeColor="#6fbf73"
+												className={classes.successIcon}
+											/>
+											&nbsp;
+											<Typography style={{ display: 'inline' }}>
+												<b>Transaction ID:</b> {values.transactionID}
+											</Typography>
+										</Paper>
 										<br />
 										<Button
 											type="button"
@@ -432,18 +446,17 @@ class SendFactoidForm extends Component {
 											color="primary"
 											variant="contained"
 											onClick={handleReset}
-											//disabled={!dirty || isSubmitting}
 										>
 											New Transaction
 										</Button>
-									</span>
+									</div>
 								) : (
 									<React.Fragment>
 										<CircularProgress thickness={7} />
 										{values.ledgerStatus}
 									</React.Fragment>
 								)}
-							</div>
+							</React.Fragment>
 						) : (
 							<Button
 								className={classes.sendButton}
@@ -511,6 +524,17 @@ const styles = {
 	transactionErrorText: { color: 'red', fontSize: '16px' },
 	pointer: {
 		cursor: 'pointer',
+	},
+	transaction: {
+		borderColor: '#6fbf73',
+		borderStyle: 'solid',
+
+		paddingTop: 3,
+		paddingBottom: 8,
+	},
+	successIcon: {
+		position: 'relative',
+		top: '5px',
 	},
 };
 

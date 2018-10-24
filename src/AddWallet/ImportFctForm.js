@@ -42,7 +42,7 @@ class ImportFctForm extends React.Component {
 				onSubmit={(values, actions) => {
 					const fctAddress_o = newStandardAddress(
 						get(values, fctAddrPath),
-						get(values, nicknamePath)
+						get(values, nicknamePath).trim()
 					);
 
 					addAddress(fctAddress_o, 'fct');
@@ -126,6 +126,7 @@ const FormTextField = (props) => {
 					inputProps={{
 						spellCheck: false,
 						maxLength: props.maxLength,
+						autoComplete: 'nope',
 					}}
 					{...field}
 					label={props.label + ' ' + (props.error ? '*' : '')}

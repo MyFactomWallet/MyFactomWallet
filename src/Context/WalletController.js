@@ -46,6 +46,7 @@ class WalletController extends React.Component {
 			},
 			//===================================================
 			isStateHydrated: false,
+			isWalletEmpty: this.isWalletEmpty,
 			activeAddressIndex_o: null,
 			signWithSeed: this.signWithSeed,
 			getSeedAddresses: this.getSeedAddresses,
@@ -158,6 +159,7 @@ class WalletController extends React.Component {
 		}));
 
 		await this.setDefaultIndex();
+
 		this.saveStateToLocalStorage();
 	};
 
@@ -217,11 +219,24 @@ class WalletController extends React.Component {
 		this.saveStateToLocalStorage();
 	};
 
+	isWalletEmpty = () => {
+		const { network } = this.props.networkController.networkProps;
+
+		return (
+			_isEmpty(this.state.addresses[network].fct) &&
+			_isEmpty(this.state.addresses[network].ec)
+		);
+	};
+
 	setDefaultIndex = () => {
 		if (!_isEmpty(this.getFactoidAddresses())) {
 			return this.selectAddress(0, 'fct');
 		} else if (!_isEmpty(this.getEntryCreditAddresses())) {
 			return this.selectAddress(0, 'ec');
+		} else {
+			return this.smartSetState({
+				activeAddressIndex_o: null,
+			});
 		}
 	};
 
