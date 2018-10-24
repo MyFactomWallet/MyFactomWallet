@@ -3,6 +3,7 @@ import _flowRight from 'lodash/flowRight';
 import _flow from 'lodash/flow';
 import _isEmpty from 'lodash/isEmpty';
 import _noop from 'lodash/noop';
+import _isNil from 'lodash/isNil';
 import { WalletContext } from './WalletContext';
 import { withFactomCli } from './FactomCliContext';
 import { withNetwork } from './NetworkContext';
@@ -104,26 +105,34 @@ class WalletController extends React.Component {
 			localStorage.getItem(LOCAL_STORAGE_KEY)
 		);
 
-		const prepareArray = (addressArray) =>
-			addressArray.map((addr_o) => ({
-				...addr_o,
-				balance: null,
-				transactions: [],
+		if (!_isNil(localStorageAddresses)) {
+			const prepareArray = (addressArray) =>
+				addressArray.map((addr_o) => ({
+					...addr_o,
+					balance: null,
+					transactions: [],
+				}));
+
+			const { mainnet, testnet } = localStorageAddresses;
+
+			const storageAddresses = {
+				mainnet: {
+					fct: prepareArray(mainnet.fct),
+					ec: prepareArray(mainnet.ec),
+				},
+				testnet: {
+					fct: prepareArray(testnet.fct),
+					ec: prepareArray(testnet.ec),
+				},
+			};
+
+			await this.smartSetState((prevState) => ({
+				addresses: storageAddresses,
 			}));
 
-		const { mainnet, testnet } = localStorageAddresses;
-
-		const storageAddresses = {
-			mainnet: { fct: prepareArray(mainnet.fct), ec: prepareArray(mainnet.ec) },
-			testnet: { fct: prepareArray(testnet.fct), ec: prepareArray(testnet.ec) },
-		};
-
-		await this.smartSetState((prevState) => ({
-			addresses: storageAddresses,
-		}));
-
-		await this.setDefaultIndex();
-		await this.updateBalances({ force: true });
+			await this.setDefaultIndex();
+			await this.updateBalances({ force: true });
+		}
 		await this.smartSetState({ isStateHydrated: true });
 	};
 

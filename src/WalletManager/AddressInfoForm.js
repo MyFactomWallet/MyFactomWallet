@@ -122,7 +122,7 @@ class AddressInfoForm extends React.Component {
 													color="default"
 												/>
 											}
-											label="Save to Cache" // Save to Browser Storage
+											label="Save to Browser" // Save to Browser Storage
 										/>
 									)}
 								/>
