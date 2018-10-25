@@ -45,12 +45,6 @@ class SendFactoidForm extends Component {
 		this.setState({ sendFactoidFee });
 	}
 
-	handleKeyPress(event) {
-		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
-			event.preventDefault();
-		}
-	}
-
 	getMaxFCT(balance, fee) {
 		const maxFactoids = balance * FACTOSHI_MULTIPLIER - fee;
 		if (maxFactoids < 0) {
@@ -230,7 +224,7 @@ class SendFactoidForm extends Component {
 					handleReset,
 					handleChange,
 				}) => (
-					<Form onKeyPress={this.handleKeyPress} autoComplete="nope">
+					<Form autoComplete="nope">
 						<AddressInfoHeader />
 
 						<Field name={recipientAddressPath}>

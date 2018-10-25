@@ -46,12 +46,6 @@ class ConvertECForm extends Component {
 		this.setState({ sendFactoshiFee, ecRate });
 	}
 
-	handleKeyPress(event) {
-		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
-			event.preventDefault();
-		}
-	}
-
 	getMaxEC(balance, fee) {
 		const maxFactoshis = balance - fee;
 		let maxEntryCredits = maxFactoshis / this.state.ecRate;
@@ -233,7 +227,7 @@ class ConvertECForm extends Component {
 					handleReset,
 					handleChange,
 				}) => (
-					<Form onKeyPress={this.handleKeyPress} autoComplete="nope">
+					<Form autoComplete="nope">
 						<AddressInfoHeader />
 						<Field name={recipientAddressPath}>
 							{({ field, form }) => (

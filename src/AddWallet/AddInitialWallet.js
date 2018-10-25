@@ -8,7 +8,8 @@ import AddWalletStepper from './AddWalletStepper';
 
 class AddInitialWallet extends Component {
 	navigateToWallet = () => {
-		this.props.history.push('/wallet/manage/');
+		//this.props.history.push('/wallet/manage/');
+		this.props.history.push('/');
 	};
 
 	render() {

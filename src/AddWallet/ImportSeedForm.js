@@ -16,12 +16,6 @@ import factombip44 from 'factombip44/dist/factombip44';
 const mnemonicPath = 'mnemonic';
 
 class ImportSeedForm extends React.Component {
-	handleKeyPress(event) {
-		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
-			event.preventDefault();
-		}
-	}
-
 	render() {
 		const { classes } = this.props;
 
@@ -46,11 +40,7 @@ class ImportSeedForm extends React.Component {
 						),
 				})}
 				render={({ isSubmitting, errors, touched }) => (
-					<Form
-						onKeyPress={this.handleKeyPress}
-						style={{ width: '500px' }}
-						autoComplete="nope"
-					>
+					<Form style={{ width: '500px' }} autoComplete="nope">
 						<React.Fragment>
 							<FormTextField
 								error={
@@ -110,7 +100,6 @@ const FormTextField = (props) => {
 					label={props.label + ' ' + (props.error ? '*' : '')}
 					margin="dense"
 					fullWidth
-					multiline
 					error={props.error}
 				/>
 			)}

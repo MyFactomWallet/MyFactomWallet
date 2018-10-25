@@ -14,9 +14,8 @@ class LandingPage extends Component {
 		const { classes } = this.props;
 		const { getActiveAddress } = this.props.walletController;
 
-		const walletPath = _isNil(getActiveAddress())
-			? '/wallet/add'
-			: '/wallet/manage';
+		const walletPath = _isNil(getActiveAddress()) ? '/wallet/add' : '/';
+		//: '/wallet/manage';
 
 		return (
 			<div className={classes.body}>

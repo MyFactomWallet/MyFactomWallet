@@ -25,7 +25,7 @@ class WalletManager extends Component {
 		} = this.props;
 
 		return (
-			<Grid container>
+			<React.Fragment>
 				{isWalletEmpty() ? (
 					<Redirect to="/wallet/add/" />
 				) : (
@@ -43,7 +43,7 @@ class WalletManager extends Component {
 						</Grid>
 					)
 				)}
-			</Grid>
+			</React.Fragment>
 		);
 	}
 }

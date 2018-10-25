@@ -86,9 +86,8 @@ class ButtonAppBar extends React.Component {
 
 		const testnetActive = networkProps.network === 'testnet';
 
-		const walletPath = _isNil(getActiveAddress())
-			? '#/wallet/add'
-			: '#/wallet/manage';
+		const walletPath = _isNil(getActiveAddress()) ? '#/wallet/add' : '#/';
+		//: '#/wallet/manage';
 
 		return (
 			<AppBar position="static" className={classes.root}>

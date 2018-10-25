@@ -35,8 +35,9 @@ class App extends Component {
 									<Header />
 									<LedgerController>
 										<div className={classes.body}>
-											<Route exact path="/" component={LandingPage} />
-											<Route path="/wallet/manage/" component={WalletManager} />
+											<Route exact path="/" component={WalletManager} />
+											{/* <Route exact path="/" component={LandingPage} />
+											<Route path="/wallet/manage/" component={WalletManager} /> */}
 											<Route path="/wallet/add/" component={AddInitialWallet} />
 											<Route exact path="/vote" component={ComingSoon} />
 											<Route exact path="/createVote" component={ComingSoon} />

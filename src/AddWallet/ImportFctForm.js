@@ -21,12 +21,6 @@ const fctAddrPath = 'factoidAddress';
 const nicknamePath = 'nickname';
 
 class ImportFctForm extends React.Component {
-	handleKeyPress(event) {
-		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
-			event.preventDefault();
-		}
-	}
-
 	render() {
 		const {
 			classes,
@@ -70,7 +64,7 @@ class ImportFctForm extends React.Component {
 						),
 				})}
 				render={({ isSubmitting, errors, touched }) => (
-					<Form onKeyPress={this.handleKeyPress}>
+					<Form>
 						<FormTextField
 							error={
 								errors.factoidAddress && touched.factoidAddress ? true : false
@@ -132,7 +126,6 @@ const FormTextField = (props) => {
 					label={props.label + ' ' + (props.error ? '*' : '')}
 					margin="dense"
 					fullWidth
-					multiline
 					error={props.error}
 				/>
 			)}

@@ -52,12 +52,6 @@ class SeedForm extends React.Component {
 		}));
 	};
 
-	handleKeyPress(event) {
-		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
-			event.preventDefault();
-		}
-	}
-
 	hasAddressSelected = (formValues) =>
 		Object.keys(formValues)
 			.filter((key) => key.startsWith('checkbox'))
@@ -100,7 +94,7 @@ class SeedForm extends React.Component {
 					setFieldValue,
 					handleChange,
 				}) => (
-					<Form onKeyPress={this.handleKeyPress}>
+					<Form>
 						<GenerateAddressTable
 							title={getTitle(networkProps)[type]}
 							type={type}

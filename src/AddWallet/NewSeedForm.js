@@ -24,12 +24,6 @@ class NewSeedForm extends React.Component {
 		this.props.setMnemonic(this.props.walletController.getRandomMnemonic());
 	}
 
-	handleKeyPress(event) {
-		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
-			event.preventDefault();
-		}
-	}
-
 	nextStep = () => {
 		this.setState({ step: 2 });
 	};
@@ -53,11 +47,7 @@ class NewSeedForm extends React.Component {
 						.oneOf([this.props.mnemonic], 'Seed does not match'),
 				})}
 				render={({ isSubmitting, errors, touched }) => (
-					<Form
-						onKeyPress={this.handleKeyPress}
-						style={{ width: '500px' }}
-						autoComplete="nope"
-					>
+					<Form style={{ width: '500px' }} autoComplete="nope">
 						{this.state.step === 1 && (
 							<React.Fragment>
 								<Typography
@@ -145,7 +135,6 @@ const FormTextField = (props) => {
 					label={props.label + ' ' + (props.error ? '*' : '')}
 					margin="dense"
 					fullWidth
-					multiline
 					error={props.error}
 				/>
 			)}

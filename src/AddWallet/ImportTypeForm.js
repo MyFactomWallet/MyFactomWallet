@@ -44,11 +44,6 @@ const getImportTypes = (networkProps) => {
 const importTypePath = 'importType';
 
 class ImportTypeForm extends React.Component {
-	handleKeyPress(event) {
-		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
-			event.preventDefault();
-		}
-	}
 	render() {
 		const {
 			classes,
@@ -67,7 +62,7 @@ class ImportTypeForm extends React.Component {
 					[importTypePath]: Yup.string().required('Required'),
 				})}
 				render={({ values, handleChange, isSubmitting, errors, touched }) => (
-					<Form onKeyPress={this.handleKeyPress}>
+					<Form>
 						<FormControl
 							error={
 								_get(errors, importTypePath) && _get(touched, importTypePath)

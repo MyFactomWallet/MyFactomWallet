@@ -188,7 +188,6 @@ class GenerateAddressTable extends React.Component {
 																						}}
 																						margin="dense"
 																						fullWidth
-																						multiline
 																						error={
 																							errors[nicknamePath] &&
 																							touched[nicknamePath]

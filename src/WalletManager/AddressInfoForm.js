@@ -25,12 +25,6 @@ const saveLocallyPath = 'saveLocally';
 const deleteAnchorElPath = 'deleteAnchorEl';
 
 class AddressInfoForm extends React.Component {
-	handleKeyPress(event) {
-		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
-			event.preventDefault();
-		}
-	}
-
 	render() {
 		const {
 			classes,
@@ -93,7 +87,7 @@ class AddressInfoForm extends React.Component {
 					setFieldValue,
 					handleChange,
 				}) => (
-					<Form onKeyPress={this.handleKeyPress}>
+					<Form>
 						<Typography variant="h6">Edit Address</Typography>
 						<Grid container item xs={12}>
 							<Grid item xs={12}>
@@ -199,7 +193,6 @@ const FormTextField = (props) => {
 					label={props.label + ' ' + (props.error ? '*' : '')}
 					margin="dense"
 					fullWidth
-					multiline
 					error={props.error}
 				/>
 			)}

@@ -21,11 +21,6 @@ const ecAddrNamePath = 'entryCreditAddress';
 const nicknamePath = 'nickname';
 
 class ImportEcForm extends React.Component {
-	handleKeyPress(event) {
-		if (event.target.type !== 'textarea' && event.which === 13 /* Enter */) {
-			event.preventDefault();
-		}
-	}
 	render() {
 		const {
 			classes,
@@ -72,7 +67,7 @@ class ImportEcForm extends React.Component {
 						),
 				})}
 				render={({ isSubmitting, errors, touched }) => (
-					<Form onKeyPress={this.handleKeyPress}>
+					<Form>
 						<FormTextField
 							error={
 								errors.entryCreditAddress && touched.entryCreditAddress
@@ -135,7 +130,6 @@ const FormTextField = (props) => {
 					label={props.label + ' ' + (props.error ? '*' : '')}
 					margin="dense"
 					fullWidth
-					multiline
 					error={props.error}
 				/>
 			)}
