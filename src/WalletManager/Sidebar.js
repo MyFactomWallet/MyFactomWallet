@@ -5,7 +5,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import AddWalletModal from '../AddWallet/AddWalletModal.js';
+import AddWalletModal from '../addWallet/AddWalletModal.js';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
