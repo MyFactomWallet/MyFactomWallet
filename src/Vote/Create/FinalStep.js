@@ -6,7 +6,7 @@ import OpenInNew from '@material-ui/icons/OpenInNew';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import SectionHeader from '../Shared/SectionHeader';
+import SectionHeader from '../shared/SectionHeader';
 
 const styles = (theme) => ({
 	pad: {

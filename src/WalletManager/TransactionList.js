@@ -3,7 +3,7 @@ import _flowRight from 'lodash/flowRight';
 import _isEmpty from 'lodash/isEmpty';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { withWalletContext } from '../Context/WalletContext';
+import { withWalletContext } from '../context/WalletContext';
 import Typography from '@material-ui/core/Typography';
 
 class TransactionList extends React.Component {

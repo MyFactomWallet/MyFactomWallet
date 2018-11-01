@@ -3,10 +3,10 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import SignVote from '../Shared/SignVote';
-import VoteSummary from '../Shared/VoteSummary';
+import SignVote from '../shared/SignVote';
+import VoteSummary from '../shared/VoteSummary';
 import Button from '@material-ui/core/Button';
-import SectionHeader from '../Shared/SectionHeader';
+import SectionHeader from '../shared/SectionHeader';
 
 function PreviewVote(props) {
 	const { classes } = props;

@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { withWalletContext } from '../Context/WalletContext';
+import { withWalletContext } from '../context/WalletContext';
 import { Redirect } from 'react-router-dom';
 
 class WalletManager extends Component {

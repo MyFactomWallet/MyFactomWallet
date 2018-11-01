@@ -1,5 +1,5 @@
 import React from 'react';
-import { withNetwork } from '../../Context/NetworkContext';
+import { withNetwork } from '../../context/NetworkContext';
 import _flowRight from 'lodash/flowRight';
 /**
  * Constants

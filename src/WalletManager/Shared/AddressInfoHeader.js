@@ -2,14 +2,14 @@ import React from 'react';
 import _flowRight from 'lodash/flowRight';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import { withWalletContext } from '../../Context/WalletContext';
+import { withWalletContext } from '../../context/WalletContext';
 import FormatBalance from './BalanceFormatter.js';
 import _isNil from 'lodash/isNil';
 import Paper from '@material-ui/core/Paper';
 import VerifiedUser from '@material-ui/icons/VerifiedUser';
 import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
-import { withLedger } from '../../Context/LedgerContext';
+import { withLedger } from '../../context/LedgerContext';
 
 const AddressInfoHeader = (props) => {
 	const {

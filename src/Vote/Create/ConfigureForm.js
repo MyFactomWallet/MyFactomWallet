@@ -20,7 +20,7 @@ import Clear from '@material-ui/icons/Clear';
 import Button from '@material-ui/core/Button';
 import get from 'lodash/get';
 import omit from 'lodash/omit';
-import SectionHeader from '../Shared/SectionHeader';
+import SectionHeader from '../shared/SectionHeader';
 
 import {
 	SINGLE_OPTION_VOTING,

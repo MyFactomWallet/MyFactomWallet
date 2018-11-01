@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import WhereToVote from '@material-ui/icons/WhereToVoteOutlined';
 import AccountBalance from '@material-ui/icons/AccountBalanceOutlined';
-import { withWalletContext } from '../Context/WalletContext';
+import { withWalletContext } from '../context/WalletContext';
 
 class LandingPage extends Component {
 	render() {

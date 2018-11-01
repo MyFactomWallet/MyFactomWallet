@@ -3,7 +3,7 @@ import _isEmpty from 'lodash/isEmpty';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
-import AddressInfoHeader from './Shared/AddressInfoHeader';
+import AddressInfoHeader from './shared/AddressInfoHeader';
 import AddressInfoForm from './AddressInfoForm';
 import TransactionList from './TransactionList';
 

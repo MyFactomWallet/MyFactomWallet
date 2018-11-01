@@ -7,8 +7,8 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
-import { withWalletContext } from '../Context/WalletContext';
-import { withNetwork } from '../Context/NetworkContext';
+import { withWalletContext } from '../context/WalletContext';
+import { withNetwork } from '../context/NetworkContext';
 import GenerateAddressTable from './GenerateAddressTable';
 
 /**

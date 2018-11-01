@@ -16,8 +16,8 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import CloudDone from '@material-ui/icons/CloudDoneOutlined';
 import CustomNodeForm from './CustomNodeForm';
 import Modal from '@material-ui/core/Modal';
-import { withWalletContext } from '../Context/WalletContext';
-import { withNetwork } from '../Context/NetworkContext';
+import { withWalletContext } from '../context/WalletContext';
+import { withNetwork } from '../context/NetworkContext';
 
 //import CloudOff from '@material-ui/icons/CloudOff';
 

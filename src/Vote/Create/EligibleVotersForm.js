@@ -17,7 +17,7 @@ import FormControl from '@material-ui/core/FormControl';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Button from '@material-ui/core/Button';
 import get from 'lodash/get';
-import SectionHeader from '../Shared/SectionHeader';
+import SectionHeader from '../shared/SectionHeader';
 
 const selectedListPath = 'formFields.selectedList';
 const workingVoterIDPath = 'formFields.workingVoterID';

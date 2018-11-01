@@ -2,7 +2,7 @@ import React from 'react';
 import _get from 'lodash/get';
 import { Formik, Form, ErrorMessage } from 'formik';
 import { withStyles } from '@material-ui/core/styles';
-import { withNetwork } from '../Context/NetworkContext';
+import { withNetwork } from '../context/NetworkContext';
 import _flowRight from 'lodash/flowRight';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';

@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import SendFactoidForm from './SendFactoidForm.js';
 import ConvertECForm from './ConvertECForm.js';
 import AddressInfoTab from './AddressInfoTab';
-import { withNetwork } from '../Context/NetworkContext';
+import { withNetwork } from '../context/NetworkContext';
 
 class WalletTabContent extends React.Component {
 	state = {

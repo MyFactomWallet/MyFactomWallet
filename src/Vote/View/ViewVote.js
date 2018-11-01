@@ -17,9 +17,9 @@ import Button from '@material-ui/core/Button';
 import QS from 'qs';
 import ArrowForward from '@material-ui/icons/ArrowForward';
 import ArrowBack from '@material-ui/icons/ArrowBack';
-import VoteSummary from '../Shared/VoteSummary';
-import SignVote from '../Shared/SignVote';
-import SectionHeader from '../Shared/SectionHeader';
+import VoteSummary from '../shared/VoteSummary';
+import SignVote from '../shared/SignVote';
+import SectionHeader from '../shared/SectionHeader';
 //import OpenInNew from '@material-ui/icons/OpenInNew';
 //import { Link } from 'react-router-dom';
 

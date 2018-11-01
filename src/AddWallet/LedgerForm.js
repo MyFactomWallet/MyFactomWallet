@@ -7,10 +7,10 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
-import { withWalletContext } from '../Context/WalletContext';
+import { withWalletContext } from '../context/WalletContext';
 import Typography from '@material-ui/core/Typography';
-import { withLedger } from '../Context/LedgerContext';
-import { withNetwork } from '../Context/NetworkContext';
+import { withLedger } from '../context/LedgerContext';
+import { withNetwork } from '../context/NetworkContext';
 import GenerateAddressTable from './GenerateAddressTable';
 import CircularProgress from '@material-ui/core/CircularProgress';
 

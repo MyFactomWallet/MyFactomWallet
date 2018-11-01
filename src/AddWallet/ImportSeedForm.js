@@ -1,7 +1,7 @@
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { withStyles } from '@material-ui/core/styles';
-import { withWalletContext } from '../Context/WalletContext';
+import { withWalletContext } from '../context/WalletContext';
 import _get from 'lodash/get';
 import _flowRight from 'lodash/flowRight';
 import PropTypes from 'prop-types';

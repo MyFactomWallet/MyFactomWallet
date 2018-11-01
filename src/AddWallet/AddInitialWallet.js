@@ -3,7 +3,7 @@ import _flowRight from 'lodash/flowRight';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { withWalletContext } from '../Context/WalletContext';
+import { withWalletContext } from '../context/WalletContext';
 import AddWalletStepper from './AddWalletStepper';
 
 class AddInitialWallet extends Component {

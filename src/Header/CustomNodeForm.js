@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import SectionHeader from '../Vote/Shared/SectionHeader.js';
+import SectionHeader from '../vote/shared/SectionHeader.js';
 
 const hostPath = 'host';
 const portPath = 'port';

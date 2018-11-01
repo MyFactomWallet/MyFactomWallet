@@ -11,9 +11,9 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import FormatBalance from './Shared/BalanceFormatter.js';
-import { withWalletContext } from '../Context/WalletContext';
-import { withNetwork } from '../Context/NetworkContext';
+import FormatBalance from './shared/BalanceFormatter.js';
+import { withWalletContext } from '../context/WalletContext';
+import { withNetwork } from '../context/NetworkContext';
 import _isEmpty from 'lodash/isEmpty';
 
 class Sidebar extends Component {

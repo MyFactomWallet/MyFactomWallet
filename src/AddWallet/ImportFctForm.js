@@ -9,8 +9,8 @@ import TextField from '@material-ui/core/TextField';
 import { isValidFctPublicAddress } from 'factom/dist/factom';
 import get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
-import { withWalletContext } from '../Context/WalletContext';
-import { withNetwork } from '../Context/NetworkContext';
+import { withWalletContext } from '../context/WalletContext';
+import { withNetwork } from '../context/NetworkContext';
 
 /**
  * Constants

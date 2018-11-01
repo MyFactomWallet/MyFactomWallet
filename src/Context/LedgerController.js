@@ -4,8 +4,8 @@ import _flowRight from 'lodash/flowRight';
 import { LedgerContext } from './LedgerContext';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import Fct from '@factoid.org/hw-app-fct';
-import { withNetwork } from '../Context/NetworkContext';
-import { withWalletContext } from '../Context/WalletContext';
+import { withNetwork } from '../context/NetworkContext';
+import { withWalletContext } from '../context/WalletContext';
 import { Transaction } from 'factom/dist/factom';
 /**
  * Constants

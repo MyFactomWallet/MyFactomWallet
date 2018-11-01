@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { withNetwork } from '../Context/NetworkContext';
+import { withNetwork } from '../context/NetworkContext';
 import _flowRight from 'lodash/flowRight';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -9,7 +9,7 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import AddWalletStepContent from './AddWalletStepContent';
-import SectionHeader from '../Vote/Shared/SectionHeader.js';
+import SectionHeader from '../vote/shared/SectionHeader.js';
 import Paper from '@material-ui/core/Paper';
 
 const getStandardSteps = () => {

@@ -14,12 +14,12 @@ import Tooltip from '@material-ui/core/Tooltip';
 import LabelImportant from '@material-ui/icons/LabelImportant';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import get from 'lodash/get';
-import SectionHeader from '../Shared/SectionHeader';
+import SectionHeader from '../shared/SectionHeader';
 
 import {
 	APPROVAL_VOTING,
 	INSTANT_RUNOFF_VOTING,
-} from '../Create/VOTE_CONSTANTS';
+} from '../create/VOTE_CONSTANTS';
 
 //duplicates
 const titlePath = 'pollJSON.proposal.title';
