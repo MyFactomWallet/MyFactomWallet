@@ -238,7 +238,7 @@ class ConfirmationDialogRaw extends React.Component {
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={this.handleAgree} color="primary">
-						Agree
+						Accept
 					</Button>
 				</DialogActions>
 			</Dialog>

@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
 import { withWalletContext } from '../context/WalletContext';
+import { withSeed } from '../context/SeedContext';
 import { withNetwork } from '../context/NetworkContext';
 import GenerateAddressTable from './GenerateAddressTable';
 
@@ -37,7 +38,7 @@ class SeedForm extends React.Component {
 	}
 
 	getNextFive = async () => {
-		const generatedAddressList = await this.props.walletController.getSeedAddresses(
+		const generatedAddressList = await this.props.seedController.getSeedAddresses(
 			this.props.mnemonic,
 			this.state.generatedAddressList.length,
 			5,
@@ -139,6 +140,11 @@ const styles = (theme) => ({
 	errorText: { color: 'red', fontSize: '12px' },
 });
 
-const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
+const enhancer = _flowRight(
+	withNetwork,
+	withSeed,
+	withWalletContext,
+	withStyles(styles)
+);
 
 export default enhancer(SeedForm);

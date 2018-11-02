@@ -19,8 +19,8 @@ const getStandardSteps = () => {
 const getLedgerAddressSteps = (networkProps) => {
 	return [
 		'Import Method',
-		networkProps.factoidAbbreviation,
-		networkProps.ecAbbreviation,
+		networkProps.factoidAbbreviationFull,
+		networkProps.ecAbbreviationFull,
 	];
 };
 //this.props.networkController.networkProps.factoidAbbreviation
@@ -28,8 +28,8 @@ const getSeedAddressSteps = (networkProps) => {
 	return [
 		'Import Method',
 		'Seed Value',
-		networkProps.factoidAbbreviation,
-		networkProps.ecAbbreviation,
+		networkProps.factoidAbbreviationFull,
+		networkProps.ecAbbreviationFull,
 	];
 };
 
@@ -145,7 +145,7 @@ const styles = (theme) => ({
 		backgroundColor: '#eeeeee',
 	},
 	paper: {
-		minWidth: 525,
+		minWidth: 565,
 		padding: theme.spacing.unit * 4,
 		minHeight: 300,
 	},

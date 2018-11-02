@@ -80,7 +80,10 @@ class Sidebar extends Component {
 				<ExpansionPanel
 					key={index}
 					expanded={expanded}
-					onClick={() => selectAddress(index, 'ec')}
+					onClick={async () => {
+						await selectAddress(index, 'ec');
+						updateBalances();
+					}}
 					className={expanded ? classes.expanded : ''}
 				>
 					<ExpansionPanelSummary>

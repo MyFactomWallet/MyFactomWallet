@@ -17,6 +17,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AddressInfoHeader from './shared/AddressInfoHeader';
 import { withLedger } from '../context/LedgerContext';
+import { withSeed } from '../context/SeedContext';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
 import { isValidEcPublicAddress } from 'factom/dist/factom';
@@ -64,7 +65,7 @@ class ConvertECForm extends Component {
 	verifySeed = (seed) => {
 		const activeAddress_o = this.props.walletController.getActiveAddress();
 
-		return this.props.walletController.verifySeed(seed, activeAddress_o);
+		return this.props.seedController.verifySeed(seed, activeAddress_o);
 	};
 
 	render() {
@@ -74,14 +75,13 @@ class ConvertECForm extends Component {
 				updateBalances,
 				getEntryCreditAddresses,
 				getActiveAddress,
-				getEntryCreditRate,
-				signWithSeed,
 				activeAddressIndex_o,
 				addAddressTransaction,
 			},
 			ledgerController: { signWithLedger },
 			factomCliController: { factomCli },
 			networkController: { networkProps },
+			seedController: { signWithSeed },
 		} = this.props;
 
 		const activeAddress_o = getActiveAddress();
@@ -539,6 +539,7 @@ const styles = {
 const enhancer = _flowRight(
 	withNetwork,
 	withLedger,
+	withSeed,
 	withWalletContext,
 	withFactomCli,
 	withStyles(styles)

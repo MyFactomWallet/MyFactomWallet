@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import withRootTheme from './withRootTheme';
 import WalletController from './context/WalletController';
+import SeedController from './context/SeedController';
 import FactomCliController from './context/FactomCliController';
 import NetworkController from './context/NetworkController';
 import LedgerController from './context/LedgerController';
@@ -33,26 +34,30 @@ class App extends Component {
 								<Disclaimer />
 								<WalletController>
 									<Header />
-									<LedgerController>
-										<div className={classes.body}>
-											<Route exact path="/" component={WalletManager} />
-											{/* <Route exact path="/" component={LandingPage} />
+									<SeedController>
+										<LedgerController>
+											<div className={classes.body}>
+												<Route exact path="/" component={WalletManager} />
+												{/* <Route exact path="/" component={LandingPage} />
 											<Route path="/wallet/manage/" component={WalletManager} /> */}
-											<Route path="/wallet/add/" component={AddInitialWallet} />
-											{/* 											<Route exact path="/vote" component={ComingSoon} />
- */}{' '}
-											<Route exact path="/createVote" component={ComingSoon} />
-											<Route exact path="/vote" component={Vote} />
-											<Route exact path="/viewVote" component={ViewVote} />
-											<Route
-												exact
-												path="/createVote"
-												component={CreateVoteStepper}
-											/>
-											{/* <Route exact path="/manageVoters" component={ManageVoterList} /> 
+												<Route
+													path="/wallet/add/"
+													component={AddInitialWallet}
+												/>
+												{/* <Route exact path="/vote" component={ComingSoon} /> 
+											<Route exact path="/createVote" component={ComingSoon} />*/}
+												<Route exact path="/vote" component={Vote} />
+												<Route exact path="/viewVote" component={ViewVote} />
+												<Route
+													exact
+													path="/createVote"
+													component={CreateVoteStepper}
+												/>
+												{/* <Route exact path="/manageVoters" component={ManageVoterList} /> 
 											<Route exact path="/help" component={Help} />*/}
-										</div>
-									</LedgerController>
+											</div>
+										</LedgerController>
+									</SeedController>
 								</WalletController>
 							</React.Fragment>
 						</FactomCliController>

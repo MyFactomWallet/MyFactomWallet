@@ -4,17 +4,12 @@ import _flow from 'lodash/flow';
 import _isEmpty from 'lodash/isEmpty';
 import _noop from 'lodash/noop';
 import _isNil from 'lodash/isNil';
+import _pick from 'lodash/pick';
 import { WalletContext } from './WalletContext';
 import { withFactomCli } from './FactomCliContext';
 import { withNetwork } from './NetworkContext';
-import {
-	Transaction,
-	keyToPrivateFctAddress,
-	keyToPrivateEcAddress,
-	getPublicAddress,
-} from 'factom/dist/factom';
+import { Transaction, getPublicAddress } from 'factom/dist/factom';
 import factombip44 from 'factombip44/dist/factombip44';
-import _pick from 'lodash/pick';
 
 /**
  * Constants
@@ -45,13 +40,11 @@ class WalletController extends React.Component {
 				},
 			},
 			//===================================================
+			activeAddressIndex_o: null,
 			isStateHydrated: false,
 			isWalletEmpty: this.isWalletEmpty,
-			activeAddressIndex_o: null,
-			signWithSeed: this.signWithSeed,
-			getSeedAddresses: this.getSeedAddresses,
+
 			getRandomMnemonic: this.getRandomMnemonic,
-			verifySeed: this.verifySeed,
 			verifyKey: this.verifyKey,
 			updateAddress: this.updateAddress,
 			addAddressTransaction: this.addAddressTransaction,
@@ -244,41 +237,6 @@ class WalletController extends React.Component {
 		return factombip44.randomMnemonic();
 	}
 
-	keyToFctAddress(key) {
-		return getPublicAddress(keyToPrivateFctAddress(key));
-	}
-	keyToECAddress(key) {
-		return getPublicAddress(keyToPrivateEcAddress(key));
-	}
-
-	signWithSeed = async ({ mnemonic, index, toAddr, amount, type }) => {
-		let signedTX = {};
-
-		const bip32Account = this.props.networkController.networkProps.bip32Account;
-
-		const wallet = new factombip44.FactomBIP44(mnemonic);
-
-		const privateKey = keyToPrivateFctAddress(
-			wallet.generateFactoidPrivateKey(bip32Account, 0, index)
-		);
-
-		if (type === 'sendFCT') {
-			signedTX = await this.props.factomCliController.factomCli.createFactoidTransaction(
-				privateKey,
-				toAddr,
-				amount
-			);
-		} else if (type === 'convertFCT') {
-			signedTX = await this.props.factomCliController.factomCli.createEntryCreditPurchaseTransaction(
-				privateKey,
-				toAddr,
-				amount
-			);
-		}
-
-		return signedTX;
-	};
-
 	verifyKey = (privateKey, { address }) => {
 		try {
 			// for factom addresses
@@ -286,50 +244,6 @@ class WalletController extends React.Component {
 		} catch (err) {
 			return false;
 		}
-	};
-
-	verifySeed = (mnemonic, { address, index }) => {
-		try {
-			// for factom addresses
-			const wallet = new factombip44.FactomBIP44(mnemonic);
-			const bip32Account = this.props.networkController.networkProps
-				.bip32Account;
-
-			const derivedAddress = this.keyToFctAddress(
-				wallet.generateFactoidPrivateKey(bip32Account, 0, index)
-			);
-
-			return derivedAddress.valueOf() === address.valueOf(); // memoize
-		} catch (err) {
-			return false;
-		}
-	};
-
-	getSeedAddresses = async (mnemonic, startIndex, amount, type) => {
-		let result = [];
-
-		const bip32Account = this.props.networkController.networkProps.bip32Account;
-
-		const wallet = new factombip44.FactomBIP44(mnemonic);
-
-		for (let index = startIndex; index < startIndex + amount; index++) {
-			let key = null;
-			let address = null;
-
-			if (type === 'fct') {
-				key = wallet.generateFactoidPrivateKey(bip32Account, 0, index);
-				address = this.keyToFctAddress(key);
-			} else if (type === 'ec') {
-				key = wallet.generateEntryCreditPrivateKey(bip32Account, 0, index);
-				address = this.keyToECAddress(key);
-			}
-
-			result.push({ address, index });
-		}
-
-		const addressList = await Promise.all(result.map(this.updateWalletBalance));
-
-		return addressList;
 	};
 
 	addAddress = (address_o, type) => {

@@ -13,15 +13,16 @@ import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
 import AddressInfoHeader from './shared/AddressInfoHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withWalletContext } from '../context/WalletContext';
-import SendTransactionPreview from './SendTransactionPreview';
+import { withSeed } from '../context/SeedContext';
 import { withNetwork } from '../context/NetworkContext';
 import { withLedger } from '../context/LedgerContext';
 import { isValidFctPublicAddress } from 'factom/dist/factom';
-import Paper from '@material-ui/core/Paper';
-import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
+import SendTransactionPreview from './SendTransactionPreview';
 
 /**
  * Constants
@@ -62,7 +63,7 @@ class SendFactoidForm extends Component {
 	verifySeed = (seed) => {
 		const activeAddress_o = this.props.walletController.getActiveAddress();
 
-		return this.props.walletController.verifySeed(seed, activeAddress_o);
+		return this.props.seedController.verifySeed(seed, activeAddress_o);
 	};
 
 	render() {
@@ -73,12 +74,12 @@ class SendFactoidForm extends Component {
 				getFactoidAddresses,
 				getActiveAddress,
 				updateBalances,
-				signWithSeed,
 				activeAddressIndex_o,
 				addAddressTransaction,
 			},
 			ledgerController: { signWithLedger },
 			networkController: { networkProps },
+			seedController: { signWithSeed },
 		} = this.props;
 
 		const factoidAddresses = getFactoidAddresses();
@@ -535,6 +536,7 @@ const styles = {
 const enhancer = _flowRight(
 	withNetwork,
 	withLedger,
+	withSeed,
 	withWalletContext,
 	withFactomCli,
 	withStyles(styles)

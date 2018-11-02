@@ -1,15 +1,17 @@
 import React from 'react';
 import _flowRight from 'lodash/flowRight';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
-import { withWalletContext } from '../../context/WalletContext';
-import FormatBalance from './BalanceFormatter.js';
 import _isNil from 'lodash/isNil';
+import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import VerifiedUser from '@material-ui/icons/VerifiedUser';
-import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import FormatBalance from './BalanceFormatter.js';
+import { withWalletContext } from '../../context/WalletContext';
 import { withLedger } from '../../context/LedgerContext';
+import Tooltip from '@material-ui/core/Tooltip';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const AddressInfoHeader = (props) => {
 	const {
@@ -34,6 +36,14 @@ const AddressInfoHeader = (props) => {
 							<i>Address:</i>
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							{activeAddress_o.address}
+							&nbsp;
+							<CopyToClipboard text={activeAddress_o.address}>
+								<Tooltip title="Copy" className={classes.pointer}>
+									<SvgIcon fontSize="inherit" color="primary">
+										<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+									</SvgIcon>
+								</Tooltip>
+							</CopyToClipboard>
 						</Typography>
 						{activeAddress_o.importType === 'ledger' && (
 							<Typography>
