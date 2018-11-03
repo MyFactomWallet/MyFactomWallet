@@ -32,11 +32,12 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
+//import FormHelperText from '@material-ui/core/FormHelperText';
 import {
-	SINGLE_OPTION_VOTING,
-	APPROVAL_VOTING,
-	INSTANT_RUNOFF_VOTING,
+	BINARY_CONFIG,
+	SINGLE_OPTION_CONFIG,
+	APPROVAL_CONFIG,
+	INSTANT_RUNOFF_CONFIG,
 	ALL_ELIGIBLE_VOTERS,
 	PARTICIPANTS_ONLY,
 } from './VOTE_CONSTANTS';
@@ -44,10 +45,11 @@ import {
 /**
  * Constants
  */
-const TYPE_VALUES = [
-	{ value: SINGLE_OPTION_VOTING, text: SINGLE_OPTION_VOTING },
-	{ value: APPROVAL_VOTING, text: APPROVAL_VOTING },
-	{ value: INSTANT_RUNOFF_VOTING, text: INSTANT_RUNOFF_VOTING },
+const VOTE_TYPE_VALUES = [
+	{ value: BINARY_CONFIG.name, text: BINARY_CONFIG.name },
+	{ value: SINGLE_OPTION_CONFIG.name, text: SINGLE_OPTION_CONFIG.name },
+	{ value: APPROVAL_CONFIG.name, text: APPROVAL_CONFIG.name },
+	{ value: INSTANT_RUNOFF_CONFIG.name, text: INSTANT_RUNOFF_CONFIG.name },
 ];
 
 const COMPUTE_AGAINST_VALUES = [
@@ -79,6 +81,8 @@ const optionsPath = 'pollJSON.vote.config.options';
 const abstentionPath = 'pollJSON.vote.config.allowAbstention';
 const computeResultsAgainstPath = 'pollJSON.vote.config.computeResultsAgainst';
 const acceptanceCriteriaPath = 'pollJSON.vote.config.acceptanceCriteria';
+const winnerCriteriaPath = 'pollJSON.vote.config.winnerCriteria';
+//const minSupportPath = 'pollJSON.vote.config.winnerCriteria.minSupport';
 
 // form specific fields
 const voteTypeTextPath = 'formFields.voteTypeText';
@@ -86,7 +90,6 @@ const questionSourcePath = 'formFields.questionSource';
 const workingOptionPath = 'formFields.workingOption';
 const workingHrefPath = 'formFields.workingHref';
 const checkedTurnoutPath = 'formFields.checkedTurnout';
-const checkedSupportPath = 'formFields.checkedSupport';
 const workingWeightMinTurnoutPath = 'formFields.workingWeightMinTurnout';
 const workingUnweightMinTurnoutPath = 'formFields.workingUnweightMinTurnout';
 const workingWeightMinSupportPath = 'formFields.workingWeightMinSupport';
@@ -154,9 +157,9 @@ class ConfigureVoteForm extends React.Component {
 					}),
 				})}
 				onSubmit={(values, actions) => {
-					/*
-					* Handle text vs externalRef
-					*/
+					/**
+					 * Handle text vs externalRef
+					 */
 					if (_get(values, textPath)) {
 						// delete href
 						values = _omit(values, externalRefPath);
@@ -171,52 +174,45 @@ class ConfigureVoteForm extends React.Component {
 						};
 					}
 
-					/*
-					* Handle acceptance criteria
-					*/
-					if (
-						_get(values, checkedTurnoutPath) ||
-						_get(values, checkedSupportPath)
-					) {
+					/**
+					 * Handle Acceptance Citeria
+					 */
+					if (_get(values, checkedTurnoutPath)) {
 						// reset acceptance criteria
 						_get(values, configPath).acceptanceCriteria = {};
+
+						// set acceptance criteria
+						_get(values, acceptanceCriteriaPath).minTurnout = {
+							weighted: _get(values, workingWeightMinTurnoutPath),
+							unweighted: _get(values, workingUnweightMinTurnoutPath),
+						};
 					} else {
 						// no acceptance criteria
 						values = _omit(values, acceptanceCriteriaPath);
 					}
 
-					// add turnout criteria
-					if (_get(values, checkedTurnoutPath)) {
-						_get(values, acceptanceCriteriaPath).minTurnout = {
-							weighted: _get(values, workingWeightMinTurnoutPath),
-							unweighted: _get(values, workingUnweightMinTurnoutPath),
+					/**
+					 * Handle Winner Citeria
+					 */
+
+					// reset winnerCriteria
+					_get(values, configPath).winnerCritieria = { minSupport: {} };
+
+					if (_get(values, applyMinSupportToAllOptions)) {
+						// apply criteria to all options
+						_get(values, winnerCriteriaPath).minSupport['*'] = {
+							weighted: _get(values, workingWeightMinSupportPath),
+							unweighted: _get(values, workingUnweightMinSupportPath),
+						};
+					} else {
+						// add criteria for specific option
+						_get(values, winnerCriteriaPath).minSupport = {
+							[_get(values, workingMinSupportOption)]: {
+								weighted: _get(values, workingWeightMinSupportPath),
+								unweighted: _get(values, workingUnweightMinSupportPath),
+							},
 						};
 					}
-
-					// add support criteria
-					if (_get(values, checkedSupportPath)) {
-						_get(values, acceptanceCriteriaPath).minSupport = {};
-
-						if (_get(values, applyMinSupportToAllOptions)) {
-							// add criteria for all options
-							for (let option of _get(values, optionsPath)) {
-								_get(values, acceptanceCriteriaPath).minSupport[option] = {
-									weighted: _get(values, workingWeightMinSupportPath),
-									unweighted: _get(values, workingUnweightMinSupportPath),
-								};
-							}
-						} else {
-							// add criteria for specific option
-							_get(values, acceptanceCriteriaPath).minSupport = {
-								[_get(values, workingMinSupportOption)]: {
-									weighted: _get(values, workingWeightMinSupportPath),
-									unweighted: _get(values, workingUnweightMinSupportPath),
-								},
-							};
-						}
-					}
-
-					// add Support Criteria
 
 					// update Poll
 					updatePoll(values);
@@ -388,7 +384,7 @@ class ConfigureVoteForm extends React.Component {
 									<FormSelectField
 										name={voteTypeTextPath}
 										label="Type"
-										options={TYPE_VALUES}
+										options={VOTE_TYPE_VALUES}
 										width={215}
 										onChange={(e) => {
 											//update question type
@@ -397,27 +393,41 @@ class ConfigureVoteForm extends React.Component {
 											//update dependent fields
 											const newValue = e.target.value;
 
-											setFieldValue(optionsPath, []);
+											//setFieldValue(optionsPath, []);
 											setFieldValue(applyMinSupportToAllOptions, true);
 											setFieldValue(workingMinSupportOption, '');
 
-											if (newValue === SINGLE_OPTION_VOTING) {
-												setFieldValue(voteTypePath, 0);
-												setFieldValue(minOptionsPath, 1);
-												setFieldValue(maxOptionsPath, 1);
-											} else if (newValue === APPROVAL_VOTING) {
-												setFieldValue(voteTypePath, 0);
+											if (newValue === BINARY_CONFIG.name) {
+												setFieldValue(voteTypePath, BINARY_CONFIG.type);
+												setFieldValue(minOptionsPath, BINARY_CONFIG.numOptions);
+												setFieldValue(maxOptionsPath, BINARY_CONFIG.numOptions);
+											} else if (newValue === SINGLE_OPTION_CONFIG.name) {
+												setFieldValue(voteTypePath, SINGLE_OPTION_CONFIG.type);
+												setFieldValue(
+													minOptionsPath,
+													SINGLE_OPTION_CONFIG.numOptions
+												);
+												setFieldValue(
+													maxOptionsPath,
+													SINGLE_OPTION_CONFIG.numOptions
+												);
+											} else if (newValue === APPROVAL_CONFIG.name) {
+												setFieldValue(voteTypePath, APPROVAL_CONFIG.type);
 												setFieldValue(minOptionsPath, '');
 												setFieldValue(maxOptionsPath, '');
-											} else if (newValue === INSTANT_RUNOFF_VOTING) {
-												setFieldValue(voteTypePath, 1);
+											} else if (newValue === INSTANT_RUNOFF_CONFIG.name) {
+												setFieldValue(voteTypePath, INSTANT_RUNOFF_CONFIG.type);
 												setFieldValue(minOptionsPath, '');
 												setFieldValue(maxOptionsPath, '');
 											}
 										}}
 									/>
 								</Grid>
-								{_get(values, voteTypeTextPath) && (
+								{/**
+								 * Compute Results Against
+								 * Abstention
+								 */}
+								{_get(values, voteTypePath) !== '' && (
 									<Grid container spacing={8} item xs={12}>
 										<Grid item xs={12}>
 											<FormSelectField
@@ -451,9 +461,13 @@ class ConfigureVoteForm extends React.Component {
 										</Grid>
 									</Grid>
 								)}
-
-								{(_get(values, voteTypeTextPath) === APPROVAL_VOTING ||
-									_get(values, voteTypeTextPath) === INSTANT_RUNOFF_VOTING) && (
+								{/**
+								 * Minimum Options
+								 * Maximum Options
+								 */}
+								{(_get(values, voteTypeTextPath) === APPROVAL_CONFIG.name ||
+									_get(values, voteTypeTextPath) ===
+										INSTANT_RUNOFF_CONFIG.name) && (
 									<Grid container spacing={8} item xs={12}>
 										<Grid item xs={12}>
 											<FormTextField
@@ -485,7 +499,10 @@ class ConfigureVoteForm extends React.Component {
 										</Grid>
 									</Grid>
 								)}
-								{_get(values, voteTypeTextPath) && (
+								{/**
+								 * Add Options
+								 */}
+								{_get(values, voteTypePath) !== '' && (
 									<Grid item xs={12}>
 										<Paper elevation={2} className={classes.pad}>
 											<List className={classes.optionList} dense>
@@ -578,246 +595,178 @@ class ConfigureVoteForm extends React.Component {
 									</Grid>
 								)}
 							</Grid>
-							<Grid item xs={12}>
-								<br />
-								<br />
-								<SectionHeader
-									disableGutterBottom={true}
-									text="Acceptance Criteria"
-								/>
-								<List dense>
-									<ListItem disableGutters divider>
-										<Grid container>
-											<Grid item xs={4}>
-												<Field
-													name={checkedTurnoutPath}
-													render={({ field, form }) => (
-														<FormControlLabel
-															control={
-																<Checkbox
-																	name={checkedTurnoutPath}
-																	checked={field.value}
-																	onChange={(e) => {
-																		handleChange(e);
-
-																		if (field.value) {
-																			// reset turnout acceptance criteria
-																			form.setFieldValue(
-																				workingWeightMinTurnoutPath,
-																				''
-																			);
-																			form.setFieldValue(
-																				workingUnweightMinTurnoutPath,
-																				''
-																			);
-																		}
-																	}}
-																	color="default"
-																/>
-															}
-															label="Minimum Turnout"
-														/>
-													)}
-												/>
-											</Grid>
-											<Grid item xs={4}>
-												<label
-													style={{
-														color: this.criteriaStyle(
-															values,
-															checkedTurnoutPath
-														),
-													}}
-												>
-													Weighted Ratio:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-													<input
-														name={workingWeightMinTurnoutPath}
-														disabled={!_get(values, checkedTurnoutPath)}
-														size="4"
-														onBlur={handleBlur}
-														type="number"
-														className={classes.numberInput}
-														value={_get(values, workingWeightMinTurnoutPath)}
-														onChange={handleChange}
-													/>
-												</label>
-												<br />
-												<label
-													style={{
-														color: this.criteriaStyle(
-															values,
-															checkedTurnoutPath
-														),
-													}}
-												>
-													Unweighted Ratio:&nbsp;
-													<input
-														name={workingUnweightMinTurnoutPath}
-														disabled={!_get(values, checkedTurnoutPath)}
-														size="4"
-														onBlur={handleBlur}
-														type="number"
-														className={classes.numberInput}
-														value={_get(values, workingUnweightMinTurnoutPath)}
-														onChange={handleChange}
-													/>
-												</label>
-											</Grid>
-											<Grid
-												style={{
-													color: this.criteriaStyle(values, checkedTurnoutPath),
-												}}
-												item
-												xs={4}
-											>
-												Applies to all eligible voters.
-											</Grid>
+							<Grid item container xs={12}>
+								<Grid item xs={12}>
+									<br />
+									<br />
+									<SectionHeader text="Winner Criteria" />
+								</Grid>
+								<Grid item xs={12}>
+									<Grid container>
+										<Grid item xs={4}>
+											<Typography>Minimum Support *</Typography>
 										</Grid>
-									</ListItem>
-									<ListItem disableGutters divider>
-										<Grid container>
-											<Grid item xs={4}>
-												<Field
-													name={checkedSupportPath}
-													render={({ field, form }) => (
-														<FormControlLabel
-															control={
-																<Checkbox
-																	name={checkedSupportPath}
-																	checked={field.value}
-																	//onChange={handleChange}
-
-																	onChange={(e) => {
-																		handleChange(e);
-
-																		form.setFieldValue(
-																			applyMinSupportToAllOptions,
-																			true
-																		);
-
-																		if (field.value) {
-																			//reset support acceptance criteria
-																			form.setFieldValue(
-																				workingWeightMinSupportPath,
-																				''
-																			);
-																			form.setFieldValue(
-																				workingUnweightMinSupportPath,
-																				''
-																			);
-																			form.setFieldValue(
-																				workingMinSupportOption,
-																				''
-																			);
-																		}
-																	}}
-																	color="default"
-																/>
-															}
-															label="Minimum Support"
-														/>
-													)}
+										<Grid item xs={4}>
+											<label>
+												Weighted Ratio:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+												<input
+													name={workingWeightMinSupportPath}
+													size="4"
+													onBlur={handleBlur}
+													type="number"
+													className={classes.numberInput}
+													value={_get(values, workingWeightMinSupportPath)}
+													onChange={handleChange}
 												/>
-											</Grid>
-											<Grid item xs={4}>
-												<label
-													style={{
-														color: this.criteriaStyle(
-															values,
-															checkedSupportPath
-														),
-													}}
-												>
-													Weighted Ratio:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-													<input
-														name={workingWeightMinSupportPath}
-														disabled={!_get(values, checkedSupportPath)}
-														size="4"
-														onBlur={handleBlur}
-														type="number"
-														className={classes.numberInput}
-														value={_get(values, workingWeightMinSupportPath)}
-														onChange={handleChange}
-													/>
-												</label>
+											</label>
 
-												<br />
-												<label
-													style={{
-														color: this.criteriaStyle(
-															values,
-															checkedSupportPath
-														),
-													}}
-												>
-													Unweighted Ratio:&nbsp;
-													<input
-														name={workingUnweightMinSupportPath}
-														disabled={!_get(values, checkedSupportPath)}
-														size="4"
-														onBlur={handleBlur}
-														type="number"
-														className={classes.numberInput}
-														value={_get(values, workingUnweightMinSupportPath)}
-														onChange={handleChange}
-													/>
-												</label>
-											</Grid>
-											<Grid item xs={4}>
-												<div
-													style={{
-														color: this.criteriaStyle(
-															values,
-															checkedSupportPath
-														),
-													}}
-												>
-													{_get(values, voteTypeTextPath) ? (
-														_get(values, voteTypeTextPath) ===
-														SINGLE_OPTION_VOTING ? (
-															<div>
-																Applies to option:&nbsp;
-																<Field
-																	name={workingMinSupportOption}
-																	component="select"
-																	disabled={!_get(values, checkedSupportPath)}
-																	onChange={(e) => {
-																		handleChange(e);
-
-																		if (!e.target.value) {
-																			setFieldValue(
-																				applyMinSupportToAllOptions,
-																				true
-																			);
-																		} else {
-																			setFieldValue(
-																				applyMinSupportToAllOptions,
-																				false
-																			);
-																		}
-																	}}
-																>
-																	<option value="">All Options</option>
-																	{_get(values, optionsPath).map(
-																		(option, index) => (
-																			<option key={index} value={option}>
-																				{option}
-																			</option>
-																		)
-																	)}
-																</Field>
-															</div>
-														) : (
-															'Applies to all options'
-														)
-													) : (
-														'Select an Answer Type'
-													)}
-												</div>
-											</Grid>
+											<br />
+											<label>
+												Unweighted Ratio:&nbsp;
+												<input
+													name={workingUnweightMinSupportPath}
+													size="4"
+													onBlur={handleBlur}
+													type="number"
+													className={classes.numberInput}
+													value={_get(values, workingUnweightMinSupportPath)}
+													onChange={handleChange}
+												/>
+											</label>
 										</Grid>
-									</ListItem>
-								</List>
+										<Grid item xs={4}>
+											{_get(values, voteTypePath) !== '' ? (
+												_get(values, voteTypeTextPath) ===
+												BINARY_CONFIG.name ? (
+													<div>
+														Applies to option:&nbsp;
+														<Field
+															name={workingMinSupportOption}
+															component="select"
+															onChange={(e) => {
+																handleChange(e);
+
+																if (!e.target.value) {
+																	setFieldValue(
+																		applyMinSupportToAllOptions,
+																		true
+																	);
+																} else {
+																	setFieldValue(
+																		applyMinSupportToAllOptions,
+																		false
+																	);
+																}
+															}}
+														>
+															<option value="">All Options</option>
+															{_get(values, optionsPath).map(
+																(option, index) => (
+																	<option key={index} value={option}>
+																		{option}
+																	</option>
+																)
+															)}
+														</Field>
+													</div>
+												) : (
+													'Applies to all options'
+												)
+											) : (
+												'Select an Answer Type'
+											)}
+										</Grid>
+									</Grid>
+								</Grid>
+							</Grid>
+							<Grid container item xs={12}>
+								<Grid item xs={12}>
+									<br />
+									<SectionHeader
+										disableGutterBottom={true}
+										text="Acceptance Criteria"
+									/>
+								</Grid>
+								<Grid container item xs={12}>
+									<Grid item xs={4}>
+										<Field
+											name={checkedTurnoutPath}
+											render={({ field, form }) => (
+												<FormControlLabel
+													control={
+														<Checkbox
+															name={checkedTurnoutPath}
+															checked={field.value}
+															onChange={(e) => {
+																handleChange(e);
+
+																if (field.value) {
+																	// reset turnout acceptance criteria
+																	form.setFieldValue(
+																		workingWeightMinTurnoutPath,
+																		''
+																	);
+																	form.setFieldValue(
+																		workingUnweightMinTurnoutPath,
+																		''
+																	);
+																}
+															}}
+															color="default"
+														/>
+													}
+													label="Minimum Turnout"
+												/>
+											)}
+										/>
+									</Grid>
+									<Grid item xs={4}>
+										<label
+											style={{
+												color: this.criteriaStyle(values, checkedTurnoutPath),
+											}}
+										>
+											Weighted Ratio:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											<input
+												name={workingWeightMinTurnoutPath}
+												disabled={!_get(values, checkedTurnoutPath)}
+												size="4"
+												onBlur={handleBlur}
+												type="number"
+												className={classes.numberInput}
+												value={_get(values, workingWeightMinTurnoutPath)}
+												onChange={handleChange}
+											/>
+										</label>
+										<br />
+										<label
+											style={{
+												color: this.criteriaStyle(values, checkedTurnoutPath),
+											}}
+										>
+											Unweighted Ratio:&nbsp;
+											<input
+												name={workingUnweightMinTurnoutPath}
+												disabled={!_get(values, checkedTurnoutPath)}
+												size="4"
+												onBlur={handleBlur}
+												type="number"
+												className={classes.numberInput}
+												value={_get(values, workingUnweightMinTurnoutPath)}
+												onChange={handleChange}
+											/>
+										</label>
+									</Grid>
+									<Grid
+										style={{
+											color: this.criteriaStyle(values, checkedTurnoutPath),
+										}}
+										item
+										xs={4}
+									>
+										Applies to all eligible voters.
+									</Grid>
+								</Grid>
 							</Grid>
 							<Grid item xs={12} className={classes.stepperButtons}>
 								<br />

@@ -17,8 +17,8 @@ import get from 'lodash/get';
 import SectionHeader from '../shared/SectionHeader';
 
 import {
-	APPROVAL_VOTING,
-	INSTANT_RUNOFF_VOTING,
+	APPROVAL_CONFIG,
+	INSTANT_RUNOFF_CONFIG,
 } from '../create/VOTE_CONSTANTS';
 
 //duplicates
@@ -217,8 +217,11 @@ class VoteSummary extends React.Component {
 						<input defaultChecked type="checkbox" />
 					</Grid>
 				</Grid>
-				{(get(poll, voteTypePath) === APPROVAL_VOTING ||
-					get(poll, voteTypePath) === INSTANT_RUNOFF_VOTING) && (
+				{/**
+				 *Fix
+				 */}
+				{(get(poll, voteTypePath) === APPROVAL_CONFIG.type ||
+					get(poll, voteTypePath) === INSTANT_RUNOFF_CONFIG.type) && (
 					<Grid container item xs={12}>
 						<Grid item xs={12}>
 							<Typography gutterBottom>

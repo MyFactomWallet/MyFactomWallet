@@ -30,6 +30,7 @@ export default class CreateVoteController extends React.Component {
 						computeResultsAgainst: '',
 						minOptions: '',
 						maxOptions: '',
+						winnerCriteria: {},
 						acceptanceCriteria: {},
 					},
 				},
