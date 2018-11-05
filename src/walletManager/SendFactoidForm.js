@@ -17,6 +17,8 @@ import Paper from '@material-ui/core/Paper';
 import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
 import AddressInfoHeader from './shared/AddressInfoHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import OpenInNew from '@material-ui/icons/OpenInNew';
+import Tooltip from '@material-ui/core/Tooltip';
 import { withWalletContext } from '../context/WalletContext';
 import { withSeed } from '../context/SeedContext';
 import { withNetwork } from '../context/NetworkContext';
@@ -430,8 +432,33 @@ class SendFactoidForm extends Component {
 												className={classes.successIcon}
 											/>
 											&nbsp;
-											<Typography style={{ display: 'inline' }}>
+											<Typography gutterBottom style={{ display: 'inline' }}>
 												<b>Transaction ID:</b> {values.transactionID}
+											</Typography>
+											<br />
+											<br />
+											<Typography>
+												This transaction will be visible{' '}
+												<Tooltip title="Open Factom Explorer">
+													<a
+														target="_blank"
+														rel="noopener noreferrer"
+														href={
+															networkProps.explorerURL +
+															'/transaction?txid=' +
+															values.transactionID
+														}
+													>
+														here{' '}
+														<OpenInNew
+															color="primary"
+															style={{ fontSize: 15 }}
+														/>
+													</a>
+												</Tooltip>{' '}
+												in 10-15 minutes, after being included in the next
+												Factom block currently being processed by the blockchain
+												<br />
 											</Typography>
 										</Paper>
 										<br />

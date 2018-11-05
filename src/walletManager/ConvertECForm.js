@@ -15,6 +15,8 @@ import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import OpenInNew from '@material-ui/icons/OpenInNew';
+import Tooltip from '@material-ui/core/Tooltip';
 import AddressInfoHeader from './shared/AddressInfoHeader';
 import { withLedger } from '../context/LedgerContext';
 import { withSeed } from '../context/SeedContext';
@@ -432,6 +434,31 @@ class ConvertECForm extends Component {
 											&nbsp;
 											<Typography style={{ display: 'inline' }}>
 												<b>Transaction ID:</b> {values.transactionID}
+											</Typography>
+											<br />
+											<br />
+											<Typography>
+												This transaction will be visible{' '}
+												<Tooltip title="Open Factom Explorer">
+													<a
+														target="_blank"
+														rel="noopener noreferrer"
+														href={
+															networkProps.explorerURL +
+															'/transaction?txid=' +
+															values.transactionID
+														}
+													>
+														here{' '}
+														<OpenInNew
+															color="primary"
+															style={{ fontSize: 15 }}
+														/>
+													</a>
+												</Tooltip>{' '}
+												in 10-15 minutes, after being included in the next
+												Factom block currently being processed by the blockchain
+												<br />
 											</Typography>
 										</Paper>
 										<br />

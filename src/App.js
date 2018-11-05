@@ -44,15 +44,19 @@ class App extends Component {
 													path="/wallet/add/"
 													component={AddInitialWallet}
 												/>
-												{/* <Route exact path="/vote" component={ComingSoon} /> 
-											<Route exact path="/createVote" component={ComingSoon} />*/}
-												<Route exact path="/vote" component={Vote} />
+												<Route exact path="/vote" component={ComingSoon} />
+												<Route
+													exact
+													path="/createVote"
+													component={ComingSoon}
+												/>
+												{/* <Route exact path="/vote" component={Vote} />
 												<Route exact path="/viewVote" component={ViewVote} />
 												<Route
 													exact
 													path="/createVote"
 													component={CreateVoteStepper}
-												/>
+												/> */}
 												{/* <Route exact path="/manageVoters" component={ManageVoterList} /> 
 											<Route exact path="/help" component={Help} />*/}
 											</div>

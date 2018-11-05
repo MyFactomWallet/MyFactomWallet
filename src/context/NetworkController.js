@@ -20,6 +20,7 @@ class NetworkController extends React.Component {
 			ecAbbreviation: 'EC',
 			ecAbbreviationFull: 'Entry Credit',
 			apiPort: 8188,
+			explorerURL: 'https://explorer.factoid.org',
 		},
 		testnet: {
 			network: 'testnet',
@@ -29,6 +30,7 @@ class NetworkController extends React.Component {
 			ecAbbreviation: 'TC',
 			ecAbbreviationFull: 'Test Credit',
 			apiPort: 8288,
+			explorerURL: 'https://testnet.factoid.org',
 		},
 	};
 
