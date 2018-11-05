@@ -37,7 +37,7 @@ export default class CreateVoteController extends React.Component {
 			},
 			formFields: {
 				voteTypeText: '',
-				questionSource: '',
+				questionSource: 'text',
 				workingHref: '',
 				workingOption: '',
 				checkedTurnout: false,
@@ -47,7 +47,6 @@ export default class CreateVoteController extends React.Component {
 				workingWeightMinSupport: '',
 				workingUnweightMinSupport: '',
 				workingMinSupportOption: '',
-				applyMinSupportToAllOptions: true,
 			},
 		},
 		eligibleVotersForm: {

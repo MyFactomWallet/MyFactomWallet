@@ -2,6 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import _get from 'lodash/get';
 import _omit from 'lodash/omit';
+import _isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
 import {
 	Formik,
@@ -95,7 +96,6 @@ const workingUnweightMinTurnoutPath = 'formFields.workingUnweightMinTurnout';
 const workingWeightMinSupportPath = 'formFields.workingWeightMinSupport';
 const workingUnweightMinSupportPath = 'formFields.workingUnweightMinSupport';
 const workingMinSupportOption = 'formFields.workingMinSupportOption';
-const applyMinSupportToAllOptions = 'formFields.applyMinSupportToAllOptions';
 
 class ConfigureVoteForm extends React.Component {
 	componentDidMount() {
@@ -198,19 +198,20 @@ class ConfigureVoteForm extends React.Component {
 					// reset winnerCriteria
 					_get(values, configPath).winnerCritieria = { minSupport: {} };
 
-					if (_get(values, applyMinSupportToAllOptions)) {
-						// apply criteria to all options
-						_get(values, winnerCriteriaPath).minSupport['*'] = {
-							weighted: _get(values, workingWeightMinSupportPath),
-							unweighted: _get(values, workingUnweightMinSupportPath),
-						};
-					} else {
+					if (_get(values, voteTypeTextPath) === BINARY_CONFIG.name) {
 						// add criteria for specific option
 						_get(values, winnerCriteriaPath).minSupport = {
 							[_get(values, workingMinSupportOption)]: {
 								weighted: _get(values, workingWeightMinSupportPath),
 								unweighted: _get(values, workingUnweightMinSupportPath),
 							},
+						};
+					} else {
+						// apply criteria to all options
+						_get(values, winnerCriteriaPath).minSupport = { '*': {} };
+						_get(values, winnerCriteriaPath).minSupport['*'] = {
+							weighted: _get(values, workingWeightMinSupportPath),
+							unweighted: _get(values, workingUnweightMinSupportPath),
 						};
 					}
 
@@ -238,7 +239,7 @@ class ConfigureVoteForm extends React.Component {
 										text="Configure Poll"
 									/>
 								</Grid>
-								<Grid container spacing={8} item xs={6}>
+								<Grid container spacing={8} item xs={5}>
 									<Grid item xs={12}>
 										<FormTextField
 											name={titlePath}
@@ -254,6 +255,92 @@ class ConfigureVoteForm extends React.Component {
 											errorClass={classes.errorText}
 										/>
 									</Grid>
+									<Grid item xs={12}>
+										<FormSelectField
+											name={voteTypeTextPath}
+											label="Vote Type"
+											options={VOTE_TYPE_VALUES}
+											width={215}
+											onChange={(e) => {
+												//update question type
+												handleChange(e);
+
+												//update dependent fields
+												const newValue = e.target.value;
+
+												//setFieldValue(optionsPath, []);
+												setFieldValue(workingMinSupportOption, '');
+
+												if (newValue === BINARY_CONFIG.name) {
+													setFieldValue(voteTypePath, BINARY_CONFIG.type);
+													setFieldValue(
+														minOptionsPath,
+														BINARY_CONFIG.numOptions
+													);
+													setFieldValue(
+														maxOptionsPath,
+														BINARY_CONFIG.numOptions
+													);
+												} else if (newValue === SINGLE_OPTION_CONFIG.name) {
+													setFieldValue(
+														voteTypePath,
+														SINGLE_OPTION_CONFIG.type
+													);
+													setFieldValue(
+														minOptionsPath,
+														SINGLE_OPTION_CONFIG.numOptions
+													);
+													setFieldValue(
+														maxOptionsPath,
+														SINGLE_OPTION_CONFIG.numOptions
+													);
+												} else if (newValue === APPROVAL_CONFIG.name) {
+													setFieldValue(voteTypePath, APPROVAL_CONFIG.type);
+													setFieldValue(minOptionsPath, '');
+													setFieldValue(maxOptionsPath, '');
+												} else if (newValue === INSTANT_RUNOFF_CONFIG.name) {
+													setFieldValue(
+														voteTypePath,
+														INSTANT_RUNOFF_CONFIG.type
+													);
+													setFieldValue(minOptionsPath, '');
+													setFieldValue(maxOptionsPath, '');
+												}
+											}}
+										/>
+									</Grid>
+									<Grid item xs={12}>
+										<FormSelectField
+											name={computeResultsAgainstPath}
+											label="Compute Results Against"
+											options={COMPUTE_AGAINST_VALUES}
+											width={215}
+											onChange={(e) => {
+												handleChange(e);
+												if (e.target.value === ALL_ELIGIBLE_VOTERS) {
+													setFieldValue(abstentionPath, false);
+												} else {
+													setFieldValue(abstentionPath, '');
+												}
+											}}
+										/>
+									</Grid>
+									<Grid item xs={12}>
+										<FormSelectField
+											name={abstentionPath}
+											label="Allow Abstention"
+											options={ABSTENTION_VALUES}
+											width={215}
+											onChange={handleChange}
+											disabled={
+												_get(values, computeResultsAgainstPath) ===
+												ALL_ELIGIBLE_VOTERS
+											}
+										/>
+									</Grid>
+								</Grid>
+								<Grid item xs={1} />
+								<Grid container item xs={6}>
 									<Grid item xs={12}>
 										<FormTextField
 											name={commitStartPath}
@@ -381,219 +468,136 @@ class ConfigureVoteForm extends React.Component {
 									<SectionHeader disableGutterBottom={true} text="Answers" />
 								</Grid>
 								<Grid item xs={12}>
-									<FormSelectField
-										name={voteTypeTextPath}
-										label="Type"
-										options={VOTE_TYPE_VALUES}
-										width={215}
-										onChange={(e) => {
-											//update question type
-											handleChange(e);
-
-											//update dependent fields
-											const newValue = e.target.value;
-
-											//setFieldValue(optionsPath, []);
-											setFieldValue(applyMinSupportToAllOptions, true);
-											setFieldValue(workingMinSupportOption, '');
-
-											if (newValue === BINARY_CONFIG.name) {
-												setFieldValue(voteTypePath, BINARY_CONFIG.type);
-												setFieldValue(minOptionsPath, BINARY_CONFIG.numOptions);
-												setFieldValue(maxOptionsPath, BINARY_CONFIG.numOptions);
-											} else if (newValue === SINGLE_OPTION_CONFIG.name) {
-												setFieldValue(voteTypePath, SINGLE_OPTION_CONFIG.type);
-												setFieldValue(
-													minOptionsPath,
-													SINGLE_OPTION_CONFIG.numOptions
-												);
-												setFieldValue(
-													maxOptionsPath,
-													SINGLE_OPTION_CONFIG.numOptions
-												);
-											} else if (newValue === APPROVAL_CONFIG.name) {
-												setFieldValue(voteTypePath, APPROVAL_CONFIG.type);
-												setFieldValue(minOptionsPath, '');
-												setFieldValue(maxOptionsPath, '');
-											} else if (newValue === INSTANT_RUNOFF_CONFIG.name) {
-												setFieldValue(voteTypePath, INSTANT_RUNOFF_CONFIG.type);
-												setFieldValue(minOptionsPath, '');
-												setFieldValue(maxOptionsPath, '');
-											}
-										}}
-									/>
-								</Grid>
-								{/**
-								 * Compute Results Against
-								 * Abstention
-								 */}
-								{_get(values, voteTypePath) !== '' && (
-									<Grid container spacing={8} item xs={12}>
-										<Grid item xs={12}>
-											<FormSelectField
-												name={computeResultsAgainstPath}
-												label="Compute Results Against"
-												options={COMPUTE_AGAINST_VALUES}
-												width={215}
-												onChange={(e) => {
-													handleChange(e);
-													if (e.target.value === ALL_ELIGIBLE_VOTERS) {
-														setFieldValue(abstentionPath, false);
-													} else {
-														setFieldValue(abstentionPath, '');
-													}
-												}}
-											/>
-										</Grid>
-										<Grid item xs={12}>
-											<FormSelectField
-												name={abstentionPath}
-												label="Allow Abstention"
-												options={ABSTENTION_VALUES}
-												width={215}
-												onChange={handleChange}
-												disabled={
-													_get(values, computeResultsAgainstPath) ===
-													ALL_ELIGIBLE_VOTERS
-												}
-											/>
-											<br />
-										</Grid>
-									</Grid>
-								)}
-								{/**
-								 * Minimum Options
-								 * Maximum Options
-								 */}
-								{(_get(values, voteTypeTextPath) === APPROVAL_CONFIG.name ||
-									_get(values, voteTypeTextPath) ===
-										INSTANT_RUNOFF_CONFIG.name) && (
-									<Grid container spacing={8} item xs={12}>
-										<Grid item xs={12}>
-											<FormTextField
-												name={minOptionsPath}
-												required={true}
-												label="Minimum Options Allowed"
-												type="number"
-												width={215}
-												error={
-													_get(errors, minOptionsPath) &&
-													_get(touched, minOptionsPath)
-												}
-												errorClass={classes.errorText}
-											/>
-										</Grid>
-										<Grid item xs={12}>
-											<FormTextField
-												name={maxOptionsPath}
-												required={true}
-												label="Maximum Options Allowed"
-												type="number"
-												width={215}
-												error={
-													_get(errors, maxOptionsPath) &&
-													_get(touched, maxOptionsPath)
-												}
-												errorClass={classes.errorText}
-											/>
-										</Grid>
-									</Grid>
-								)}
-								{/**
-								 * Add Options
-								 */}
-								{_get(values, voteTypePath) !== '' && (
-									<Grid item xs={12}>
-										<Paper elevation={2} className={classes.pad}>
-											<List className={classes.optionList} dense>
-												<FieldArray
-													name={optionsPath}
-													render={(arrayHelpers) => (
-														<div>
-															<Typography variant="subtitle1">
-																Options&nbsp;&nbsp;
-																<Field
-																	name={workingOptionPath}
-																	type="text"
-																	onKeyPress={(e) => {
-																		if (
-																			e.which === 13 /* Enter */ &&
-																			e.target.value.trim()
-																		) {
+									<Paper elevation={2} className={classes.pad}>
+										<Grid container spacing={24}>
+											<Grid item xs={6}>
+												<List className={classes.optionList} dense>
+													<FieldArray
+														name={optionsPath}
+														render={(arrayHelpers) => (
+															<div>
+																<Typography variant="subtitle1">
+																	Options *&nbsp;&nbsp;
+																	<Field
+																		name={workingOptionPath}
+																		type="text"
+																		onKeyPress={(e) => {
+																			if (
+																				e.which === 13 /* Enter */ &&
+																				e.target.value.trim()
+																			) {
+																				arrayHelpers.push(
+																					_get(values, workingOptionPath)
+																				);
+																				// reset input
+																				setFieldValue(workingOptionPath, '');
+																			}
+																		}}
+																	/>
+																	<input
+																		type="button"
+																		onClick={() => {
 																			arrayHelpers.push(
 																				_get(values, workingOptionPath)
 																			);
 																			// reset input
 																			setFieldValue(workingOptionPath, '');
-																		}
-																	}}
-																/>
-																<input
-																	type="button"
-																	onClick={() => {
-																		arrayHelpers.push(
-																			_get(values, workingOptionPath)
-																		);
-																		// reset input
-																		setFieldValue(workingOptionPath, '');
-																	}}
-																	value="Add"
-																	disabled={!_get(values, workingOptionPath)}
-																/>
-															</Typography>
-															{_get(values, optionsPath).length > 0 ? (
-																_get(values, optionsPath).map(
-																	(option, index) => (
-																		<ListItem
-																			key={index}
-																			disableGutters
-																			divider
-																			className={classes.optionListItem}
-																		>
-																			<LabelImportant
-																				style={{ fontSize: 15 }}
-																			/>
-																			<ListItemText primary={option} />
-																			<IconButton
-																				onClick={() => {
-																					arrayHelpers.remove(index);
-																					if (
-																						_get(
-																							values,
-																							workingMinSupportOption
-																						) === option
-																					) {
-																						setFieldValue(
-																							workingMinSupportOption,
-																							''
-																						);
-																						setFieldValue(
-																							applyMinSupportToAllOptions,
-																							true
-																						);
-																					}
-																				}}
-																				aria-label="Clear"
-																			>
-																				<Clear />
-																			</IconButton>
-																		</ListItem>
-																	)
-																)
-															) : (
-																<ListItem divider>
-																	<ListItemText
-																		primary={'No Options have been added'}
+																		}}
+																		value="Add"
+																		disabled={!_get(values, workingOptionPath)}
 																	/>
-																</ListItem>
-															)}
-														</div>
-													)}
-												/>
-											</List>
-										</Paper>
-									</Grid>
-								)}
+																</Typography>
+																{_get(values, optionsPath).length > 0 ? (
+																	_get(values, optionsPath).map(
+																		(option, index) => (
+																			<ListItem
+																				key={index}
+																				disableGutters
+																				divider
+																				className={classes.optionListItem}
+																			>
+																				<LabelImportant
+																					style={{ fontSize: 15 }}
+																				/>
+																				<ListItemText primary={option} />
+																				<IconButton
+																					onClick={() => {
+																						arrayHelpers.remove(index);
+																						if (
+																							_get(
+																								values,
+																								workingMinSupportOption
+																							) === option
+																						) {
+																							setFieldValue(
+																								workingMinSupportOption,
+																								''
+																							);
+																						}
+																					}}
+																					aria-label="Clear"
+																				>
+																					<Clear />
+																				</IconButton>
+																			</ListItem>
+																		)
+																	)
+																) : (
+																	<ListItem divider>
+																		<ListItemText
+																			primary={'No Options have been added'}
+																		/>
+																	</ListItem>
+																)}
+															</div>
+														)}
+													/>
+												</List>
+											</Grid>
+											<Grid item xs={6}>
+												{/**
+												 * Minimum Options
+												 * Maximum Options
+												 */}
+												{(_get(values, voteTypeTextPath) ===
+													APPROVAL_CONFIG.name ||
+													_get(values, voteTypeTextPath) ===
+														INSTANT_RUNOFF_CONFIG.name) && (
+													<Grid container spacing={8} item xs={12}>
+														<Grid item xs={12}>
+															<FormTextField
+																name={minOptionsPath}
+																required={true}
+																label="Minimum Options Allowed"
+																type="number"
+																width={215}
+																error={
+																	_get(errors, minOptionsPath) &&
+																	_get(touched, minOptionsPath)
+																}
+																errorClass={classes.errorText}
+															/>
+														</Grid>
+														<Grid item xs={12}>
+															<FormTextField
+																name={maxOptionsPath}
+																required={true}
+																label="Maximum Options Allowed"
+																type="number"
+																width={215}
+																error={
+																	_get(errors, maxOptionsPath) &&
+																	_get(touched, maxOptionsPath)
+																}
+																errorClass={classes.errorText}
+															/>
+														</Grid>
+													</Grid>
+												)}
+											</Grid>
+										</Grid>
+									</Paper>
+								</Grid>
 							</Grid>
 							<Grid item container xs={12}>
 								<Grid item xs={12}>
@@ -604,76 +608,73 @@ class ConfigureVoteForm extends React.Component {
 								<Grid item xs={12}>
 									<Grid container>
 										<Grid item xs={4}>
+											<br />
 											<Typography>Minimum Support *</Typography>
 										</Grid>
 										<Grid item xs={4}>
-											<label>
-												Weighted Ratio:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-												<input
-													name={workingWeightMinSupportPath}
-													size="4"
-													onBlur={handleBlur}
-													type="number"
-													className={classes.numberInput}
-													value={_get(values, workingWeightMinSupportPath)}
-													onChange={handleChange}
-												/>
-											</label>
+											<FormTextField
+												name={workingWeightMinSupportPath}
+												required={true}
+												width={138}
+												label="Weighted Ratio"
+												type="number"
+												error={
+													_get(errors, workingWeightMinSupportPath) &&
+													_get(touched, workingWeightMinSupportPath)
+												}
+												errorClass={classes.errorText}
+											/>
 
 											<br />
-											<label>
-												Unweighted Ratio:&nbsp;
-												<input
-													name={workingUnweightMinSupportPath}
-													size="4"
-													onBlur={handleBlur}
-													type="number"
-													className={classes.numberInput}
-													value={_get(values, workingUnweightMinSupportPath)}
-													onChange={handleChange}
-												/>
-											</label>
+											<FormTextField
+												name={workingUnweightMinSupportPath}
+												required={true}
+												width={138}
+												label="Unweighted Ratio"
+												type="number"
+												error={
+													_get(errors, workingUnweightMinSupportPath) &&
+													_get(touched, workingUnweightMinSupportPath)
+												}
+												errorClass={classes.errorText}
+											/>
 										</Grid>
 										<Grid item xs={4}>
 											{_get(values, voteTypePath) !== '' ? (
+												// vote type is selected
 												_get(values, voteTypeTextPath) ===
 												BINARY_CONFIG.name ? (
-													<div>
-														Applies to option:&nbsp;
-														<Field
+													// binary vote selected
+													!_isEmpty(_get(values, optionsPath)) ? (
+														// options exist
+														<FormSelectField
 															name={workingMinSupportOption}
-															component="select"
-															onChange={(e) => {
-																handleChange(e);
-
-																if (!e.target.value) {
-																	setFieldValue(
-																		applyMinSupportToAllOptions,
-																		true
-																	);
-																} else {
-																	setFieldValue(
-																		applyMinSupportToAllOptions,
-																		false
-																	);
+															label="Applies to option"
+															options={_get(values, optionsPath).map(
+																(value) => {
+																	return { value: value, text: value };
 																}
-															}}
-														>
-															<option value="">All Options</option>
-															{_get(values, optionsPath).map(
-																(option, index) => (
-																	<option key={index} value={option}>
-																		{option}
-																	</option>
-																)
 															)}
-														</Field>
-													</div>
+															width={215}
+															onChange={handleChange}
+														/>
+													) : (
+														<React.Fragment>
+															<br />
+															No Options Found
+														</React.Fragment>
+													)
 												) : (
-													'Applies to all options'
+													<React.Fragment>
+														<br />
+														Applies to all options
+													</React.Fragment>
 												)
 											) : (
-												'Select an Answer Type'
+												<React.Fragment>
+													<br />
+													Select a Vote Type
+												</React.Fragment>
 											)}
 										</Grid>
 									</Grid>
@@ -689,6 +690,7 @@ class ConfigureVoteForm extends React.Component {
 								</Grid>
 								<Grid container item xs={12}>
 									<Grid item xs={4}>
+										<br />
 										<Field
 											name={checkedTurnoutPath}
 											render={({ field, form }) => (
@@ -721,41 +723,34 @@ class ConfigureVoteForm extends React.Component {
 										/>
 									</Grid>
 									<Grid item xs={4}>
-										<label
-											style={{
-												color: this.criteriaStyle(values, checkedTurnoutPath),
-											}}
-										>
-											Weighted Ratio:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-											<input
-												name={workingWeightMinTurnoutPath}
-												disabled={!_get(values, checkedTurnoutPath)}
-												size="4"
-												onBlur={handleBlur}
-												type="number"
-												className={classes.numberInput}
-												value={_get(values, workingWeightMinTurnoutPath)}
-												onChange={handleChange}
-											/>
-										</label>
+										<FormTextField
+											name={workingWeightMinTurnoutPath}
+											required={_get(values, checkedTurnoutPath)}
+											disabled={!_get(values, checkedTurnoutPath)}
+											width={138}
+											label="Weighted Ratio"
+											type="number"
+											error={
+												_get(errors, workingWeightMinTurnoutPath) &&
+												_get(touched, workingWeightMinTurnoutPath)
+											}
+											errorClass={classes.errorText}
+										/>
+
 										<br />
-										<label
-											style={{
-												color: this.criteriaStyle(values, checkedTurnoutPath),
-											}}
-										>
-											Unweighted Ratio:&nbsp;
-											<input
-												name={workingUnweightMinTurnoutPath}
-												disabled={!_get(values, checkedTurnoutPath)}
-												size="4"
-												onBlur={handleBlur}
-												type="number"
-												className={classes.numberInput}
-												value={_get(values, workingUnweightMinTurnoutPath)}
-												onChange={handleChange}
-											/>
-										</label>
+										<FormTextField
+											name={workingUnweightMinTurnoutPath}
+											required={_get(values, checkedTurnoutPath)}
+											disabled={!_get(values, checkedTurnoutPath)}
+											width={138}
+											label="Unweighted Ratio"
+											type="number"
+											error={
+												_get(errors, workingUnweightMinTurnoutPath) &&
+												_get(touched, workingUnweightMinTurnoutPath)
+											}
+											errorClass={classes.errorText}
+										/>
 									</Grid>
 									<Grid
 										style={{
@@ -764,6 +759,7 @@ class ConfigureVoteForm extends React.Component {
 										item
 										xs={4}
 									>
+										<br />
 										Applies to all eligible voters.
 									</Grid>
 								</Grid>
@@ -795,8 +791,9 @@ const FormTextField = (props) => {
 			<Field name={props.name}>
 				{({ field }) => (
 					<TextField
-						style={{ minWidth: props.width }}
+						style={{ width: props.width }}
 						required={props.required}
+						disabled={props.disabled}
 						{...field}
 						type={props.type}
 						inputProps={{
@@ -867,14 +864,10 @@ const styles = (theme) => ({
 		top: '-16px',
 	},
 	optionList: {
-		width: '350px',
 		overflow: 'auto',
 	},
 	optionListItem: {
 		padding: '0px',
-	},
-	numberInput: {
-		width: '40px',
 	},
 	errorText: { color: 'red', fontSize: '13px' },
 

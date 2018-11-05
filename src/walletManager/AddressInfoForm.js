@@ -120,7 +120,7 @@ class AddressInfoForm extends React.Component {
 													color="default"
 												/>
 											}
-											label="Saved to local browser storage"
+											label="Save to local browser storage"
 										/>
 									)}
 								/>
