@@ -11,6 +11,8 @@ import Typography from '@material-ui/core/Typography';
 import AddWalletStepContent from './AddWalletStepContent';
 import SectionHeader from '../vote/shared/SectionHeader.js';
 import Paper from '@material-ui/core/Paper';
+import OpenInNew from '@material-ui/icons/OpenInNew';
+import WarningIcon from '@material-ui/icons/Warning';
 
 const getStandardSteps = () => {
 	return ['Import Method', 'Address details'];
@@ -83,10 +85,14 @@ class AddWalletStepper extends React.Component {
 		const { activeStep } = this.state;
 
 		const steps = this.state.getSteps(networkProps);
+		const sectionHeaderText =
+			networkProps.network === 'testnet'
+				? 'Add Testnet Address'
+				: 'Add Address';
 
 		return (
 			<Paper className={classes.paper}>
-				<SectionHeader text="Add Address" id="modal-title" />
+				<SectionHeader text={sectionHeaderText} id="modal-title" />
 				<Stepper activeStep={activeStep} className={classes.stepper}>
 					{steps.map((label, index) => {
 						const props = {};
@@ -103,9 +109,38 @@ class AddWalletStepper extends React.Component {
 					{activeStep === steps.length ? (
 						<React.Fragment>
 							<br />
-							<Typography variant="subtitle1" gutterBottom>
-								Address(es) have successfully been added.
-							</Typography>
+							{networkProps.network === 'testnet' ? (
+								<React.Fragment>
+									<Typography variant="subtitle1" gutterBottom>
+										Testnet address(es) have successfully been added.
+									</Typography>
+									<Paper className={classes.testnetWarning}>
+										<Typography className={classes.warningText}>
+											<WarningIcon className={classes.warningIcon} />
+											&nbsp;&nbsp;Use these addresses for Testnet ONLY. Do not
+											send real Factoids to these addresses, or you run the risk
+											of losing them. Please read all notices.
+											<br />
+											<br />
+											You can use the{' '}
+											<a
+												target="_blank"
+												rel="noopener noreferrer"
+												href={'https://faucet.factoid.org/'}
+											>
+												Factom Testnet Faucet{' '}
+												<OpenInNew color="primary" style={{ fontSize: 15 }} />
+											</a>{' '}
+											to receive Testoids.
+										</Typography>
+									</Paper>
+								</React.Fragment>
+							) : (
+								<Typography variant="subtitle1" gutterBottom>
+									Address(es) have successfully been added.
+								</Typography>
+							)}
+
 							<br />
 							<br />
 							<div>
@@ -148,6 +183,21 @@ const styles = (theme) => ({
 		minWidth: 565,
 		padding: theme.spacing.unit * 4,
 		minHeight: 300,
+	},
+	testnetWarning: {
+		borderColor: '#ffa000',
+		borderStyle: 'solid',
+		padding: 5,
+		width: 415,
+	},
+	warningIcon: {
+		color: '#ffa000',
+		display: 'inline',
+		position: 'relative',
+		top: '6px',
+	},
+	warningText: {
+		display: 'inline',
 	},
 });
 

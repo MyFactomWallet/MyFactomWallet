@@ -56,10 +56,10 @@ class ConfirmationDialogRaw extends React.Component {
 					</Typography>
 					<br />
 					<Typography>
-						<b>MyFactomWallet.com</b> is a client-side interface wallet. We
-						provide the user with access to the Factom blockchain, but we do not
-						store, control or have access to ANY user wallet or blockchain
-						information including keys or transaction data. Therefore,&nbsp;
+						MyFactomWallet.com is a client-side interface wallet. We provide the
+						user with access to the Factom blockchain, but we do not store,
+						control or have access to ANY user wallet or blockchain information
+						including keys or transaction data. Therefore,&nbsp;
 						<b>we cannot reverse transactions or recover funds.</b>
 						&nbsp; MyFactomWallet.com is not a bank or a custodian. Your assets
 						and your security are entirely your own responsibility. By using
@@ -72,10 +72,22 @@ class ConfirmationDialogRaw extends React.Component {
 					<ul>
 						<li>
 							<Typography>
+								<b>
+									MYFACTOMWALLET.COM IS CONNECTED TO A FACTOM TESTNET NODE.
+									NEVER SEND FUNDS FROM A MAINNET ADDRESS TO A TESTNET ADDRESS
+									AND VICE VERSA. MAINNET ACCESS WILL BE ENABLED SOON. UNTIL
+									THEN, ONLY USE MYFACTOMWALLET.COM TO INTERACT WITH THE
+									TESTNET. YOU ACKNOWLEDGE THAT TESTNET TESTOIDS AND TEST
+									CREDITS HAVE NO VALUE.
+								</b>
+							</Typography>
+						</li>
+						<li>
+							<Typography>
 								This project is under active development; there is always the
 								possibility something unexpected happens that causes your funds
 								to be lost, including but not limited to third party domain
-								attacks. We are not responsible for any loss.
+								attacks. <b>We are not responsible for any loss.</b>
 							</Typography>
 						</li>
 						<li>
@@ -129,7 +141,6 @@ class ConfirmationDialogRaw extends React.Component {
 								account, and may withdraw your funds.
 							</Typography>
 						</li>
-
 						<li>
 							<Typography>
 								We are not a custodian. Your funds are stored on the blockchain

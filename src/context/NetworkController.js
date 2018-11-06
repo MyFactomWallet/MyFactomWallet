@@ -8,6 +8,7 @@ class NetworkController extends React.Component {
 
 		this.state = {
 			networkProps: this.networkProps['testnet'],
+			changeNetwork: this.changeNetwork,
 		};
 	}
 
@@ -34,9 +35,9 @@ class NetworkController extends React.Component {
 		},
 	};
 
-	changeNetwork(network) {
+	changeNetwork = (network) => {
 		this.setState({ networkProps: this.networkProps[network] });
-	}
+	};
 
 	render() {
 		return (

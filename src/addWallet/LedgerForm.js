@@ -135,7 +135,60 @@ class LedgerForm extends React.Component {
 							<React.Fragment>
 								<br />
 								{!_isNil(values.ledgerStatus) ? (
-									values.ledgerStatus
+									<React.Fragment>
+										<Typography>{values.ledgerStatus}</Typography>
+										<br />
+										<Typography>
+											<b>Note:</b>
+										</Typography>
+										<ul>
+											<li>
+												<Typography>
+													The Ledger Nano S hardware wallet can be ordered
+													from&nbsp;
+													<a
+														target="_blank"
+														rel="noopener noreferrer"
+														href={
+															'https://www.ledger.com/products/ledger-nano-s'
+														}
+													>
+														Ledger's website.
+													</a>
+												</Typography>
+											</li>
+											<li>
+												<Typography>
+													To function properly the application "Factom" needs to
+													be installed on the Ledger Nano S from the Ledger Live
+													Manager.
+												</Typography>
+											</li>
+											<li>
+												<Typography>
+													Only works with&nbsp;
+													<a
+														target="_blank"
+														rel="noopener noreferrer"
+														href={'https://www.google.com/chrome/'}
+													>
+														Chrome
+													</a>
+													. The&nbsp;
+													<a
+														target="_blank"
+														rel="noopener noreferrer"
+														href={
+															'https://chrome.google.com/webstore/detail/fido-u2f-universal-2nd-fa/pfboblefjcgdjicmnffhdgionmgcdmne'
+														}
+													>
+														FIDO U2F extension
+													</a>
+													&nbsp;is required.
+												</Typography>
+											</li>
+										</ul>
+									</React.Fragment>
 								) : (
 									<React.Fragment>
 										<Typography>

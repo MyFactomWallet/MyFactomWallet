@@ -25,7 +25,6 @@ class ButtonAppBar extends React.Component {
 	state = {
 		voteAnchorEl: null,
 		networkAnchorEl: null,
-		network: 'Testnet',
 		openCustomNodeForm: false,
 	};
 
@@ -56,23 +55,23 @@ class ButtonAppBar extends React.Component {
 	handleTestnet = () => {
 		this.setState({
 			networkAnchorEl: null,
-			network: 'Testnet',
 		});
+		this.props.networkController.changeNetwork('testnet');
 	};
 
 	handleMainnet = () => {
 		this.setState({
 			networkAnchorEl: null,
-			network: 'Mainnet',
 		});
+		this.props.networkController.changeNetwork('mainnet');
 	};
 
 	handleCustomNode = (host, port) => {
 		console.log('Host: ' + host);
 		console.log('Port: ' + port);
-		this.setState({
+		/* this.setState({
 			network: host + ':' + port,
-		});
+		}); */
 		this.handleCloseCustomNodeForm();
 	};
 
@@ -154,10 +153,11 @@ class ButtonAppBar extends React.Component {
 						<Button
 							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
 							aria-haspopup="true"
-							disableRipple //onClick={this.handleNetworkClick}
+							disableRipple //temp
+							//onClick={this.handleNetworkClick}
 							className={classes.menuText}
 						>
-							Node: {this.state.network}
+							Node: {networkProps.network}
 							&nbsp;
 							<CloudDone
 								titleAccess="Network Operational"
@@ -171,7 +171,7 @@ class ButtonAppBar extends React.Component {
 							open={Boolean(networkAnchorEl)}
 							onClose={this.handleNetworkClose}
 						>
-							{/* 	<MenuItem onClick={this.handleMainnet}>
+							{/* <MenuItem onClick={this.handleMainnet}>
 								Mainnet&nbsp;&nbsp; <CloudDone style={{ color: 'green' }} />
 							</MenuItem> */}
 							<MenuItem onClick={this.handleTestnet}>
@@ -246,7 +246,7 @@ const styles = (theme) => ({
 		left: `50%`,
 		transform: `translate(-50%, -50%)`,
 	},
-	testnetHeader: { color: '#f50057' },
+	testnetHeader: { color: '#ffa000' },
 });
 
 const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
