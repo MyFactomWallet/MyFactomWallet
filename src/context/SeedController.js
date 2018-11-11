@@ -25,6 +25,7 @@ class SeedController extends React.Component {
 			getSeedAddresses: this.getSeedAddresses,
 			signWithSeed: this.signWithSeed,
 			verifySeed: this.verifySeed,
+			getRandomMnemonic: this.getRandomMnemonic,
 		};
 	}
 
@@ -101,6 +102,10 @@ class SeedController extends React.Component {
 			return false;
 		}
 	};
+
+	getRandomMnemonic() {
+		return factombip44.randomMnemonic();
+	}
 
 	render() {
 		return (

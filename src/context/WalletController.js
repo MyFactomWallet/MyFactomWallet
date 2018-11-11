@@ -44,7 +44,6 @@ class WalletController extends React.Component {
 			isStateHydrated: false,
 			isWalletEmpty: this.isWalletEmpty,
 
-			getRandomMnemonic: this.getRandomMnemonic,
 			verifyKey: this.verifyKey,
 			updateAddress: this.updateAddress,
 			addAddressTransaction: this.addAddressTransaction,
@@ -232,10 +231,6 @@ class WalletController extends React.Component {
 			});
 		}
 	};
-
-	getRandomMnemonic() {
-		return factombip44.randomMnemonic();
-	}
 
 	verifyKey = (privateKey, { address }) => {
 		try {

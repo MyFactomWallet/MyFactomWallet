@@ -1,7 +1,7 @@
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { withStyles } from '@material-ui/core/styles';
-import { withWalletContext } from '../context/WalletContext';
+import { withSeed } from '../context/SeedContext';
 import _get from 'lodash/get';
 import _flowRight from 'lodash/flowRight';
 import PropTypes from 'prop-types';
@@ -21,7 +21,7 @@ class NewSeedForm extends React.Component {
 	};
 
 	componentDidMount() {
-		this.props.setMnemonic(this.props.walletController.getRandomMnemonic());
+		this.props.setMnemonic(this.props.seedController.getRandomMnemonic());
 	}
 
 	nextStep = () => {
@@ -151,6 +151,6 @@ const styles = (theme) => ({
 	errorText: { color: 'red' },
 });
 
-const enhancer = _flowRight(withWalletContext, withStyles(styles));
+const enhancer = _flowRight(withSeed, withStyles(styles));
 
 export default enhancer(NewSeedForm);

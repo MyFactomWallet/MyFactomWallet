@@ -21,6 +21,7 @@ import Disclaimer from './Disclaimer';
 //import ManageVoterList from './vote/voterList/ManageVoterList.js';
 import Typography from '@material-ui/core/Typography';
 import TestnetWarningBar from './TestnetWarningBar';
+import AppRouter from './AppRouter';
 
 class App extends Component {
 	render() {
@@ -38,30 +39,7 @@ class App extends Component {
 									<SeedController>
 										<LedgerController>
 											<div className={classes.body}>
-												<Route exact path="/" component={WalletManager} />
-												{/* <Route exact path="/" component={LandingPage} />
-											<Route path="/wallet/manage/" component={WalletManager} /> */}
-												<Route
-													path="/wallet/add/"
-													component={AddInitialWallet}
-												/>
-
-												<Route exact path="/vote" component={ComingSoon} />
-												<Route
-													exact
-													path="/createVote"
-													component={ComingSoon}
-												/>
-												{/* <Route exact path="/vote" component={Vote} />
-												<Route exact path="/viewVote" component={ViewVote} />
-												<Route
-													exact
-													path="/createVote"
-													component={CreateVoteStepper}
-												/> */}
-												{/* <Route exact path="/manageVoters" component={ManageVoterList} /> 
-											<Route exact path="/help" component={Help} />*/}
-												<Route path="/" component={TestnetWarningBar} />
+												<AppRouter />
 											</div>
 										</LedgerController>
 									</SeedController>
