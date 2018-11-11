@@ -9,7 +9,6 @@ import { WalletContext } from './WalletContext';
 import { withFactomCli } from './FactomCliContext';
 import { withNetwork } from './NetworkContext';
 import { Transaction, getPublicAddress } from 'factom/dist/factom';
-import factombip44 from 'factombip44/dist/factombip44';
 
 /**
  * Constants
@@ -43,7 +42,7 @@ class WalletController extends React.Component {
 			activeAddressIndex_o: null,
 			isStateHydrated: false,
 			isWalletEmpty: this.isWalletEmpty,
-
+			handleNetworkChange: this.handleNetworkChange,
 			verifyKey: this.verifyKey,
 			updateAddress: this.updateAddress,
 			addAddressTransaction: this.addAddressTransaction,
@@ -127,6 +126,12 @@ class WalletController extends React.Component {
 			await this.updateBalances({ force: true });
 		}
 		await this.smartSetState({ isStateHydrated: true });
+	};
+
+	handleNetworkChange = async (network) => {
+		await this.smartSetState({ isStateHydrated: false });
+		this.props.networkController.changeNetwork(network);
+		this.hydrateStateWithLocalStorage();
 	};
 
 	deleteAddress = async (activeAddressIndex_o) => {

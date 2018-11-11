@@ -8,7 +8,6 @@ import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withWalletContext } from '../context/WalletContext';
-import { Redirect } from 'react-router-dom';
 
 class WalletManager extends Component {
 	componentDidMount() {
@@ -17,31 +16,23 @@ class WalletManager extends Component {
 
 	render() {
 		const {
-			walletController: {
-				getActiveAddress,
-				activeAddressIndex_o,
-				isWalletEmpty,
-			},
+			walletController: { getActiveAddress, activeAddressIndex_o },
 		} = this.props;
 
 		return (
 			<React.Fragment>
-				{isWalletEmpty() ? (
-					<Redirect to="/wallet/add/" />
-				) : (
-					!_isNil(getActiveAddress()) && (
-						<Grid container spacing={24} item xs={12}>
-							<Grid item xs={4}>
-								<Sidebar />
-							</Grid>
-
-							<Grid item xs={8}>
-								<Paper>
-									<WalletTabContent type={activeAddressIndex_o.type} />
-								</Paper>
-							</Grid>
+				{!_isNil(getActiveAddress()) && (
+					<Grid container spacing={24} item xs={12}>
+						<Grid item xs={4}>
+							<Sidebar />
 						</Grid>
-					)
+
+						<Grid item xs={8}>
+							<Paper>
+								<WalletTabContent type={activeAddressIndex_o.type} />
+							</Paper>
+						</Grid>
+					</Grid>
 				)}
 			</React.Fragment>
 		);

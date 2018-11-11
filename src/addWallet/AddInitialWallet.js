@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
+import { withRouter } from 'react-router-dom';
 import AddWalletStepper from './AddWalletStepper';
 
 class AddInitialWallet extends Component {
-	navigateToWallet = () => {
-		//this.props.history.push('/wallet/manage/');
-		this.props.history.push('/');
-	};
+	componentDidMount() {
+		this.props.setReadyToManage(false);
+	}
 
 	render() {
 		const {
@@ -26,7 +26,7 @@ class AddInitialWallet extends Component {
 		return (
 			<Grid container item xs={12} justify="center">
 				<AddWalletStepper
-					handleClose={this.navigateToWallet}
+					handleClose={() => this.props.setReadyToManage(true)}
 					handleCloseText={handleCloseText}
 				/>
 			</Grid>
@@ -39,5 +39,10 @@ AddInitialWallet.propTypes = {
 
 const styles = (theme) => ({});
 
-const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
+const enhancer = _flowRight(
+	withRouter,
+	withNetwork,
+	withWalletContext,
+	withStyles(styles)
+);
 export default enhancer(AddInitialWallet);

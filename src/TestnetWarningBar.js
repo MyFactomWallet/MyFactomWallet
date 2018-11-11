@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import _flowRight from 'lodash/flowRight';
 import { withNetwork } from './context/NetworkContext';

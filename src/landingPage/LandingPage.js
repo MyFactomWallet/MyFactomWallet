@@ -14,9 +14,6 @@ class LandingPage extends Component {
 		const { classes } = this.props;
 		const { getActiveAddress } = this.props.walletController;
 
-		const walletPath = _isNil(getActiveAddress()) ? '/wallet/add' : '/';
-		//: '/wallet/manage';
-
 		return (
 			<div className={classes.body}>
 				<Typography variant="h5">
@@ -27,7 +24,7 @@ class LandingPage extends Component {
 				<Button
 					className={classes.button}
 					component={Link}
-					to={walletPath}
+					to={'/'}
 					variant="outlined"
 					color="primary"
 				>

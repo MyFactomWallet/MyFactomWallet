@@ -13,6 +13,7 @@ import SectionHeader from '../vote/shared/SectionHeader.js';
 import Paper from '@material-ui/core/Paper';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import WarningIcon from '@material-ui/icons/Warning';
+import { withWalletContext } from '../context/WalletContext';
 
 const getStandardSteps = () => {
 	return ['Import Method', 'Address details'];
@@ -80,6 +81,7 @@ class AddWalletStepper extends React.Component {
 			classes,
 			handleCloseText,
 			networkController: { networkProps },
+			walletController: { isWalletEmpty },
 		} = this.props;
 
 		const { activeStep } = this.state;
@@ -110,48 +112,35 @@ class AddWalletStepper extends React.Component {
 						<React.Fragment>
 							<br />
 							{networkProps.network === 'testnet' ? (
-								<React.Fragment>
-									<Typography variant="subtitle1" gutterBottom>
-										Testnet address(es) have successfully been added.
-									</Typography>
-									<Paper className={classes.testnetWarning}>
-										<Typography className={classes.warningText}>
-											<WarningIcon className={classes.warningIcon} />
-											&nbsp;&nbsp;Use these addresses for Testnet ONLY. Do not
-											send real Factoids to these addresses, or you run the risk
-											of losing them. Please read all notices.
-											<br />
-											<br />
-											You can use the{' '}
-											<a
-												target="_blank"
-												rel="noopener noreferrer"
-												href={'https://faucet.factoid.org/'}
-											>
-												Factom Testnet Faucet{' '}
-												<OpenInNew color="primary" style={{ fontSize: 15 }} />
-											</a>{' '}
-											to receive Testoids.
-										</Typography>
-									</Paper>
-								</React.Fragment>
+								<TestnetFinalStep
+									classes={classes}
+									isWalletEmpty={isWalletEmpty()}
+								/>
 							) : (
-								<Typography variant="subtitle1" gutterBottom>
-									Address(es) have successfully been added.
-								</Typography>
+								<MainnetFinalStep
+									classes={classes}
+									isWalletEmpty={isWalletEmpty()}
+								/>
 							)}
-
 							<br />
 							<br />
 							<div>
-								<Button onClick={this.handleReset}>Add Another</Button>
-								<Button
-									onClick={this.props.handleClose}
-									variant="contained"
-									color="primary"
-								>
-									{handleCloseText}
-								</Button>
+								{!isWalletEmpty() ? (
+									<React.Fragment>
+										<Button onClick={this.handleReset}>Add Another</Button>
+										<Button
+											onClick={this.props.handleClose}
+											variant="contained"
+											color="primary"
+										>
+											{handleCloseText}
+										</Button>
+									</React.Fragment>
+								) : (
+									<Button variant="outlined" onClick={this.handleReset}>
+										Reset
+									</Button>
+								)}
 							</div>
 						</React.Fragment>
 					) : (
@@ -173,6 +162,60 @@ class AddWalletStepper extends React.Component {
 }
 AddWalletStepper.propTypes = {
 	classes: PropTypes.object.isRequired,
+};
+
+const MainnetFinalStep = ({ classes, isWalletEmpty }) => {
+	if (isWalletEmpty) {
+		return (
+			<Typography variant="subtitle1" gutterBottom>
+				No Addresses have been added.
+			</Typography>
+		);
+	} else {
+		return (
+			<Typography variant="subtitle1" gutterBottom>
+				You have finished adding an address.
+			</Typography>
+		);
+	}
+};
+
+const TestnetFinalStep = ({ classes, isWalletEmpty }) => {
+	if (isWalletEmpty) {
+		return (
+			<Typography variant="subtitle1" gutterBottom>
+				No Addresses have been added.
+			</Typography>
+		);
+	} else {
+		return (
+			<React.Fragment>
+				<Typography variant="subtitle1" gutterBottom>
+					You have finished adding a Testnet address.
+				</Typography>
+				<Paper className={classes.testnetWarning}>
+					<Typography className={classes.warningText}>
+						<WarningIcon className={classes.warningIcon} />
+						&nbsp;&nbsp;Use these addresses for Testnet ONLY. Do not send real
+						Factoids to these addresses, or you run the risk of losing them.
+						Please read all notices.
+						<br />
+						<br />
+						You can use the{' '}
+						<a
+							target="_blank"
+							rel="noopener noreferrer"
+							href={'https://faucet.factoid.org/'}
+						>
+							Factom Testnet Faucet{' '}
+							<OpenInNew color="primary" style={{ fontSize: 15 }} />
+						</a>{' '}
+						to receive Testoids.
+					</Typography>
+				</Paper>
+			</React.Fragment>
+		);
+	}
 };
 
 const styles = (theme) => ({
@@ -201,6 +244,6 @@ const styles = (theme) => ({
 	},
 });
 
-const enhancer = _flowRight(withNetwork, withStyles(styles));
+const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
 
 export default enhancer(AddWalletStepper);

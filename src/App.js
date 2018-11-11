@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
-import LandingPage from './landingPage/LandingPage';
 import Header from './header/Header';
-import WalletManager from './walletManager/WalletManager';
-import AddInitialWallet from './addWallet/AddInitialWallet';
-import Vote from './vote/listing/VoteListing';
-import ViewVote from './vote/view/ViewVote';
-import CreateVoteStepper from './vote/create/CreateVoteStepper';
-import { HashRouter as Router, Route } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import withRootTheme from './withRootTheme';
@@ -16,10 +10,7 @@ import SeedController from './context/SeedController';
 import FactomCliController from './context/FactomCliController';
 import NetworkController from './context/NetworkController';
 import LedgerController from './context/LedgerController';
-//import Help from './help/Help';
 import Disclaimer from './Disclaimer';
-//import ManageVoterList from './vote/voterList/ManageVoterList.js';
-import Typography from '@material-ui/core/Typography';
 import TestnetWarningBar from './TestnetWarningBar';
 import AppRouter from './AppRouter';
 
@@ -40,6 +31,7 @@ class App extends Component {
 										<LedgerController>
 											<div className={classes.body}>
 												<AppRouter />
+												<TestnetWarningBar />
 											</div>
 										</LedgerController>
 									</SeedController>
@@ -54,14 +46,6 @@ class App extends Component {
 }
 App.propTypes = {
 	classes: PropTypes.object.isRequired,
-};
-
-const ComingSoon = () => {
-	return (
-		<Typography variant="h5" align="center">
-			Coming soon...
-		</Typography>
-	);
 };
 
 const styles = (theme) => ({

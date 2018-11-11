@@ -1,5 +1,4 @@
 import React from 'react';
-import _isNil from 'lodash/isNil';
 import _flowRight from 'lodash/flowRight';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -56,14 +55,14 @@ class ButtonAppBar extends React.Component {
 		this.setState({
 			networkAnchorEl: null,
 		});
-		this.props.networkController.changeNetwork('testnet');
+		this.props.walletController.handleNetworkChange('testnet');
 	};
 
 	handleMainnet = () => {
 		this.setState({
 			networkAnchorEl: null,
 		});
-		this.props.networkController.changeNetwork('mainnet');
+		this.props.walletController.handleNetworkChange('mainnet');
 	};
 
 	handleCustomNode = (host, port) => {
@@ -78,15 +77,11 @@ class ButtonAppBar extends React.Component {
 	render() {
 		const {
 			classes,
-			walletController: { getActiveAddress },
 			networkController: { networkProps },
 		} = this.props;
 		const { voteAnchorEl, networkAnchorEl } = this.state;
 
 		const testnetActive = networkProps.network === 'testnet';
-
-		const walletPath = _isNil(getActiveAddress()) ? '#/wallet/add' : '#/';
-		//: '#/wallet/manage';
 
 		return (
 			<AppBar position="static" className={classes.root}>
@@ -143,7 +138,7 @@ class ButtonAppBar extends React.Component {
 							</MenuItem>
 						</Menu>
 					</div>
-					<Button href={walletPath} className={classes.menuText}>
+					<Button href="#/" className={classes.menuText}>
 						Wallet
 					</Button>
 					{/* <Button href="#help" className={classes.menuText}>
@@ -153,8 +148,8 @@ class ButtonAppBar extends React.Component {
 						<Button
 							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
 							aria-haspopup="true"
-							disableRipple //temp
-							//onClick={this.handleNetworkClick}
+							//disableRipple //temp
+							onClick={this.handleNetworkClick}
 							className={classes.menuText}
 						>
 							Node: {networkProps.network}
@@ -163,7 +158,7 @@ class ButtonAppBar extends React.Component {
 								titleAccess="Network Operational"
 								style={{ color: 'green' }}
 							/>
-							{/* <ExpandMore /> */}
+							<ExpandMore />
 						</Button>
 						<Menu
 							id="simple-vote-menu"
@@ -171,10 +166,10 @@ class ButtonAppBar extends React.Component {
 							open={Boolean(networkAnchorEl)}
 							onClose={this.handleNetworkClose}
 						>
-							{/* <MenuItem onClick={this.handleMainnet}>
+							<MenuItem onClick={this.handleMainnet} disabled={!testnetActive}>
 								Mainnet&nbsp;&nbsp; <CloudDone style={{ color: 'green' }} />
-							</MenuItem> */}
-							<MenuItem onClick={this.handleTestnet}>
+							</MenuItem>
+							<MenuItem onClick={this.handleTestnet} disabled={testnetActive}>
 								Testnet&nbsp;&nbsp; <CloudDone style={{ color: 'green' }} />
 							</MenuItem>
 							{/* <MenuItem
