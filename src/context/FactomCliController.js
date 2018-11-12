@@ -5,6 +5,8 @@ import { FactomCli } from 'factom/dist/factom';
 import { withNetwork } from './NetworkContext';
 import _flowRight from 'lodash/flowRight';
 import defaultsDeep from 'lodash/fp/defaultsDeep';
+import _flow from 'lodash/flow';
+import _noop from 'lodash/noop';
 
 class FactomCliController extends React.Component {
 	constructor(props) {
@@ -32,13 +34,22 @@ class FactomCliController extends React.Component {
 	};
 
 	newFactomCli = (connectionParams = {}) =>
-		new FactomCli(defaultsDeep(connectionParams, this.defaultConnectionParams));
+		new FactomCli(defaultsDeep(this.defaultConnectionParams, connectionParams));
 
-	connectToServer = (connectionParams = {}) => {
-		this.setState({
+	connectToServer = async (
+		connectionParams = {
+			port: this.props.networkController.networkProps.apiPort,
+		}
+	) => {
+		await this.smartSetState({
 			factomCli: this.newFactomCli(connectionParams),
 		});
 	};
+
+	smartSetState = (newState, afterSetState = _noop) =>
+		new Promise((resolve) =>
+			this.setState(newState, _flow([afterSetState, resolve]))
+		);
 
 	render() {
 		return (

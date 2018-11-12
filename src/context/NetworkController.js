@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { NetworkContext } from './NetworkContext';
 import TestnetDisclaimer from '../TestnetDisclaimer';
+import _flow from 'lodash/flow';
+import _noop from 'lodash/noop';
 
 class NetworkController extends React.Component {
 	constructor(props) {
@@ -36,9 +38,14 @@ class NetworkController extends React.Component {
 		},
 	};
 
-	changeNetwork = (network) => {
-		this.setState({ networkProps: this.networkProps[network] });
+	changeNetwork = async (network) => {
+		await this.smartSetState({ networkProps: this.networkProps[network] });
 	};
+
+	smartSetState = (newState, afterSetState = _noop) =>
+		new Promise((resolve) =>
+			this.setState(newState, _flow([afterSetState, resolve]))
+		);
 
 	render() {
 		return (
