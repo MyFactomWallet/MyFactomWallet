@@ -17,7 +17,6 @@ class ConfirmationDialogRaw extends React.Component {
 		};
 	}
 
-	// TODO
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.value !== this.props.value) {
 			this.setState({ value: nextProps.value });
@@ -42,11 +41,7 @@ class ConfirmationDialogRaw extends React.Component {
 				aria-labelledby="confirmation-dialog-title"
 				{...other}
 			>
-				<DialogTitle
-					align="center"
-					className={classes.dialogTitle}
-					style={{ backgroundColor: '#f50057' }}
-				>
+				<DialogTitle align="center" style={{ backgroundColor: '#f50057' }}>
 					<Warning fontSize="large" />
 				</DialogTitle>
 				<DialogContent>
@@ -72,22 +67,18 @@ class ConfirmationDialogRaw extends React.Component {
 					<ul>
 						<li>
 							<Typography>
-								<b>
-									MYFACTOMWALLET.COM IS CONNECTED TO A FACTOM TESTNET NODE.
-									NEVER SEND FUNDS FROM A MAINNET ADDRESS TO A TESTNET ADDRESS
-									AND VICE VERSA. MAINNET ACCESS WILL BE ENABLED SOON. UNTIL
-									THEN, ONLY USE MYFACTOMWALLET.COM TO INTERACT WITH THE
-									TESTNET. YOU ACKNOWLEDGE THAT TESTNET TESTOIDS AND TEST
-									CREDITS HAVE NO VALUE.
-								</b>
-							</Typography>
-						</li>
-						<li>
-							<Typography>
 								This project is under active development; there is always the
 								possibility something unexpected happens that causes your funds
 								to be lost, including but not limited to third party domain
 								attacks. <b>We are not responsible for any loss.</b>
+							</Typography>
+						</li>
+						<li>
+							<Typography>
+								Never send funds from a mainnet address to a testnet address and
+								vice versa. Sending Factoids to the testnet will likely result
+								in a loss of factoids. You acknowledge that testnet Testoids and
+								Test Credits have no value.
 							</Typography>
 						</li>
 						<li>
@@ -262,17 +253,7 @@ ConfirmationDialogRaw.propTypes = {
 	value: PropTypes.string,
 };
 
-const styles = (theme) => ({
-	root: {
-		width: '100%',
-		maxWidth: 600,
-		backgroundColor: theme.palette.background.paper,
-	},
-	paper: {
-		width: '100%',
-		maxHeight: 435,
-	},
-});
+const styles = (theme) => ({});
 
 class ConfirmationDialog extends React.Component {
 	state = {
@@ -285,13 +266,9 @@ class ConfirmationDialog extends React.Component {
 	};
 
 	render() {
-		const { classes } = this.props;
 		return (
-			<div className={classes.root}>
+			<div>
 				<ConfirmationDialogRaw
-					classes={{
-						paper: classes.paper,
-					}}
 					open={this.state.open}
 					onClose={this.handleClose}
 					value={this.state.value}

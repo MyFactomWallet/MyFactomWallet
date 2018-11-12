@@ -54,9 +54,9 @@ class NewSeedForm extends React.Component {
 									style={{ fontWeight: 500 }}
 									className={classes.warningText}
 								>
-									Write down your seed carefully on a piece of paper. If you
-									lose this seed, you will lose access to your addresses
-									forever!
+									Write down your seed carefully on a piece of paper. This seed
+									provides access to all the derived addresses. If you lose this
+									seed, you will lose access to your addresses forever!
 								</Typography>
 								<br />
 								<Typography style={{ fontWeight: 500 }}>
@@ -75,6 +75,7 @@ class NewSeedForm extends React.Component {
 									}
 									name={mnemonicPath}
 									label="Verify Seed Phrase"
+									autoFocus={true}
 								/>
 								<ErrorMessage
 									name={mnemonicPath}
@@ -136,6 +137,7 @@ const FormTextField = (props) => {
 					margin="dense"
 					fullWidth
 					error={props.error}
+					autoFocus={props.autoFocus}
 				/>
 			)}
 		</Field>

@@ -186,6 +186,7 @@ class GenerateAddressTable extends React.Component {
 																								arrayHelpers
 																							);
 																						}}
+																						autoFocus
 																						margin="dense"
 																						fullWidth
 																						error={

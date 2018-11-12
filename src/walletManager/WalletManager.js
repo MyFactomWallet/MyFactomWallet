@@ -19,9 +19,11 @@ class WalletManager extends Component {
 			walletController: { getActiveAddress, activeAddressIndex_o },
 		} = this.props;
 
+		const activeAddress = getActiveAddress();
+
 		return (
 			<React.Fragment>
-				{!_isNil(getActiveAddress()) && (
+				{!_isNil(activeAddress) && (
 					<Grid container spacing={24} item xs={12}>
 						<Grid item xs={4}>
 							<Sidebar />
@@ -29,7 +31,10 @@ class WalletManager extends Component {
 
 						<Grid item xs={8}>
 							<Paper>
-								<WalletTabContent type={activeAddressIndex_o.type} />
+								<WalletTabContent
+									type={activeAddressIndex_o.type}
+									activeAddress={activeAddress}
+								/>
 							</Paper>
 						</Grid>
 					</Grid>

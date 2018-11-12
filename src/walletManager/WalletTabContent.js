@@ -5,8 +5,9 @@ import _flowRight from 'lodash/flowRight';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import SendFactoidForm from './SendFactoidForm.js';
-import ConvertECForm from './ConvertECForm.js';
+import SendFactoidForm from './SendFactoidForm';
+import ConvertECForm from './ConvertECForm';
+import ViewPrivateKeyForm from './ViewPrivateKeyForm';
 import AddressInfoTab from './AddressInfoTab';
 import { withNetwork } from '../context/NetworkContext';
 
@@ -23,10 +24,17 @@ class WalletTabContent extends React.Component {
 		const {
 			classes,
 			type,
+			activeAddress,
 			networkController: { networkProps },
 		} = this.props;
 
-		const { tabValue } = this.state;
+		let tabValue = this.state.tabValue;
+
+		if (tabValue === 3 && activeAddress.importType !== 'seed') {
+			//only seeds have tab 3
+			tabValue = 0;
+		}
+
 		return (
 			<div className={classes.root}>
 				{type === 'fct' && (
@@ -48,6 +56,9 @@ class WalletTabContent extends React.Component {
 									networkProps.ecAbbreviation
 								}
 							/>
+							{activeAddress.importType === 'seed' && (
+								<Tab label="View Private Key" />
+							)}
 						</Tabs>
 						{tabValue === 0 && (
 							<TabContainer classes={classes}>
@@ -64,12 +75,17 @@ class WalletTabContent extends React.Component {
 								<ConvertECForm />
 							</TabContainer>
 						)}
+						{tabValue === 3 && (
+							<TabContainer classes={classes}>
+								<ViewPrivateKeyForm />
+							</TabContainer>
+						)}
 					</div>
 				)}
 				{type === 'ec' && (
 					<div>
 						<Tabs
-							value={tabValue}
+							value={0}
 							onChange={this.handleChange}
 							indicatorColor="primary"
 							textColor="primary"

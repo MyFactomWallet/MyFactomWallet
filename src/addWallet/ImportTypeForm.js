@@ -29,7 +29,7 @@ const getImportTypes = (networkProps) => {
 		},
 		{
 			value: 'importSeed',
-			label: 'Import addresses from 12-word seed',
+			label: 'Import addresses from mnemonic seed phrase',
 		},
 		{
 			value: 'ledger',

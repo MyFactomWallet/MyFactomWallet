@@ -51,6 +51,7 @@ class ImportSeedForm extends React.Component {
 								name={mnemonicPath}
 								label="Seed Phrase"
 								placeholder={'Enter Seed Phrase'}
+								autoFocus={true}
 							/>
 							<ErrorMessage
 								name={mnemonicPath}
@@ -101,6 +102,7 @@ const FormTextField = (props) => {
 					margin="dense"
 					fullWidth
 					error={props.error}
+					autoFocus={props.autoFocus}
 				/>
 			)}
 		</Field>

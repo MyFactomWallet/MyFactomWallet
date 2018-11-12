@@ -80,7 +80,7 @@ class AddWalletStepContent extends React.Component {
 							key="fctSeedForm"
 						/>
 					);
-				} else if (this.props.importType === 'ledger') {
+				} /* else if (this.props.importType === 'ledger') {
 					return (
 						<LedgerForm
 							handleNext={this.props.handleNext}
@@ -89,7 +89,7 @@ class AddWalletStepContent extends React.Component {
 							key="ecLedgerForm"
 						/>
 					);
-				}
+				} */
 				break;
 			case 3:
 				if (

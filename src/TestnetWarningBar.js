@@ -29,9 +29,6 @@ function TestnetWarningBar(props) {
 						&nbsp;
 						<WarningIcon className={classes.warningIcon} />
 					</Toolbar>
-					<div className={classes.toolbar}>
-						<Typography>Mainnet access will be enabled soon.</Typography>
-					</div>
 				</AppBar>
 			</React.Fragment>
 		);
@@ -60,7 +57,7 @@ const styles = (theme) => ({
 		fontSize: 52,
 	},
 	toolbarSpace: {
-		height: 100,
+		height: 85,
 	},
 });
 

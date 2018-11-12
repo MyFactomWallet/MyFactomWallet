@@ -26,6 +26,7 @@ class SeedController extends React.Component {
 			signWithSeed: this.signWithSeed,
 			verifySeed: this.verifySeed,
 			getRandomMnemonic: this.getRandomMnemonic,
+			getPrivateKey: this.getPrivateKey,
 		};
 	}
 
@@ -106,6 +107,15 @@ class SeedController extends React.Component {
 	getRandomMnemonic() {
 		return factombip44.randomMnemonic();
 	}
+
+	getPrivateKey = (mnemonic, index) => {
+		const bip32Account = this.props.networkController.networkProps.bip32Account;
+		const wallet = new factombip44.FactomBIP44(mnemonic);
+		const key = wallet.generateFactoidPrivateKey(bip32Account, 0, index);
+		const privateKey = keyToPrivateFctAddress(key);
+
+		return privateKey;
+	};
 
 	render() {
 		return (

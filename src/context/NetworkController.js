@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NetworkContext } from './NetworkContext';
+import TestnetDisclaimer from '../TestnetDisclaimer';
 
 class NetworkController extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			networkProps: this.networkProps['testnet'],
+			networkProps: this.networkProps['mainnet'],
 			changeNetwork: this.changeNetwork,
 		};
 	}
@@ -43,6 +44,7 @@ class NetworkController extends React.Component {
 		return (
 			<NetworkContext.Provider value={this.state}>
 				{this.props.children}
+				{this.state.networkProps.network === 'testnet' && <TestnetDisclaimer />}
 			</NetworkContext.Provider>
 		);
 	}

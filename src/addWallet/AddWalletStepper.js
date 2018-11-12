@@ -23,7 +23,7 @@ const getLedgerAddressSteps = (networkProps) => {
 	return [
 		'Import Method',
 		networkProps.factoidAbbreviationFull,
-		networkProps.ecAbbreviationFull,
+		//	networkProps.ecAbbreviationFull,
 	];
 };
 //this.props.networkController.networkProps.factoidAbbreviation

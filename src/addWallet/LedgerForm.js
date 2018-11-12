@@ -174,17 +174,7 @@ class LedgerForm extends React.Component {
 													>
 														Chrome
 													</a>
-													. The&nbsp;
-													<a
-														target="_blank"
-														rel="noopener noreferrer"
-														href={
-															'https://chrome.google.com/webstore/detail/fido-u2f-universal-2nd-fa/pfboblefjcgdjicmnffhdgionmgcdmne'
-														}
-													>
-														FIDO U2F extension
-													</a>
-													&nbsp;is required.
+													.
 												</Typography>
 											</li>
 										</ul>
