@@ -163,7 +163,7 @@ class ConvertECForm extends Component {
 
 							const fromAddr = activeAddress_o.address;
 							const toAddr = recipientAddress;
-							const amount = this.state.ecRate * entryCreditAmount;
+							const amount = Math.round(this.state.ecRate * entryCreditAmount);
 							const index = activeAddress_o.index;
 
 							const ledgerTrans_o = {

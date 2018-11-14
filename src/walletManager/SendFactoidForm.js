@@ -121,13 +121,13 @@ class SendFactoidForm extends Component {
 							transaction = await factomCli.createFactoidTransaction(
 								privateKey,
 								recipientAddress,
-								FACTOID_MULTIPLIER * sendFactoidAmount
+								Math.round(FACTOID_MULTIPLIER * sendFactoidAmount)
 							);
 						} else if (importType === 'seed') {
 							const mnemonic = seed.trim();
 							const index = activeAddress_o.index;
 							const toAddr = recipientAddress;
-							const amount = sendFactoidAmount * FACTOID_MULTIPLIER;
+							const amount = Math.round(sendFactoidAmount * FACTOID_MULTIPLIER);
 							const type = 'sendFCT';
 
 							const seedTrans_o = {
@@ -161,7 +161,7 @@ class SendFactoidForm extends Component {
 
 							const fromAddr = activeAddress_o.address;
 							const toAddr = recipientAddress;
-							const amount = sendFactoidAmount * FACTOID_MULTIPLIER;
+							const amount = Math.round(sendFactoidAmount * FACTOID_MULTIPLIER);
 							const index = activeAddress_o.index;
 
 							const ledgerTrans_o = {

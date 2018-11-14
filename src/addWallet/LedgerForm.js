@@ -149,9 +149,7 @@ class LedgerForm extends React.Component {
 													<a
 														target="_blank"
 														rel="noopener noreferrer"
-														href={
-															'https://www.ledger.com/products/ledger-nano-s'
-														}
+														href={'https://www.ledger.com/?r=1b0be6fa98ba'}
 													>
 														Ledger's website.
 													</a>

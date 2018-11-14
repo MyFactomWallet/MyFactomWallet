@@ -17,6 +17,7 @@ import CustomNodeForm from './CustomNodeForm';
 import Modal from '@material-ui/core/Modal';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
+import HelpModal from './HelpModal';
 
 //import CloudOff from '@material-ui/icons/CloudOff';
 
@@ -106,7 +107,7 @@ class ButtonAppBar extends React.Component {
 							)}
 						</Link>
 					</Typography>
-					<div>
+					{/* <div>
 						<Button
 							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
 							aria-haspopup="true"
@@ -137,18 +138,15 @@ class ButtonAppBar extends React.Component {
 								Create Poll
 							</MenuItem>
 						</Menu>
-					</div>
+					</div> */}
 					<Button href="#/" className={classes.menuText}>
 						Wallet
 					</Button>
-					{/* <Button href="#help" className={classes.menuText}>
-						Help
-					</Button> */}
+					<HelpModal />
 					<div className={classes.network}>
 						<Button
 							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
 							aria-haspopup="true"
-							//disableRipple //temp
 							onClick={this.handleNetworkClick}
 							className={classes.menuText}
 						>
