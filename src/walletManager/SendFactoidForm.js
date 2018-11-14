@@ -227,13 +227,8 @@ class SendFactoidForm extends Component {
 					handleReset,
 					handleChange,
 				}) => (
-					<Form autoComplete="nope">
+					<Form autoComplete="nope" autoComplete="off">
 						<AddressInfoHeader />
-						<input
-							name="fake_field"
-							className={classes.visuallyHidden}
-							type="text"
-						/>
 						<Field name={recipientAddressPath}>
 							{({ field, form }) => (
 								<TextField
@@ -260,6 +255,8 @@ class SendFactoidForm extends Component {
 									inputProps={{
 										spellCheck: false,
 										maxLength: FCT_ADDRESS_LENGTH,
+										autoComplete: 'nope',
+										autoComplete: 'off',
 									}}
 								/>
 							)}
@@ -365,6 +362,7 @@ class SendFactoidForm extends Component {
 												spellCheck: false,
 												maxLength: FCT_ADDRESS_LENGTH,
 												autoComplete: 'nope',
+												autoComplete: 'off',
 											}}
 										/>
 									)}
@@ -384,6 +382,7 @@ class SendFactoidForm extends Component {
 										<TextField
 											inputProps={{
 												autoComplete: 'nope',
+												autoComplete: 'off',
 											}}
 											error={
 												_get(errors, seedPath) && _get(touched, seedPath)
@@ -562,16 +561,6 @@ const styles = {
 	successIcon: {
 		position: 'relative',
 		top: '5px',
-	},
-	visuallyHidden: {
-		margin: '-1px',
-		padding: '0',
-		width: '1px',
-		height: '1px',
-		overflow: 'hidden',
-		clip: 'rect(0 0 0 0)',
-		clip: 'rect(0, 0, 0, 0)',
-		position: 'absolute',
 	},
 };
 

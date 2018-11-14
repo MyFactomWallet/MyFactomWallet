@@ -229,13 +229,8 @@ class ConvertECForm extends Component {
 					handleReset,
 					handleChange,
 				}) => (
-					<Form autoComplete="nope">
+					<Form autoComplete="nope" autoComplete="off">
 						<AddressInfoHeader />
-						<input
-							name="fake_field"
-							className={classes.visuallyHidden}
-							type="text"
-						/>
 						<Field name={recipientAddressPath}>
 							{({ field, form }) => (
 								<TextField
@@ -262,6 +257,8 @@ class ConvertECForm extends Component {
 									inputProps={{
 										spellCheck: false,
 										maxLength: EC_ADDRESS_LENGTH,
+										autoComplete: 'nope',
+										autoComplete: 'off',
 									}}
 								/>
 							)}
@@ -359,6 +356,7 @@ class ConvertECForm extends Component {
 												spellCheck: false,
 												maxLength: EC_ADDRESS_LENGTH,
 												autoComplete: 'nope',
+												autoComplete: 'off',
 											}}
 										/>
 									)}
@@ -390,6 +388,7 @@ class ConvertECForm extends Component {
 											disabled={isSubmitting}
 											inputProps={{
 												autoComplete: 'nope',
+												autoComplete: 'off',
 											}}
 										/>
 									)}
@@ -566,16 +565,6 @@ const styles = {
 	successIcon: {
 		position: 'relative',
 		top: '5px',
-	},
-	visuallyHidden: {
-		margin: '-1px',
-		padding: '0',
-		width: '1px',
-		height: '1px',
-		overflow: 'hidden',
-		clip: 'rect(0 0 0 0)',
-		clip: 'rect(0, 0, 0, 0)',
-		position: 'absolute',
 	},
 };
 

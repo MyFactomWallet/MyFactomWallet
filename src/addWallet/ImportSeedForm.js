@@ -40,7 +40,11 @@ class ImportSeedForm extends React.Component {
 						),
 				})}
 				render={({ isSubmitting, errors, touched }) => (
-					<Form style={{ width: '500px' }} autoComplete="nope">
+					<Form
+						style={{ width: '500px' }}
+						autoComplete="nope"
+						autoComplete="off"
+					>
 						<React.Fragment>
 							<FormTextField
 								error={
@@ -96,6 +100,7 @@ const FormTextField = (props) => {
 				<TextField
 					inputProps={{
 						autoComplete: 'nope',
+						autoComplete: 'off',
 					}}
 					{...field}
 					label={props.label + ' ' + (props.error ? '*' : '')}

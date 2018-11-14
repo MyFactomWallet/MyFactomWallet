@@ -65,13 +65,8 @@ class ViewPrivateKeyForm extends Component {
 						.test(seedPath, 'Invalid Seed Phrase', this.verifySeed),
 				})}
 				render={({ isSubmitting, errors, touched, values, setFieldValue }) => (
-					<Form autoComplete="nope">
+					<Form autoComplete="nope" autoComplete="off">
 						<AddressInfoHeader />
-						<input
-							name="fake_field"
-							className={classes.visuallyHidden}
-							type="text"
-						/>
 						{_isEmpty(_get(values, privateKeyPath)) && (
 							<FormTextField
 								name={seedPath}
@@ -156,6 +151,7 @@ const FormTextField = (props) => {
 							spellCheck: props.enableSpellCheck,
 							maxLength: props.maxLength,
 							autoComplete: 'nope',
+							autoComplete: 'off',
 						}}
 						error={props.error}
 						label={props.label}
@@ -182,16 +178,6 @@ const styles = {
 		height: '24px',
 	},
 	errorText: { color: 'red', fontSize: '12px', textAlign: 'left' },
-	visuallyHidden: {
-		margin: '-1px',
-		padding: '0',
-		width: '1px',
-		height: '1px',
-		overflow: 'hidden',
-		clip: 'rect(0 0 0 0)',
-		clip: 'rect(0, 0, 0, 0)',
-		position: 'absolute',
-	},
 };
 
 const enhancer = _flowRight(withSeed, withWalletContext, withStyles(styles));

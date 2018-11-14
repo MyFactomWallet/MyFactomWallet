@@ -47,7 +47,11 @@ class NewSeedForm extends React.Component {
 						.oneOf([this.props.mnemonic], 'Seed does not match'),
 				})}
 				render={({ isSubmitting, errors, touched }) => (
-					<Form style={{ width: '500px' }} autoComplete="nope">
+					<Form
+						style={{ width: '500px' }}
+						autoComplete="nope"
+						autoComplete="off"
+					>
 						{this.state.step === 1 && (
 							<React.Fragment>
 								<Typography
@@ -131,6 +135,7 @@ const FormTextField = (props) => {
 				<TextField
 					inputProps={{
 						autoComplete: 'nope',
+						autoComplete: 'off',
 					}}
 					{...field}
 					label={props.label + ' ' + (props.error ? '*' : '')}
