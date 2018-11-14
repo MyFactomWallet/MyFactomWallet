@@ -41,6 +41,8 @@ class WalletController extends React.Component {
 			//===================================================
 			activeAddressIndex_o: null,
 			isStateHydrated: false,
+			readyToManageWallet: false,
+			setReadyToManageWallet: this.setReadyToManageWallet,
 			isWalletEmpty: this.isWalletEmpty,
 			handleNetworkChange: this.handleNetworkChange,
 			verifyKey: this.verifyKey,
@@ -125,7 +127,14 @@ class WalletController extends React.Component {
 			await this.setDefaultIndex();
 			await this.updateBalances({ force: true });
 		}
+		await this.smartSetState({ readyToManageWallet: !this.isWalletEmpty() });
 		await this.smartSetState({ isStateHydrated: true });
+	};
+
+	setReadyToManageWallet = (value) => {
+		this.smartSetState({
+			readyToManageWallet: value,
+		});
 	};
 
 	handleNetworkChange = async (network) => {

@@ -178,8 +178,9 @@ class LedgerForm extends React.Component {
 													rel="noopener noreferrer"
 													href={'https://www.ledger.com/?r=1b0be6fa98ba'}
 												>
-													Ledger's website.
-												</a>
+													Ledger's website
+												</a>{' '}
+												(affiliate link).
 											</Typography>
 										</li>
 										<li>

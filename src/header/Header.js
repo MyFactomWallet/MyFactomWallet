@@ -66,6 +66,15 @@ class ButtonAppBar extends React.Component {
 		this.props.walletController.handleNetworkChange('mainnet');
 	};
 
+	handleWallet = () => {
+		if (
+			!this.props.walletController.readyToManageWallet &&
+			!this.props.walletController.isWalletEmpty()
+		) {
+			this.props.walletController.setReadyToManageWallet(true);
+		}
+	};
+
 	handleCustomNode = (host, port) => {
 		console.log('Host: ' + host);
 		console.log('Port: ' + port);
@@ -139,7 +148,11 @@ class ButtonAppBar extends React.Component {
 							</MenuItem>
 						</Menu>
 					</div> */}
-					<Button href="#/" className={classes.menuText}>
+					<Button
+						href="#/"
+						onClick={this.handleWallet}
+						className={classes.menuText}
+					>
 						Wallet
 					</Button>
 					<HelpModal />

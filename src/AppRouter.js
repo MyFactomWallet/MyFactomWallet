@@ -14,23 +14,13 @@ import Typography from '@material-ui/core/Typography';
 //import Header from './header/Header';
 
 class AppRouter extends Component {
-	state = { readyToManage: false };
-
-	componentDidMount() {
-		this.setState({
-			readyToManage: !this.props.walletController.isWalletEmpty(),
-		});
-	}
-
-	setReadyToManage = (value) => {
-		this.setState({
-			readyToManage: value,
-		});
-	};
-
 	render() {
 		const {
-			walletController: { isWalletEmpty },
+			walletController: {
+				readyToManageWallet,
+				isWalletEmpty,
+				setReadyToManageWallet,
+			},
 		} = this.props;
 
 		return (
@@ -40,10 +30,12 @@ class AppRouter extends Component {
 						exact
 						path="/"
 						render={() =>
-							this.state.readyToManage && !isWalletEmpty() ? (
+							readyToManageWallet && !isWalletEmpty() ? (
 								<WalletManager />
 							) : (
-								<AddInitialWallet setReadyToManage={this.setReadyToManage} />
+								<AddInitialWallet
+									setReadyToManageWallet={setReadyToManageWallet}
+								/>
 							)
 						}
 					/>

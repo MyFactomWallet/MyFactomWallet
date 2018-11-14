@@ -10,7 +10,7 @@ import AddWalletStepper from './AddWalletStepper';
 
 class AddInitialWallet extends Component {
 	componentDidMount() {
-		this.props.setReadyToManage(false);
+		this.props.setReadyToManageWallet(false);
 	}
 
 	render() {
@@ -26,7 +26,7 @@ class AddInitialWallet extends Component {
 		return (
 			<Grid container item xs={12} justify="center">
 				<AddWalletStepper
-					handleClose={() => this.props.setReadyToManage(true)}
+					handleClose={() => this.props.setReadyToManageWallet(true)}
 					handleCloseText={handleCloseText}
 				/>
 			</Grid>
