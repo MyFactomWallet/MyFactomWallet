@@ -41,6 +41,13 @@ class LedgerForm extends React.Component {
 		this.getNextFive(0);
 	}
 
+	retryConnection = () => {
+		this.setState({
+			ledgerStatus: null,
+		});
+		this.getNextFive(0);
+	};
+
 	getNextFive = async (startIndex) => {
 		try {
 			const generatedAddressList = await this.props.ledgerController.getLedgerAddresses(
@@ -54,12 +61,13 @@ class LedgerForm extends React.Component {
 					...prevState.generatedAddressList,
 					...generatedAddressList,
 				],
-				ledgerConnected: true, //delete
+				ledgerConnected: true,
 			}));
 		} catch (err) {
 			console.log(err);
 			this.setState({
-				ledgerStatus: 'Ledger Nano S not found. Please go back and try again.',
+				ledgerStatus:
+					'Ledger Nano S not found. Launch Factom on your device and try again.',
 				ledgerConnected: false,
 			});
 		}
@@ -138,56 +146,66 @@ class LedgerForm extends React.Component {
 									<React.Fragment>
 										<Typography>{values.ledgerStatus}</Typography>
 										<br />
-										<Typography>
-											<b>Note:</b>
-										</Typography>
-										<ul>
-											<li>
-												<Typography>
-													The Ledger Nano S hardware wallet can be ordered
-													from&nbsp;
-													<a
-														target="_blank"
-														rel="noopener noreferrer"
-														href={'https://www.ledger.com/?r=1b0be6fa98ba'}
-													>
-														Ledger's website.
-													</a>
-												</Typography>
-											</li>
-											<li>
-												<Typography>
-													To function properly the application "Factom" needs to
-													be installed on the Ledger Nano S from the Ledger Live
-													Manager.
-												</Typography>
-											</li>
-											<li>
-												<Typography>
-													Only works with&nbsp;
-													<a
-														target="_blank"
-														rel="noopener noreferrer"
-														href={'https://www.google.com/chrome/'}
-													>
-														Chrome
-													</a>
-													.
-												</Typography>
-											</li>
-										</ul>
+										<Button
+											variant="contained"
+											color="primary"
+											onClick={this.retryConnection}
+										>
+											Retry
+										</Button>
 									</React.Fragment>
 								) : (
 									<React.Fragment>
 										<Typography>
-											<b>Connect your Ledger</b>
+											<b>Connecting to Ledger Nano S</b>
 										</Typography>
 										<CircularProgress thickness={7} />
 									</React.Fragment>
 								)}
+								<React.Fragment>
+									<br />
+									<br />
+									<Typography>
+										<b>Note:</b>
+									</Typography>
+									<ul>
+										<li>
+											<Typography>
+												The Ledger Nano S hardware wallet can be ordered
+												from&nbsp;
+												<a
+													target="_blank"
+													rel="noopener noreferrer"
+													href={'https://www.ledger.com/?r=1b0be6fa98ba'}
+												>
+													Ledger's website.
+												</a>
+											</Typography>
+										</li>
+										<li>
+											<Typography>
+												To function properly the application "Factom" needs to
+												be launched on the Ledger Nano S. You can install the
+												application from the Ledger Live Manager.
+											</Typography>
+										</li>
+										<li>
+											<Typography>
+												Only works with&nbsp;
+												<a
+													target="_blank"
+													rel="noopener noreferrer"
+													href={'https://www.google.com/chrome/'}
+												>
+													Chrome
+												</a>
+												.
+											</Typography>
+										</li>
+									</ul>
+								</React.Fragment>
 							</React.Fragment>
 						)}
-
 						<br />
 						<br />
 						<div>

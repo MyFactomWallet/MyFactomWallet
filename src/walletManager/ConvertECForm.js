@@ -151,7 +151,7 @@ class ConvertECForm extends Component {
 							if (ledgerConnected) {
 								actions.setFieldValue(
 									'ledgerStatus',
-									'Waiting for Confirmation'
+									'Waiting 30s for Confirmation'
 								);
 							} else {
 								actions.resetForm();
@@ -231,6 +231,11 @@ class ConvertECForm extends Component {
 				}) => (
 					<Form autoComplete="nope">
 						<AddressInfoHeader />
+						<input
+							name="fake_field"
+							className={classes.visuallyHidden}
+							type="text"
+						/>
 						<Field name={recipientAddressPath}>
 							{({ field, form }) => (
 								<TextField
@@ -457,7 +462,8 @@ class ConvertECForm extends Component {
 													</a>
 												</Tooltip>{' '}
 												in 10-15 minutes, after being included in the next
-												Factom block currently being processed by the blockchain
+												Factom block currently being processed by the
+												blockchain. Funds are available for use immediately.
 												<br />
 											</Typography>
 										</Paper>
@@ -560,6 +566,16 @@ const styles = {
 	successIcon: {
 		position: 'relative',
 		top: '5px',
+	},
+	visuallyHidden: {
+		margin: '-1px',
+		padding: '0',
+		width: '1px',
+		height: '1px',
+		overflow: 'hidden',
+		clip: 'rect(0 0 0 0)',
+		clip: 'rect(0, 0, 0, 0)',
+		position: 'absolute',
 	},
 };
 
