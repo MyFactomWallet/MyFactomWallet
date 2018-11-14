@@ -1,4 +1,4 @@
-View [MyFactomWallet](https://myfactomwallet.github.io/MyFactomWallet/) (ALPHA)
+View [MyFactomWallet](https://www.myfactomwallet.com) (Deployed branch: feature_vote)
 
 ## Table of Contents
 
