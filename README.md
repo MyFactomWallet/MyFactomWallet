@@ -8,7 +8,6 @@ View [MyFactomWallet](https://www.myfactomwallet.com) (Deployed branch: feature_
 ## Getting Started
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
-You can find the most recent version of the Create React App guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
 
 Many thanks to [MyEtherWallet](https://github.com/MyEtherWallet/) for inspiration.
 
@@ -16,5 +15,5 @@ Many thanks to [MyEtherWallet](https://github.com/MyEtherWallet/) for inspiratio
 
 [factomjs](https://github.com/PaulBernier/factomjs)
 Library to interact easily with Factom blockchain.  
-[Material-UI](https://material-ui.com/) The official Semantic-UI-React integration.  
+[Material-UI](https://material-ui.com/) React components that implement Google's Material Design.  
 [Prettier](https://prettier.io/) An opinionated code formatter.
