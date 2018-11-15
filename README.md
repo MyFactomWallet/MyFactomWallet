@@ -7,6 +7,8 @@ View [MyFactomWallet](https://www.myfactomwallet.com) (Deployed branch: feature_
 
 ## Getting Started
 
+This README is a work in progress.
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Many thanks to [MyEtherWallet](https://github.com/MyEtherWallet/) for inspiration.

@@ -47,6 +47,30 @@ class AddWalletModal extends React.Component {
 							</a>
 							&nbsp;for support.
 						</Typography>
+						<br />
+						<Typography>
+							Ledger Nano S documentation can be found{' '}
+							<a
+								target="_blank"
+								rel="noopener noreferrer"
+								href={'http://help.myfactomwallet.com/'}
+							>
+								here
+							</a>
+							.
+						</Typography>
+						<br />
+						<Typography>
+							MyFactomWallet's Github repositories are{' '}
+							<a
+								target="_blank"
+								rel="noopener noreferrer"
+								href={'https://github.com/MyFactomWallet'}
+							>
+								here
+							</a>
+							.
+						</Typography>
 					</Paper>
 				</Modal>
 			</div>
@@ -64,9 +88,9 @@ const styles = (theme) => ({
 		top: `50%`,
 		left: `50%`,
 		transform: `translate(-50%, -50%)`,
-		minWidth: '470px',
 		minHeight: '138px',
 		padding: '30px',
+		maxWidth: '425px',
 	},
 	menuText: {
 		color: 'white',
