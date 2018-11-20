@@ -1,6 +1,6 @@
 {
 	"name": "myfactomwallet",
-	"homepage": "https://www.myfactomwallet.com",
+	"homepage": "https://myfactomwallet.com",
 	"version": "0.2.0",
 	"private": true,
 	"dependencies": {
