@@ -66,8 +66,7 @@ class LedgerForm extends React.Component {
 		} catch (err) {
 			console.log(err);
 			this.setState({
-				ledgerStatus:
-					'Ledger Nano S not found. Launch Factom on your device and try again.',
+				ledgerStatus: 'Ledger Nano S not found. Troubleshooting tips:',
 				ledgerConnected: false,
 			});
 		}
@@ -145,6 +144,64 @@ class LedgerForm extends React.Component {
 								{!_isNil(values.ledgerStatus) ? (
 									<React.Fragment>
 										<Typography>{values.ledgerStatus}</Typography>
+										<ul>
+											<li>
+												<Typography>
+													Are you using a Ledger Nano S device?
+												</Typography>
+											</li>
+											<li>
+												<Typography>
+													Is the Factom app launched on your device?
+												</Typography>
+											</li>
+											<li>
+												<Typography>
+													Is your device running the latest version?
+												</Typography>
+											</li>
+											<li>
+												<Typography>
+													Have you closed the Ledger Live Manager?
+												</Typography>
+											</li>
+											<li>
+												<Typography>
+													Are you using&nbsp;
+													<a
+														target="_blank"
+														rel="noopener noreferrer"
+														href={'https://www.google.com/chrome/'}
+													>
+														Chrome
+													</a>
+													?
+												</Typography>
+											</li>
+
+											<li>
+												<Typography>Are you running any adblockers?</Typography>
+											</li>
+											<li>
+												<Typography>
+													Have you tried restarting your device?
+												</Typography>
+											</li>
+											<li>
+												<Typography>
+													Support is available in the #ledger-nano-s channel on
+													our&nbsp;
+													<a
+														target="_blank"
+														rel="noopener noreferrer"
+														href={'https://discord.gg/79kH2pp'}
+													>
+														Discord server
+													</a>
+													.
+												</Typography>
+											</li>
+										</ul>
 										<br />
 										<Button
 											variant="contained"
@@ -185,22 +242,9 @@ class LedgerForm extends React.Component {
 										</li>
 										<li>
 											<Typography>
-												To function properly the application "Factom" needs to
-												be launched on the Ledger Nano S. You can install the
+												To function properly, the Factom application needs to be
+												launched on the Ledger Nano S. You can install the
 												application from the Ledger Live Manager.
-											</Typography>
-										</li>
-										<li>
-											<Typography>
-												Only works with&nbsp;
-												<a
-													target="_blank"
-													rel="noopener noreferrer"
-													href={'https://www.google.com/chrome/'}
-												>
-													Chrome
-												</a>
-												.
 											</Typography>
 										</li>
 									</ul>
