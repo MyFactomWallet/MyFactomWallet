@@ -202,7 +202,6 @@ class LedgerForm extends React.Component {
 												</Typography>
 											</li>
 										</ul>
-										<br />
 										<Button
 											variant="contained"
 											color="primary"
