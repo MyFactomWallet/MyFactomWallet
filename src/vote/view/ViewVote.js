@@ -18,7 +18,6 @@ import QS from 'qs';
 import ArrowForward from '@material-ui/icons/ArrowForward';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import VoteSummary from '../shared/VoteSummary';
-import SignVote from '../shared/SignVote';
 import SectionHeader from '../shared/SectionHeader';
 //import OpenInNew from '@material-ui/icons/OpenInNew';
 //import { Link } from 'react-router-dom';
@@ -65,36 +64,44 @@ class ViewVote extends React.Component {
 		poll: {
 			pollJSON: {
 				proposal: {
-					title: 'This Is The Title',
-					text: '',
+					title: 'Title', //'',
+					text: 'text value', //'',
 					externalRef: {
-						href:
-							'https://raw.githubusercontent.com/JacobEberhardt/ZoKrates/aa7e11/README.md',
+						href: '',
 						hash: {
-							value:
-								'F30A765AD6C5777E82EB2B64CFA53CDBB08D435546DD351880C13691867290B4',
-							algo: 'SHA-256',
+							value: '',
+							algo: '',
 						},
 					},
 				},
 				vote: {
 					phasesBlockHeights: {
-						commitStart: '158883',
-						commitEnd: '158884',
-						revealStart: '158885',
-						revealEnd: '158886',
+						commitStart: 59158, //'',
+						commitEnd: 59159, //'',
+						revealStart: 59160, //'',
+						revealEnd: 59161, //'',
 					},
 					eligibleVotersChainId: '',
-					type: '0',
+					type: 1, //'',
 					config: {
-						options: ['Yes', 'No', 'Abstain'],
-						allowAbstention: '',
-						computeResultsAgainst: '',
-						minOptions: '',
-						maxOptions: '',
+						options: ['a', 'b', 'c'],
+						allowAbstention: true, //'',
+						computeResultsAgainst: 'ALL_ELIGIBLE_VOTERS', //'',
+						minOptions: 1,
+						maxOptions: 1,
+						winnerCriteria: {
+							minSupport: {
+								b: {
+									weighted: 1,
+									unweighted: 1,
+								},
+							},
+						},
 						acceptanceCriteria: {
-							minSupport: {},
-							minTurnout: {},
+							minTurnout: {
+								weighted: 1,
+								unweighted: 1,
+							},
 						},
 					},
 				},
@@ -316,9 +323,6 @@ class ViewVote extends React.Component {
 											</Grid>
 											<Grid xs={10} item>
 												<input type="password" />
-											</Grid>
-											<Grid item xs={12}>
-												<SignVote />
 											</Grid>
 											<Grid item xs={12}>
 												<br />

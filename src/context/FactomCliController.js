@@ -15,6 +15,7 @@ class FactomCliController extends React.Component {
 		this.state = {
 			factomCli: this.newFactomCli(),
 			connectToServer: this.connectToServer,
+			getDefaultConnectionParams: this.getDefaultConnectionParams,
 		};
 	}
 
@@ -31,6 +32,10 @@ class FactomCliController extends React.Component {
 			minTimeout: 500,
 			maxTimeout: 2000,
 		},
+	};
+
+	getDefaultConnectionParams = () => {
+		return this.defaultConnectionParams;
 	};
 
 	newFactomCli = (connectionParams = {}) =>

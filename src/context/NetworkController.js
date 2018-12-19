@@ -25,6 +25,8 @@ class NetworkController extends React.Component {
 			ecAbbreviationFull: 'Entry Credit',
 			apiPort: 8188,
 			explorerURL: 'https://explorer.factoid.org',
+			explorerApiURL: 'https://explorer.factoid.org/api/v1',
+			voteRegistrationChainID: '',
 		},
 		testnet: {
 			network: 'testnet',
@@ -35,6 +37,9 @@ class NetworkController extends React.Component {
 			ecAbbreviationFull: 'Test Credit',
 			apiPort: 8288,
 			explorerURL: 'https://testnet.factoid.org',
+			explorerApiURL: 'https://testnet.factoid.org/api/v1',
+			voteRegistrationChainID:
+				'a968e880ee3a7002f25ade15ae36a77c15f4dbc9d8c11fdd5fe86ba6af73a475',
 		},
 	};
 

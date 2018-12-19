@@ -1,28 +1,50 @@
 import React from 'react';
+import _get from 'lodash/get';
+import _isEmpty from 'lodash/isEmpty';
+import _isNumber from 'lodash/isNumber';
 import Grid from '@material-ui/core/Grid';
+import * as Yup from 'yup';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { Formik, Field, Form, FieldArray } from 'formik';
+import { Formik, Form, FieldArray } from 'formik';
 import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemText from '@material-ui/core/ListItemText';
-import Clear from '@material-ui/icons/Clear';
-import Person from '@material-ui/icons/Person';
-import Paper from '@material-ui/core/Paper';
 import Radio from '@material-ui/core/Radio';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Button from '@material-ui/core/Button';
-import get from 'lodash/get';
 import SectionHeader from '../shared/SectionHeader';
+import FormTextField from '../../component/form/FormTextField';
+import { ApolloConsumer } from 'react-apollo';
+import gql from 'graphql-tag';
+import EligibleVotersList from '../shared/EligibleVotersList';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
+/**
+ * Queries
+ */
+const GET_VOTERS = gql`
+	query Voters($chain: String!) {
+		eligibleVoters(chain: $chain) {
+			voters {
+				voterId
+				weight
+			}
+		}
+	}
+`;
+
+/**
+ * Constants
+ */
+const eligibleVotersPath = 'eligibleVoters';
+// form specific fields
 const selectedListPath = 'formFields.selectedList';
-const workingVoterIDPath = 'formFields.workingVoterID';
+const workingVoterIdPath = 'formFields.workingVoterId';
 const workingWeightPath = 'formFields.workingWeight';
-const participantsPath = 'participantsJSON';
+const workingVoterChainIDPath = 'formFields.workingVoterChainId';
+const loadingVotersPath = 'formFields.loadingVoters';
+const loadErrorMessagePath = 'formFields.loadErrorMessage';
 
 class SelectParticipants extends React.Component {
 	componentDidMount() {
@@ -37,215 +59,303 @@ class SelectParticipants extends React.Component {
 
 	render() {
 		const { eligibleVotersForm, classes, updateParticipants } = this.props;
-		/* const standingParties = this.state.standingParties.map((voter) => (
-			<ListItem key={voter.name} divider>
-				<Person />
-				<ListItemText
-					primary={voter.name}
-					secondary={'Weight: ' + voter.weight}
-				/>
-				<Typography variant="caption">{voter.role}</Typography>
-			</ListItem>
-		)); */
 
 		return (
 			<Formik
 				initialValues={eligibleVotersForm}
 				onSubmit={(values, actions) => {
+					// update participants
 					updateParticipants(values);
-					this.props.handleNext();
 
-					//setTimeout(() => {
-					//	alert(JSON.stringify(values, null, 2));
-					//	actions.setSubmitting(false);
-					//}, 1000);
+					// proceed to next page
+					this.props.handleNext();
 				}}
-				render={({ values, handleChange, setFieldValue, isSubmitting }) => (
-					<Grid container className={classes.pad}>
-						<Grid item xs={12}>
-							{/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
-							<SectionHeader text="Select Voters" />
-						</Grid>
-						<Grid item xs={12}>
-							<Form onKeyPress={this.handleKeyPress}>
+				validationSchema={Yup.object().shape({
+					eligibleVoters: Yup.array().required('* Add at least one voter'),
+					formFields: Yup.object().shape({
+						workingWeight: Yup.number()
+							.transform((currentValue, originalValue) => {
+								return originalValue === '' ? undefined : currentValue;
+							})
+							.positive('Must be a positive number'),
+					}),
+				})}
+				render={({
+					values,
+					handleChange,
+					setFieldValue,
+					isSubmitting,
+					errors,
+					submitCount,
+					touched,
+				}) => (
+					<Form onKeyPress={this.handleKeyPress}>
+						<ApolloConsumer>
+							{(client) => (
 								<FieldArray
-									name={participantsPath}
+									name={eligibleVotersPath}
 									render={(arrayHelpers) => (
-										<Grid container>
-											<Grid item xs={12} container>
-												<Grid item xs={4}>
-													<FormControl component="fieldset">
-														<RadioGroup
-															name={selectedListPath}
-															value={get(values, selectedListPath)}
-															onChange={handleChange}
-														>
-															<FormControlLabel
-																value="standing"
-																control={<Radio />}
-																label="Standing Parties"
-															/>
-															<FormControlLabel
-																value="anos"
-																control={<Radio />}
-																label="Authority Node Operators"
-															/>
-															<FormControlLabel
-																value="guides"
-																control={<Radio />}
-																label="Guides"
-															/>
-															<FormControlLabel
-																value="custom"
-																control={<Radio />}
-																label="Custom List"
-															/>
-														</RadioGroup>
-													</FormControl>
-												</Grid>
-												{get(values, selectedListPath) === 'custom' ? (
-													<Grid item xs={4} className={classes.borders}>
-														<Typography
-															style={{ fontWeight: 500 }}
-															gutterBottom
-														>
-															Add Voter
-														</Typography>
-														<Typography gutterBottom>
-															Voter ID:&nbsp;
-															<Field type="number" name={workingVoterIDPath} />
-														</Typography>
-														<Typography gutterBottom>
-															Weight:&nbsp;&nbsp;&nbsp;
-															<Field type="number" name={workingWeightPath} />
-														</Typography>
-														<input
-															type="button"
-															onClick={() => {
-																arrayHelpers.push({
-																	voterID: get(values, workingVoterIDPath),
-																	weight: get(values, workingWeightPath),
-																});
-																setFieldValue(workingVoterIDPath, '');
-																setFieldValue(workingWeightPath, '');
-															}}
-															value="Add"
-															disabled={
-																!get(values, workingVoterIDPath) ||
-																!get(values, workingWeightPath)
-															}
-														/>
+										<Grid container className={classes.pad}>
+											<Grid item xs={12}>
+												<SectionHeader text="Select Voters" />
+											</Grid>
+											<Grid item container xs={12}>
+												<Grid item xs={12} container>
+													<Grid item xs={3}>
+														<FormControl component="fieldset">
+															<RadioGroup
+																name={selectedListPath}
+																value={_get(values, selectedListPath)}
+																onChange={handleChange}
+															>
+																<FormControlLabel
+																	value="custom"
+																	control={<Radio />}
+																	label="Custom List"
+																/>
+																<FormControlLabel
+																	value="standing"
+																	control={<Radio />}
+																	label="Standing Parties"
+																	disabled
+																/>
+															</RadioGroup>
+														</FormControl>
 													</Grid>
-												) : (
-													<Grid item xs={4} />
-												)}
-												{get(values, selectedListPath) === 'custom' ? (
-													<Grid item xs={4} className={classes.padLoadVoters}>
-														<div>
+													{_get(values, selectedListPath) === 'custom' ? (
+														<Grid item xs={4} className={classes.borders}>
 															<Typography
 																style={{ fontWeight: 500 }}
 																gutterBottom
 															>
-																Load Voters
+																Add Voter
 															</Typography>
-															<Typography gutterBottom>
-																File: <input disabled type="file" />
-															</Typography>
-															<Typography>
-																Voter Chain ID: <input disabled type="text" />
-															</Typography>
-															<Typography gutterBottom>
-																Authority Nodes:
-																<input disabled type="checkbox" />
+															<FormTextField
+																label="Voter ID"
+																name={workingVoterIdPath}
+																error={
+																	_get(errors, workingVoterIdPath) &&
+																	_get(touched, workingVoterIdPath)
+																}
+																type="text"
+																isNotFast
+																onKeyPress={(e) => {
+																	if (
+																		e.which === 13 /* Enter */ &&
+																		e.target.value.trim() &&
+																		_isNumber(_get(values, workingWeightPath))
+																	) {
+																		arrayHelpers.push({
+																			voterId: _get(values, workingVoterIdPath),
+																			weight: _get(values, workingWeightPath),
+																		});
+																		setFieldValue(workingVoterIdPath, '');
+																		setFieldValue(workingWeightPath, '');
+																	}
+																}}
+															/>
+															<FormTextField
+																label="Weight"
+																name={workingWeightPath}
+																type="number"
+																error={
+																	_get(errors, workingWeightPath) &&
+																	_get(touched, workingWeightPath)
+																}
+																isNotFast
+																onKeyPress={(e) => {
+																	if (
+																		e.which === 13 /* Enter */ &&
+																		e.target.value.trim() &&
+																		!_isEmpty(_get(values, workingVoterIdPath))
+																	) {
+																		arrayHelpers.push({
+																			voterId: _get(values, workingVoterIdPath),
+																			weight: _get(values, workingWeightPath),
+																		});
+																		setFieldValue(workingVoterIdPath, '');
+																		setFieldValue(workingWeightPath, '');
+																	}
+																}}
+															/>
+															<br />
+															<br />
+															<Button
+																variant="contained"
+																component="span"
+																onClick={() => {
+																	arrayHelpers.push({
+																		voterId: _get(values, workingVoterIdPath),
+																		weight: _get(values, workingWeightPath),
+																	});
+																	setFieldValue(workingVoterIdPath, '');
+																	setFieldValue(workingWeightPath, '');
+																}}
+																disabled={
+																	!_get(values, workingVoterIdPath) ||
+																	!_get(values, workingWeightPath)
+																}
+															>
+																Add
+															</Button>
+														</Grid>
+													) : (
+														<Grid item xs={4} />
+													)}
+													{_get(values, selectedListPath) === 'custom' ? (
+														<Grid
+															item
+															xs={5}
+															container
+															className={classes.padLoadVoters}
+														>
+															<Grid item xs={12}>
+																<Typography
+																	style={{ fontWeight: 500 }}
+																	gutterBottom
+																>
+																	Load Voters
+																</Typography>
+															</Grid>
+															<Grid item xs={12}>
+																<Typography gutterBottom>
+																	File: <input disabled type="file" />
+																</Typography>
+															</Grid>
+															<Grid item xs={12}>
+																<FormTextField
+																	label="Voter Chain ID"
+																	name={workingVoterChainIDPath}
+																	type="text"
+																	fullWidth
+																/>
 																<br />
-																Guides: <input disabled type="checkbox" />
-															</Typography>
-															<button disabled>Load</button>
-														</div>
-													</Grid>
-												) : (
-													<Grid item xs={5} />
-												)}
-											</Grid>
+																<br />
+															</Grid>
+															<Grid item xs={4}>
+																<Button
+																	variant="contained"
+																	component="span"
+																	onClick={async () => {
+																		// start loading indicator
+																		setFieldValue(loadingVotersPath, true);
+																		setFieldValue(loadErrorMessagePath, '');
 
-											{get(values, selectedListPath) === 'custom' && (
-												<Grid item xs={12}>
-													<Paper
-														elevation={10}
-														className={classes.listContainer}
-													>
-														<Typography variant="subtitle1">
-															Eligible Voter List
-														</Typography>
-														<List className={classes.list} dense>
-															{get(values, participantsPath).length > 0 ? (
-																get(values, participantsPath).map(
-																	(voter, index) => (
-																		<ListItem
-																			key={index}
-																			disableGutters
-																			divider
-																		>
-																			<Person />
-																			<ListItemText
-																				primary={'Voter ID: ' + voter.voterID}
-																				secondary={'Weight: ' + voter.weight}
+																		try {
+																			const { data } = await client.query({
+																				query: GET_VOTERS,
+																				variables: {
+																					chain: _get(
+																						values,
+																						workingVoterChainIDPath
+																					),
+																				},
+																			});
+
+																			if (
+																				!_isEmpty(
+																					_get(data, 'eligibleVoters.voters')
+																				)
+																			) {
+																				// data found
+																				_get(data, 'eligibleVoters.voters').map(
+																					(voter_o) => {
+																						arrayHelpers.push({
+																							voterId: voter_o.voterId,
+																							weight: voter_o.weight,
+																						});
+																					}
+																				);
+																				setFieldValue(
+																					workingVoterChainIDPath,
+																					''
+																				);
+																			} else {
+																				// no data found
+																				setFieldValue(
+																					loadErrorMessagePath,
+																					'No voters found'
+																				);
+																			}
+																		} catch (e) {
+																			setFieldValue(
+																				loadErrorMessagePath,
+																				'An Error has occured'
+																			);
+																		}
+
+																		// stop loading indicator
+																		setFieldValue(loadingVotersPath, false);
+																	}}
+																	disabled={
+																		!_get(values, workingVoterChainIDPath)
+																	}
+																>
+																	Load
+																	{_get(values, loadingVotersPath) && (
+																		<>
+																			&nbsp;&nbsp;
+																			<CircularProgress
+																				thickness={5}
+																				size={20}
 																			/>
-																			<IconButton
-																				onClick={() => {
-																					arrayHelpers.remove(index);
-																				}}
-																				aria-label="Clear"
-																			>
-																				<Clear />
-																			</IconButton>
-																		</ListItem>
-																	)
-																)
-															) : (
-																<ListItem disableGutters divider>
-																	<ListItemText
-																		primary={'No Voters have been added'}
-																	/>
-																</ListItem>
-															)}
-														</List>
-													</Paper>
+																		</>
+																	)}
+																</Button>
+															</Grid>
+															<Grid item xs={8}>
+																{_get(values, loadErrorMessagePath) && (
+																	<Typography className={classes.errorText}>
+																		{_get(values, loadErrorMessagePath)}
+																	</Typography>
+																)}
+															</Grid>
+														</Grid>
+													) : (
+														<Grid item xs={5} />
+													)}
 												</Grid>
-											)}
-											{get(values, selectedListPath) === 'standing' && (
-												<Grid item xs={12}>
-													{/* 	<Paper elevation={10} className={classes.listContainer}>
-									<Typography variant="subtitle1">
-										Standing Party List
-									</Typography>
-	
-									<List className={classes.list} dense>
-										{standingParties}
-									</List>
-								</Paper> */}
+
+												{_get(values, selectedListPath) === 'custom' && (
+													<Grid item xs={12}>
+														<EligibleVotersList
+															eligibleVoters={_get(values, eligibleVotersPath)}
+															arrayHelpers={arrayHelpers}
+														/>
+													</Grid>
+												)}
+												{submitCount > 0 &&
+													typeof _get(errors, eligibleVotersPath) ===
+														'string' && (
+														<Grid item xs={12}>
+															<br />
+															<Typography className={classes.errorText}>
+																{_get(errors, eligibleVotersPath)}
+															</Typography>
+														</Grid>
+													)}
+
+												<Grid item xs={12} className={classes.stepperButtons}>
+													<br />
+													<Button disabled onClick={this.props.handleBack}>
+														Back
+													</Button>
+													<Button
+														variant="contained"
+														color="primary"
+														type="submit"
+														disabled={isSubmitting}
+													>
+														Next
+													</Button>
 												</Grid>
-											)}
-											<Grid item xs={12} className={classes.stepperButtons}>
-												<br />
-												<Button disabled onClick={this.props.handleBack}>
-													Back
-												</Button>
-												<Button
-													variant="contained"
-													color="primary"
-													type="submit"
-													disabled={isSubmitting}
-												>
-													Next
-												</Button>
 											</Grid>
 										</Grid>
 									)}
 								/>
-							</Form>
-						</Grid>
-					</Grid>
+							)}
+						</ApolloConsumer>
+					</Form>
 				)}
 			/>
 		);
@@ -260,10 +370,6 @@ const styles = (theme) => ({
 	pad: {
 		padding: '15px',
 	},
-	list: {
-		overflow: 'auto',
-		height: 350,
-	},
 	borders: {
 		borderRightStyle: 'solid',
 		borderRightColor: 'lightgray',
@@ -276,12 +382,11 @@ const styles = (theme) => ({
 	padLoadVoters: {
 		padding: '10px',
 	},
-	listContainer: {
-		marginTop: '10px',
-		padding: '15px',
-	},
 	stepperButtons: {
 		marginLeft: '-15px',
+	},
+	errorText: {
+		color: 'red',
 	},
 });
 

@@ -1,35 +1,35 @@
 import React from 'react';
+import _flowRight from 'lodash/flowRight';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import OpenInNew from '@material-ui/icons/OpenInNew';
+import { withNetwork } from '../../context/NetworkContext';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import SectionHeader from '../shared/SectionHeader';
 
-const styles = (theme) => ({
-	pad: {
-		padding: '15px',
-	},
-});
-
 function FinalStep(props) {
-	const { classes } = props;
+	const {
+		classes,
+		createPollResult,
+		networkController: { networkProps },
+	} = props;
+
+	const entryHashURL = networkProps.explorerURL + '/entry?hash=';
 
 	return (
 		<Grid className={classes.pad} container>
 			<Grid item xs={12}>
 				<SectionHeader text="Setup Complete!" />
-
+				{/* <pre>{JSON.stringify(createPollResult, null, 2)}</pre> */}
 				<Typography gutterBottom>
 					You're poll is pending confirmation on the Factom blockchain.&nbsp;
 					<Link
 						target="_blank"
 						rel="noopener noreferrer"
-						to={
-							'/viewVote?id=e62aeaad853809e0a6901faa7698d305b5927fe9aeffff9fa233f3367629f098'
-						}
+						to={'/viewVote?id=' + createPollResult.vote.entryHash}
 					>
 						<Button variant="outlined">
 							View Poll
@@ -39,45 +39,59 @@ function FinalStep(props) {
 				</Typography>
 			</Grid>
 			<Grid item xs={12}>
-				<Typography style={{ display: 'inline', fontWeight: 500 }} gutterBottom>
-					Voter Chain ID:&nbsp;
-					<Typography style={{ display: 'inline' }}>
-						df3ade9eec4b08d5379cc64270c30ea7315d8a8a1a69efe2b98a60ecdd69e604&nbsp;
-						<a
-							target="_blank"
-							rel="noopener noreferrer"
-							href={
-								'https://explorer.factom.com/eblocks/0e5570917c25c6b35dbf67c802958d802e43fd9f48dd0c35a01feec1235de267'
-							}
-						>
-							<OpenInNew color="primary" style={{ fontSize: 15 }} />
-						</a>
-					</Typography>
-				</Typography>
-
-				<br />
-				<Typography style={{ display: 'inline', fontWeight: 500 }} gutterBottom>
-					Poll Chain ID:&nbsp;
-				</Typography>
-				<Typography style={{ display: 'inline' }}>
-					e5783ef44313a678d489b6917ef96d971156615ae71a671fdf638af403146ab7&nbsp;
-					<a
-						target="_blank"
-						rel="noopener noreferrer"
-						href={
-							'https://explorer.factom.com/eblocks/0e5570917c25c6b35dbf67c802958d802e43fd9f48dd0c35a01feec1235de267'
-						}
-					>
-						<OpenInNew color="primary" style={{ fontSize: 15 }} />
-					</a>
-				</Typography>
+				<SectionHeader text="Eligible Voters" />
+				<ExplorerLink
+					label={'Entry Hash'}
+					URL={entryHashURL}
+					ID={createPollResult.eligibleVoters.entryHash}
+				/>
+			</Grid>
+			<Grid item xs={12}>
+				<SectionHeader text="Vote Configuration" />
+				<ExplorerLink
+					label={'Entry Hash'}
+					URL={entryHashURL}
+					ID={createPollResult.vote.entryHash}
+				/>
+			</Grid>
+			<Grid item xs={12}>
+				<SectionHeader text="Vote Registration" />
+				<ExplorerLink
+					label={'Entry Hash'}
+					URL={entryHashURL}
+					ID={createPollResult.registration.entryHash}
+				/>
 			</Grid>
 		</Grid>
 	);
 }
 
+const styles = (theme) => ({
+	pad: {
+		padding: '15px',
+	},
+});
+
+const ExplorerLink = ({ label, URL, ID }) => {
+	return (
+		<>
+			<Typography style={{ display: 'inline' }} gutterBottom>
+				{label + ':'}&nbsp;
+			</Typography>
+			<Typography style={{ display: 'inline' }}>
+				{ID}&nbsp;
+				<a target="_blank" rel="noopener noreferrer" href={URL + ID}>
+					<OpenInNew color="primary" style={{ fontSize: 15 }} />
+				</a>
+			</Typography>
+		</>
+	);
+};
+
 FinalStep.propTypes = {
 	classes: PropTypes.object,
 };
 
-export default withStyles(styles)(FinalStep);
+const enhancer = _flowRight(withNetwork, withStyles(styles));
+
+export default enhancer(FinalStep);

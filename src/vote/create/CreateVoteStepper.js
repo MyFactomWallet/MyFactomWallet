@@ -10,8 +10,8 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import PreviewVote from './PreviewVote.js';
 import FinalStep from './FinalStep.js';
-import CreateVoteController from './CreateVoteController';
-import ConfigureForm from './ConfigureForm';
+import VoteConfiguration from './VoteConfiguration';
+import CreateVoteForm from './CreateVoteForm';
 
 class CreateVoteStepper extends React.Component {
 	state = {
@@ -45,7 +45,7 @@ class CreateVoteStepper extends React.Component {
 				);
 			case 1:
 				return (
-					<ConfigureForm
+					<CreateVoteForm
 						handleNext={this.handleNext}
 						handleBack={this.handleBack}
 						updatePoll={createVoteSnapshot.updatePoll}
@@ -58,6 +58,10 @@ class CreateVoteStepper extends React.Component {
 						handleNext={this.handleNext}
 						handleBack={this.handleBack}
 						poll={createVoteSnapshot.pollForm}
+						eligibleVoters={
+							createVoteSnapshot.eligibleVotersForm.eligibleVoters
+						}
+						updateCreatePollResult={createVoteSnapshot.updateCreatePollResult}
 					/>
 				);
 			default:
@@ -75,7 +79,7 @@ class CreateVoteStepper extends React.Component {
 		const { activeStep } = this.state;
 
 		return (
-			<CreateVoteController>
+			<VoteConfiguration>
 				{(createVoteSnapshot) => (
 					<Grid container>
 						<Grid item xs={2} />
@@ -98,7 +102,9 @@ class CreateVoteStepper extends React.Component {
 									})}
 								</Stepper>
 								{this.state.activeStep === steps.length ? (
-									<FinalStep />
+									<FinalStep
+										createPollResult={createVoteSnapshot.createPollResult}
+									/>
 								) : (
 									<div>
 										<div>
@@ -111,7 +117,7 @@ class CreateVoteStepper extends React.Component {
 						<Grid item xs={2} />
 					</Grid>
 				)}
-			</CreateVoteController>
+			</VoteConfiguration>
 		);
 	}
 }

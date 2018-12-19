@@ -3,15 +3,9 @@ import { withStyles } from '@material-ui/core/styles';
 import _get from 'lodash/get';
 import _omit from 'lodash/omit';
 import _isEmpty from 'lodash/isEmpty';
+import _flowRight from 'lodash/flowRight';
 import PropTypes from 'prop-types';
-import {
-	Formik,
-	Field,
-	FastField,
-	Form,
-	FieldArray,
-	ErrorMessage,
-} from 'formik';
+import { Formik, Field, FastField, Form, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -29,11 +23,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Clear from '@material-ui/icons/Clear';
 import Button from '@material-ui/core/Button';
 import SectionHeader from '../shared/SectionHeader';
-import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
+import FormTextField from '../../component/form/FormTextField';
+import FormSelectField from '../../component/form/FormSelectField';
+import { withNetwork } from '../../context/NetworkContext';
 //import FormHelperText from '@material-ui/core/FormHelperText';
+
 import {
 	BINARY_CONFIG,
 	SINGLE_OPTION_CONFIG,
@@ -41,6 +35,7 @@ import {
 	INSTANT_RUNOFF_CONFIG,
 	ALL_ELIGIBLE_VOTERS,
 	PARTICIPANTS_ONLY,
+	HASH_ALGO_VALUES,
 } from './VOTE_CONSTANTS';
 
 /**
@@ -54,8 +49,8 @@ const VOTE_TYPE_VALUES = [
 ];
 
 const COMPUTE_AGAINST_VALUES = [
-	{ value: ALL_ELIGIBLE_VOTERS, text: ALL_ELIGIBLE_VOTERS },
-	{ value: PARTICIPANTS_ONLY, text: PARTICIPANTS_ONLY },
+	{ value: ALL_ELIGIBLE_VOTERS.value, text: ALL_ELIGIBLE_VOTERS.text },
+	{ value: PARTICIPANTS_ONLY.value, text: PARTICIPANTS_ONLY.text },
 ];
 
 const ABSTENTION_VALUES = [
@@ -64,6 +59,7 @@ const ABSTENTION_VALUES = [
 ];
 
 const TITLE_MAX_LENGTH = 32;
+const QUESTION_MAX_LENGTH = 250;
 
 // poll config fields
 const titlePath = 'pollJSON.proposal.title';
@@ -86,27 +82,35 @@ const winnerCriteriaPath = 'pollJSON.vote.config.winnerCriteria';
 //const minSupportPath = 'pollJSON.vote.config.winnerCriteria.minSupport';
 
 // form specific fields
+const commitStartDatePath = 'formFields.commitStartDate';
+const commitEndDatePath = 'formFields.commitEndDate';
+const revealStartDatePath = 'formFields.revealStartDate';
+const revealEndDatePath = 'formFields.revealEndDate';
 const voteTypeTextPath = 'formFields.voteTypeText';
 const questionSourcePath = 'formFields.questionSource';
 const workingOptionPath = 'formFields.workingOption';
 const workingHrefPath = 'formFields.workingHref';
+const workingHashValuePath = 'formFields.workingHashValue';
+const workingHashAlgoPath = 'formFields.workingHashAlgo';
+const workingTextPath = 'formFields.workingText';
 const checkedTurnoutPath = 'formFields.checkedTurnout';
 const workingWeightMinTurnoutPath = 'formFields.workingWeightMinTurnout';
 const workingUnweightMinTurnoutPath = 'formFields.workingUnweightMinTurnout';
 const workingWeightMinSupportPath = 'formFields.workingWeightMinSupport';
 const workingUnweightMinSupportPath = 'formFields.workingUnweightMinSupport';
-const workingMinSupportOption = 'formFields.workingMinSupportOption';
+const workingMinSupportOptionPath = 'formFields.workingMinSupportOption';
 
-class ConfigureVoteForm extends React.Component {
-	componentDidMount() {
+class CreateVoteForm extends React.Component {
+	state = { currentHeight: null };
+
+	async componentDidMount() {
 		window.scrollTo(0, 0);
-	}
 
-	handleOptionKeyPress(event) {
-		console.log('pressed');
-		console.log(event.target.value);
-		if (event.which === 13 /* Enter */ && event.target.value) {
-		}
+		const tfaURL = this.props.networkController.networkProps.explorerApiURL;
+
+		fetch(tfaURL + '/top')
+			.then((response) => response.json())
+			.then((data) => this.setState({ currentHeight: data.result.top }));
 	}
 
 	handleKeyPress(event) {
@@ -115,8 +119,66 @@ class ConfigureVoteForm extends React.Component {
 		}
 	}
 
-	criteriaStyle = (values, path) => {
-		return !_get(values, path) ? 'gray' : '';
+	validateWriteHeight = (currentHeight, writeHeight) => {
+		let validate = true;
+		isNaN(writeHeight) ? (validate = false) : (validate = true);
+		if (validate) {
+			writeHeight <= currentHeight ? (validate = false) : (validate = true);
+		}
+
+		return validate;
+	};
+
+	handleBlockTime = (value, path, setFieldValue) => {
+		if (this.validateWriteHeight(this.state.currentHeight, value)) {
+			setFieldValue(path, calculateWriteTime(this.state.currentHeight, value));
+		} else {
+			setFieldValue(path, '');
+		}
+	};
+
+	removeOption = (
+		option,
+		index,
+		workingMinSupportOption,
+		arrayHelpers,
+		setFieldValue,
+		optionsLength,
+		minOptions,
+		maxOptions
+	) => {
+		arrayHelpers.remove(index);
+		if (workingMinSupportOption === option) {
+			setFieldValue(workingMinSupportOptionPath, '');
+		}
+
+		// reset min/max options
+		if (minOptions > optionsLength) {
+			setFieldValue(minOptionsPath, '');
+		}
+		if (maxOptions > optionsLength) {
+			setFieldValue(maxOptionsPath, '');
+		}
+	};
+
+	getMinimumOptions = (optionsList) => {
+		let minOptionsList = [];
+
+		for (let ii = 1; ii <= optionsList.length; ii++) {
+			minOptionsList.push({ value: ii, text: ii });
+		}
+
+		return minOptionsList;
+	};
+
+	getMaximumOptions = (optionsList, minOptionLength = 1) => {
+		let maxOptionsList = [];
+
+		for (let ii = minOptionLength; ii <= optionsList.length; ii++) {
+			maxOptionsList.push({ value: ii, text: ii });
+		}
+
+		return maxOptionsList;
 	};
 
 	render() {
@@ -125,6 +187,7 @@ class ConfigureVoteForm extends React.Component {
 		return (
 			<Formik
 				initialValues={pollForm}
+				validateOnChange={false}
 				validationSchema={Yup.object().shape({
 					pollJSON: Yup.object().shape({
 						proposal: Yup.object().shape({
@@ -132,27 +195,119 @@ class ConfigureVoteForm extends React.Component {
 						}),
 						vote: Yup.object().shape({
 							phasesBlockHeights: Yup.object().shape({
-								/* commitStart: Yup.number()
+								commitStart: Yup.number()
 									.transform((currentValue, originalValue) => {
 										return originalValue === '' ? undefined : currentValue;
 									})
-									.required('Required'),
+									.required('Required')
+									.moreThan(
+										this.state.currentHeight,
+										'Must be greater Current Height'
+									),
 								commitEnd: Yup.number()
 									.transform((currentValue, originalValue) => {
 										return originalValue === '' ? undefined : currentValue;
 									})
-									.required('Required'),
+									.required('Required')
+									.moreThan(
+										Yup.ref('commitStart'),
+										'Must be greater than Commit Start Block'
+									),
 								revealStart: Yup.number()
 									.transform((currentValue, originalValue) => {
 										return originalValue === '' ? undefined : currentValue;
 									})
-									.required('Required'),
+									.required('Required')
+									.moreThan(
+										Yup.ref('commitEnd'),
+										'Must be greater than Commit End Block'
+									),
 								revealEnd: Yup.number()
 									.transform((currentValue, originalValue) => {
 										return originalValue === '' ? undefined : currentValue;
 									})
-									.required('Required'), */
+									.required('Required')
+									.moreThan(
+										Yup.ref('revealStart'),
+										'Must be greater than Reveal Start Block'
+									),
 							}),
+
+							config: Yup.object().shape({
+								options: Yup.array()
+									.required('Required')
+									.min(2, 'Select at least two options'),
+								minOptions: Yup.number()
+									.transform((cv) => (isNaN(cv) ? undefined : cv))
+									.required('Required'),
+								maxOptions: Yup.number()
+									.transform((cv) => (isNaN(cv) ? undefined : cv))
+									.required('Required'),
+								allowAbstention: Yup.string().required('Required'),
+								computeResultsAgainst: Yup.string().required('Required'),
+							}),
+						}),
+					}),
+					formFields: Yup.object().shape({
+						workingWeightMinSupport: Yup.number()
+							.transform((cv) => (isNaN(cv) ? undefined : cv))
+							.required('Required')
+							.max(1, 'Too high')
+							.min(0, 'Too low'),
+						workingUnweightMinSupport: Yup.number()
+							.transform((cv) => (isNaN(cv) ? undefined : cv))
+							.required('Required')
+							.max(1, 'Too high')
+							.min(0, 'Too low'),
+						voteTypeText: Yup.string().required('Required'),
+						questionSource: Yup.string(),
+						workingText: Yup.string().when('questionSource', {
+							is: 'text',
+							then: Yup.string().required('Required'),
+							otherwise: Yup.string().notRequired(),
+						}),
+						workingHref: Yup.string().when('questionSource', {
+							is: 'href',
+							then: Yup.string().required('Required'),
+							otherwise: Yup.string().notRequired(),
+						}),
+						workingHashValue: Yup.string().when('questionSource', {
+							is: 'href',
+							then: Yup.string().required('Required'),
+							otherwise: Yup.string().notRequired(),
+						}),
+						workingHashAlgo: Yup.string().when('questionSource', {
+							is: 'href',
+							then: Yup.string().required('Required'),
+							otherwise: Yup.string().notRequired(),
+						}),
+						workingMinSupportOption: Yup.string().when('voteTypeText', {
+							is: BINARY_CONFIG.name,
+							then: Yup.string().required('Required'),
+							otherwise: Yup.string().notRequired(),
+						}),
+						checkedTurnout: Yup.boolean(),
+						workingWeightMinTurnout: Yup.number().when('checkedTurnout', {
+							is: true,
+							then: Yup.number()
+								.transform((cv) => (isNaN(cv) ? undefined : cv))
+								.required('Required')
+								.max(1, 'Too high')
+								.min(0, 'Too low'),
+							otherwise: Yup.number()
+								.transform((cv) => (isNaN(cv) ? undefined : cv))
+								.notRequired(),
+						}),
+						workingUnweightMinTurnout: Yup.number().when('checkedTurnout', {
+							is: true,
+							then: Yup.number()
+								.transform((cv) => (isNaN(cv) ? undefined : cv))
+								.required('Required')
+								.max(1, 'Too high')
+								.min(0, 'Too low'),
+							otherwise: Yup.number()
+								.transform((cv) => (isNaN(cv) ? undefined : cv))
+								.notRequired(),
 						}),
 					}),
 				})}
@@ -160,9 +315,12 @@ class ConfigureVoteForm extends React.Component {
 					/**
 					 * Handle text vs externalRef
 					 */
-					if (_get(values, textPath)) {
+					if (_get(values, questionSourcePath) === 'text') {
 						// delete href
 						values = _omit(values, externalRefPath);
+
+						// add text config
+						_get(values, proposalPath).text = _get(values, workingTextPath);
 					} else {
 						// delete text
 						values = _omit(values, textPath);
@@ -170,10 +328,12 @@ class ConfigureVoteForm extends React.Component {
 						// add externalRef config
 						_get(values, proposalPath).externalRef = {
 							href: _get(values, workingHrefPath),
-							hash: { value: '', algo: '' },
+							hash: {
+								value: _get(values, workingHashValuePath),
+								algo: _get(values, workingHashAlgoPath),
+							},
 						};
 					}
-
 					/**
 					 * Handle Acceptance Citeria
 					 */
@@ -196,12 +356,12 @@ class ConfigureVoteForm extends React.Component {
 					 */
 
 					// reset winnerCriteria
-					_get(values, configPath).winnerCritieria = { minSupport: {} };
+					_get(values, configPath).winnerCriteria = { minSupport: {} };
 
 					if (_get(values, voteTypeTextPath) === BINARY_CONFIG.name) {
 						// add criteria for specific option
 						_get(values, winnerCriteriaPath).minSupport = {
-							[_get(values, workingMinSupportOption)]: {
+							[_get(values, workingMinSupportOptionPath)]: {
 								weighted: _get(values, workingWeightMinSupportPath),
 								unweighted: _get(values, workingUnweightMinSupportPath),
 							},
@@ -228,39 +388,44 @@ class ConfigureVoteForm extends React.Component {
 					values,
 					setFieldValue,
 					handleChange,
-					handleBlur,
 				}) => (
 					<Form onKeyPress={this.handleKeyPress}>
 						<Grid container className={classes.pad}>
 							<Grid container item xs={12}>
-								<Grid item xs={12}>
+								<Grid item xs={9}>
 									<SectionHeader
 										disableGutterBottom={true}
 										text="Configure Poll"
 									/>
 								</Grid>
+								<Grid item xs={3}>
+									<Typography>
+										<b>Current Height:</b> {this.state.currentHeight}
+									</Typography>
+								</Grid>
 								<Grid container spacing={8} item xs={5}>
 									<Grid item xs={12}>
 										<FormTextField
 											name={titlePath}
-											label="Title"
-											type="text"
-											required={true}
-											fullWidth={true}
-											maxLength={TITLE_MAX_LENGTH}
-											enableSpellCheck={true}
+											label="Title *"
 											error={
 												_get(errors, titlePath) && _get(touched, titlePath)
 											}
-											errorClass={classes.errorText}
+											fullWidth
+											spellCheck
+											maxLength={TITLE_MAX_LENGTH}
 										/>
 									</Grid>
 									<Grid item xs={12}>
 										<FormSelectField
 											name={voteTypeTextPath}
-											label="Vote Type"
+											label="Vote Type *"
 											options={VOTE_TYPE_VALUES}
-											width={215}
+											error={
+												_get(errors, voteTypeTextPath) &&
+												_get(touched, voteTypeTextPath)
+											}
+											minWidth={215}
 											onChange={(e) => {
 												//update question type
 												handleChange(e);
@@ -269,7 +434,7 @@ class ConfigureVoteForm extends React.Component {
 												const newValue = e.target.value;
 
 												//setFieldValue(optionsPath, []);
-												setFieldValue(workingMinSupportOption, '');
+												setFieldValue(workingMinSupportOptionPath, '');
 
 												if (newValue === BINARY_CONFIG.name) {
 													setFieldValue(voteTypePath, BINARY_CONFIG.type);
@@ -312,86 +477,123 @@ class ConfigureVoteForm extends React.Component {
 									<Grid item xs={12}>
 										<FormSelectField
 											name={computeResultsAgainstPath}
-											label="Compute Results Against"
+											label="Compute Results Against *"
 											options={COMPUTE_AGAINST_VALUES}
-											width={215}
-											onChange={(e) => {
-												handleChange(e);
-												if (e.target.value === ALL_ELIGIBLE_VOTERS) {
-													setFieldValue(abstentionPath, false);
-												} else {
-													setFieldValue(abstentionPath, '');
-												}
-											}}
+											error={
+												_get(errors, computeResultsAgainstPath) &&
+												_get(touched, computeResultsAgainstPath)
+											}
+											minWidth={215}
 										/>
 									</Grid>
 									<Grid item xs={12}>
 										<FormSelectField
 											name={abstentionPath}
-											label="Allow Abstention"
+											label="Allow Abstention *"
 											options={ABSTENTION_VALUES}
-											width={215}
-											onChange={handleChange}
-											disabled={
-												_get(values, computeResultsAgainstPath) ===
-												ALL_ELIGIBLE_VOTERS
+											error={
+												_get(errors, abstentionPath) &&
+												_get(touched, abstentionPath)
 											}
+											minWidth={215}
 										/>
 									</Grid>
 								</Grid>
 								<Grid item xs={1} />
-								<Grid container item xs={6}>
+								<Grid container item xs={3}>
 									<Grid item xs={12}>
 										<FormTextField
 											name={commitStartPath}
-											required={true}
-											label="Commit Start Block"
+											label="Commit Start Block *"
 											type="number"
 											error={
 												_get(errors, commitStartPath) &&
 												_get(touched, commitStartPath)
 											}
-											errorClass={classes.errorText}
+											onChange={(e) => {
+												handleChange(e);
+												this.handleBlockTime(
+													e.target.value,
+													commitStartDatePath,
+													setFieldValue
+												);
+											}}
 										/>
 									</Grid>
 									<Grid item xs={12}>
 										<FormTextField
 											name={commitEndPath}
-											required={true}
-											label="Commit End Block"
+											label="Commit End Block *"
 											type="number"
 											error={
 												_get(errors, commitEndPath) &&
 												_get(touched, commitEndPath)
 											}
-											errorClass={classes.errorText}
+											onChange={(e) => {
+												handleChange(e);
+												this.handleBlockTime(
+													e.target.value,
+													commitEndDatePath,
+													setFieldValue
+												);
+											}}
 										/>
 									</Grid>
 									<Grid item xs={12}>
 										<FormTextField
 											name={revealStartPath}
-											required={true}
-											label="Reveal Start Block"
+											label="Reveal Start Block *"
 											type="number"
 											error={
 												_get(errors, revealStartPath) &&
 												_get(touched, revealStartPath)
 											}
-											errorClass={classes.errorText}
+											onChange={(e) => {
+												handleChange(e);
+												this.handleBlockTime(
+													e.target.value,
+													revealStartDatePath,
+													setFieldValue
+												);
+											}}
 										/>
 									</Grid>
 									<Grid item xs={12}>
 										<FormTextField
 											name={revealEndPath}
-											required={true}
-											label="Reveal End Block"
+											label="Reveal End Block *"
 											type="number"
 											error={
 												_get(errors, revealEndPath) &&
 												_get(touched, revealEndPath)
 											}
-											errorClass={classes.errorText}
+											onChange={(e) => {
+												handleChange(e);
+												this.handleBlockTime(
+													e.target.value,
+													revealEndDatePath,
+													setFieldValue
+												);
+											}}
 										/>
+									</Grid>
+								</Grid>
+								<Grid container item xs={3}>
+									<Grid item xs={12}>
+										<br />
+										<Typography>{_get(values, commitStartDatePath)}</Typography>
+									</Grid>
+									<Grid item xs={12}>
+										<br />
+										<Typography>{_get(values, commitEndDatePath)}</Typography>
+									</Grid>
+									<Grid item xs={12}>
+										<br />
+										<Typography>{_get(values, revealStartDatePath)}</Typography>
+									</Grid>
+									<Grid item xs={12}>
+										<br />
+										<Typography>{_get(values, revealEndDatePath)}</Typography>
 									</Grid>
 								</Grid>
 							</Grid>
@@ -410,11 +612,12 @@ class ConfigureVoteForm extends React.Component {
 												handleChange(e);
 												if (e.target.value === 'text') {
 													setFieldValue(workingHrefPath, '');
+													setFieldValue(workingHashValuePath, '');
+													setFieldValue(workingHashAlgoPath, '');
 												} else {
-													setFieldValue(textPath, '');
+													setFieldValue(workingTextPath, '');
 												}
 											}}
-											onBlur={handleBlur}
 										>
 											<FormControlLabel
 												value="text"
@@ -430,36 +633,59 @@ class ConfigureVoteForm extends React.Component {
 										</RadioGroup>
 									</FormControl>
 								</Grid>
+
 								{_get(values, questionSourcePath) === 'text' && (
 									<Grid item container xs={9}>
 										<FormTextField
-											name={textPath}
-											required={true}
-											fullWidth={true}
-											label="Question"
-											type="text"
-											multiline={true}
-											enableSpellCheck={true}
-											error={_get(errors, textPath) && _get(touched, textPath)}
-											errorClass={classes.errorText}
+											name={workingTextPath}
+											label="Question *"
+											error={
+												_get(errors, workingTextPath) &&
+												_get(touched, workingTextPath)
+											}
+											fullWidth
+											multiline
+											spellCheck
+											maxLength={QUESTION_MAX_LENGTH}
 										/>
 									</Grid>
 								)}
+
 								{_get(values, questionSourcePath) === 'href' && (
-									<Grid item xs={9}>
-										<FormTextField
-											name={workingHrefPath}
-											required={true}
-											fullWidth={true}
-											label="URL Link"
-											type="text"
-											enableSpellCheck={true}
-											error={
-												_get(errors, workingHrefPath) &&
-												_get(touched, workingHrefPath)
-											}
-											errorClass={classes.errorText}
-										/>
+									<Grid item xs={9} container>
+										<Grid item xs={12}>
+											<FormTextField
+												name={workingHrefPath}
+												label="URL Link *"
+												error={
+													_get(errors, workingHrefPath) &&
+													_get(touched, workingHrefPath)
+												}
+												fullWidth
+											/>
+										</Grid>
+										<Grid item xs={12}>
+											<FormSelectField
+												name={workingHashAlgoPath}
+												label="Hash Algorithm *"
+												options={HASH_ALGO_VALUES}
+												error={
+													_get(errors, workingHashAlgoPath) &&
+													_get(touched, workingHashAlgoPath)
+												}
+												minWidth={182}
+											/>
+										</Grid>
+										<Grid item xs={12}>
+											<FormTextField
+												name={workingHashValuePath}
+												label="Hash Value *"
+												error={
+													_get(errors, workingHashValuePath) &&
+													_get(touched, workingHashValuePath)
+												}
+											/>
+										</Grid>
 									</Grid>
 								)}
 							</Grid>
@@ -475,81 +701,102 @@ class ConfigureVoteForm extends React.Component {
 													<FieldArray
 														name={optionsPath}
 														render={(arrayHelpers) => (
-															<div>
-																<Typography variant="subtitle1">
-																	Options *&nbsp;&nbsp;
-																	<Field
-																		name={workingOptionPath}
-																		type="text"
-																		onKeyPress={(e) => {
-																			if (
-																				e.which === 13 /* Enter */ &&
-																				e.target.value.trim()
-																			) {
-																				arrayHelpers.push(
-																					_get(values, workingOptionPath)
-																				);
-																				// reset input
-																				setFieldValue(workingOptionPath, '');
-																			}
-																		}}
-																	/>
-																	<input
-																		type="button"
-																		onClick={() => {
+															<>
+																<FormTextField
+																	name={workingOptionPath}
+																	width="275px"
+																	isNotFast
+																	label="Option *"
+																	error={
+																		_get(touched, workingOptionPath) &&
+																		typeof _get(errors, optionsPath) ===
+																			'string'
+																	}
+																	onKeyPress={(e) => {
+																		if (
+																			e.which === 13 /* Enter */ &&
+																			e.target.value.trim()
+																		) {
 																			arrayHelpers.push(
 																				_get(values, workingOptionPath)
 																			);
 																			// reset input
 																			setFieldValue(workingOptionPath, '');
-																		}}
-																		value="Add"
-																		disabled={!_get(values, workingOptionPath)}
-																	/>
-																</Typography>
-																{_get(values, optionsPath).length > 0 ? (
-																	_get(values, optionsPath).map(
-																		(option, index) => (
-																			<ListItem
-																				key={index}
-																				disableGutters
-																				divider
-																				className={classes.optionListItem}
-																			>
-																				<LabelImportant
-																					style={{ fontSize: 15 }}
-																				/>
-																				<ListItemText primary={option} />
-																				<IconButton
-																					onClick={() => {
-																						arrayHelpers.remove(index);
-																						if (
-																							_get(
-																								values,
-																								workingMinSupportOption
-																							) === option
-																						) {
-																							setFieldValue(
-																								workingMinSupportOption,
-																								''
-																							);
-																						}
-																					}}
-																					aria-label="Clear"
+																		}
+																	}}
+																/>
+																<Button
+																	variant="contained"
+																	component="span"
+																	onClick={() => {
+																		arrayHelpers.push(
+																			_get(values, workingOptionPath)
+																		);
+																		// reset input
+																		setFieldValue(workingOptionPath, '');
+																	}}
+																	disabled={!_get(values, workingOptionPath)}
+																>
+																	Add
+																</Button>
+																<Field
+																	name={optionsPath}
+																	render={({ form }) => {
+																		const error = _get(
+																			form.errors,
+																			optionsPath
+																		);
+																		const touch = _get(
+																			form.touched,
+																			workingOptionPath
+																		);
+																		return touch && error ? (
+																			<div className={classes.errorText}>
+																				{error}
+																			</div>
+																		) : null;
+																	}}
+																/>
+
+																{_get(values, optionsPath).length > 0
+																	? _get(values, optionsPath).map(
+																			(option, index) => (
+																				<ListItem
+																					key={index}
+																					disableGutters
+																					divider
+																					className={classes.optionListItem}
 																				>
-																					<Clear />
-																				</IconButton>
-																			</ListItem>
-																		)
-																	)
-																) : (
-																	<ListItem divider>
-																		<ListItemText
-																			primary={'No Options have been added'}
-																		/>
-																	</ListItem>
-																)}
-															</div>
+																					<LabelImportant
+																						style={{ fontSize: 15 }}
+																					/>
+																					<ListItemText primary={option} />
+																					<IconButton
+																						onClick={() =>
+																							this.removeOption(
+																								option,
+																								index,
+																								_get(
+																									values,
+																									workingMinSupportOptionPath
+																								),
+																								arrayHelpers,
+																								setFieldValue,
+																								_get(values, optionsPath)
+																									.length - 1,
+																								_get(values, minOptionsPath),
+																								_get(values, maxOptionsPath)
+																							)
+																						}
+																						aria-label="Clear"
+																					>
+																						<Clear />
+																					</IconButton>
+																				</ListItem>
+																			)
+																	  )
+																	: ''}
+															</>
 														)}
 													/>
 												</List>
@@ -565,31 +812,38 @@ class ConfigureVoteForm extends React.Component {
 														INSTANT_RUNOFF_CONFIG.name) && (
 													<Grid container spacing={8} item xs={12}>
 														<Grid item xs={12}>
-															<FormTextField
+															<FormSelectField
 																name={minOptionsPath}
-																required={true}
-																label="Minimum Options Allowed"
+																label="Minimum Options Allowed *"
 																type="number"
-																width={215}
+																isNotFast
 																error={
 																	_get(errors, minOptionsPath) &&
 																	_get(touched, minOptionsPath)
 																}
-																errorClass={classes.errorText}
+																width={215}
+																options={this.getMinimumOptions(
+																	_get(values, optionsPath)
+																)}
+																minWidth="240px"
 															/>
 														</Grid>
 														<Grid item xs={12}>
-															<FormTextField
+															<FormSelectField
 																name={maxOptionsPath}
-																required={true}
-																label="Maximum Options Allowed"
+																label="Maximum Options Allowed *"
 																type="number"
-																width={215}
+																isNotFast
 																error={
 																	_get(errors, maxOptionsPath) &&
 																	_get(touched, maxOptionsPath)
 																}
-																errorClass={classes.errorText}
+																width={215}
+																options={this.getMaximumOptions(
+																	_get(values, optionsPath),
+																	_get(values, minOptionsPath)
+																)}
+																minWidth="240px"
 															/>
 														</Grid>
 													</Grid>
@@ -614,29 +868,25 @@ class ConfigureVoteForm extends React.Component {
 										<Grid item xs={4}>
 											<FormTextField
 												name={workingWeightMinSupportPath}
-												required={true}
-												width={138}
-												label="Weighted Ratio"
+												label="Weighted Ratio *"
 												type="number"
 												error={
 													_get(errors, workingWeightMinSupportPath) &&
 													_get(touched, workingWeightMinSupportPath)
 												}
-												errorClass={classes.errorText}
+												width={138}
 											/>
 
 											<br />
 											<FormTextField
 												name={workingUnweightMinSupportPath}
-												required={true}
-												width={138}
-												label="Unweighted Ratio"
+												label="Unweighted Ratio *"
 												type="number"
 												error={
 													_get(errors, workingUnweightMinSupportPath) &&
 													_get(touched, workingUnweightMinSupportPath)
 												}
-												errorClass={classes.errorText}
+												width={138}
 											/>
 										</Grid>
 										<Grid item xs={4}>
@@ -648,33 +898,37 @@ class ConfigureVoteForm extends React.Component {
 													!_isEmpty(_get(values, optionsPath)) ? (
 														// options exist
 														<FormSelectField
-															name={workingMinSupportOption}
-															label="Applies to option"
+															name={workingMinSupportOptionPath}
+															label="Applies to option *"
 															options={_get(values, optionsPath).map(
 																(value) => {
-																	return { value: value, text: value };
+																	return { value, text: value };
 																}
 															)}
-															width={215}
-															onChange={handleChange}
+															error={
+																_get(errors, workingMinSupportOptionPath) &&
+																_get(touched, workingMinSupportOptionPath)
+															}
+															minWidth={215}
+															isNotFast
 														/>
 													) : (
-														<React.Fragment>
+														<>
 															<br />
 															No Options Found
-														</React.Fragment>
+														</>
 													)
 												) : (
-													<React.Fragment>
+													<>
 														<br />
 														Applies to all options
-													</React.Fragment>
+													</>
 												)
 											) : (
-												<React.Fragment>
+												<>
 													<br />
 													Select a Vote Type
-												</React.Fragment>
+												</>
 											)}
 										</Grid>
 									</Grid>
@@ -691,7 +945,7 @@ class ConfigureVoteForm extends React.Component {
 								<Grid container item xs={12}>
 									<Grid item xs={4}>
 										<br />
-										<Field
+										<FastField
 											name={checkedTurnoutPath}
 											render={({ field, form }) => (
 												<FormControlLabel
@@ -725,36 +979,44 @@ class ConfigureVoteForm extends React.Component {
 									<Grid item xs={4}>
 										<FormTextField
 											name={workingWeightMinTurnoutPath}
-											required={_get(values, checkedTurnoutPath)}
+											label={
+												'Weighted Ratio' +
+												(_get(values, checkedTurnoutPath) ? ' *' : '')
+											}
 											disabled={!_get(values, checkedTurnoutPath)}
-											width={138}
-											label="Weighted Ratio"
 											type="number"
+											displayError={_get(values, checkedTurnoutPath)}
 											error={
+												_get(values, checkedTurnoutPath) &&
 												_get(errors, workingWeightMinTurnoutPath) &&
 												_get(touched, workingWeightMinTurnoutPath)
 											}
-											errorClass={classes.errorText}
+											isNotFast
+											width={138}
 										/>
 
 										<br />
 										<FormTextField
 											name={workingUnweightMinTurnoutPath}
-											required={_get(values, checkedTurnoutPath)}
+											label={
+												'Unweighted Ratio' +
+												(_get(values, checkedTurnoutPath) ? ' *' : '')
+											}
 											disabled={!_get(values, checkedTurnoutPath)}
-											width={138}
-											label="Unweighted Ratio"
 											type="number"
+											displayError={_get(values, checkedTurnoutPath)}
 											error={
+												_get(values, checkedTurnoutPath) &&
 												_get(errors, workingUnweightMinTurnoutPath) &&
 												_get(touched, workingUnweightMinTurnoutPath)
 											}
-											errorClass={classes.errorText}
+											isNotFast
+											width={138}
 										/>
 									</Grid>
 									<Grid
 										style={{
-											color: this.criteriaStyle(values, checkedTurnoutPath),
+											color: !_get(values, checkedTurnoutPath) ? 'gray' : '',
 										}}
 										item
 										xs={4}
@@ -764,6 +1026,7 @@ class ConfigureVoteForm extends React.Component {
 									</Grid>
 								</Grid>
 							</Grid>
+							{/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
 							<Grid item xs={12} className={classes.stepperButtons}>
 								<br />
 								<Button onClick={this.props.handleBack}>Back</Button>
@@ -784,74 +1047,7 @@ class ConfigureVoteForm extends React.Component {
 		);
 	}
 }
-
-const FormTextField = (props) => {
-	return (
-		<React.Fragment>
-			<Field name={props.name}>
-				{({ field }) => (
-					<TextField
-						style={{ width: props.width }}
-						required={props.required}
-						disabled={props.disabled}
-						{...field}
-						type={props.type}
-						inputProps={{
-							spellCheck: props.enableSpellCheck,
-							maxLength: props.maxLength,
-							autoComplete: 'nope',
-							autoComplete: 'off',
-						}}
-						error={props.error}
-						label={props.label}
-						fullWidth={props.fullWidth}
-						multiline={props.multiline}
-					/>
-				)}
-			</Field>
-			<ErrorMessage
-				name={props.name}
-				render={(msg) => <span className={props.errorClass}>{msg}</span>}
-			/>
-		</React.Fragment>
-	);
-};
-
-const FormSelectField = (props) => {
-	return (
-		<React.Fragment>
-			<Field name={props.name}>
-				{({ field }) => (
-					<FormControl required disabled={props.disabled}>
-						<InputLabel htmlFor={props.name}>{props.label}</InputLabel>
-						<Select
-							style={{ minWidth: props.width }}
-							{...field}
-							onChange={props.onChange}
-							name={props.name}
-							inputProps={{
-								id: props.name,
-							}}
-						>
-							{props.options.map((value, index) => (
-								<MenuItem key={index} value={value.value}>
-									{value.text}
-								</MenuItem>
-							))}
-						</Select>
-						{/* <FormHelperText /> */}
-					</FormControl>
-				)}
-			</Field>
-			<ErrorMessage
-				name={props.name}
-				render={(msg) => <span className={props.errorClass}>{msg}</span>}
-			/>
-		</React.Fragment>
-	);
-};
-
-ConfigureVoteForm.propTypes = {
+CreateVoteForm.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
@@ -859,7 +1055,6 @@ const styles = (theme) => ({
 	pad: {
 		padding: 15,
 	},
-
 	raiseRadio: {
 		position: 'relative',
 		top: '-16px',
@@ -870,10 +1065,30 @@ const styles = (theme) => ({
 	optionListItem: {
 		padding: '0px',
 	},
-	errorText: { color: 'red', fontSize: '13px' },
-
 	stepperButtons: {
 		marginLeft: '-15px',
 	},
+	errorText: { color: 'red', fontSize: '13px' },
 });
-export default withStyles(styles)(ConfigureVoteForm);
+
+function calculateWriteTime(currentHeight, writeHeight) {
+	let blocks;
+	let minutes;
+	let event = new Date();
+
+	blocks = writeHeight - currentHeight;
+	minutes = blocks * 10;
+	event.setTime(event.getTime() + minutes * 60 * 1000);
+	event = event.toLocaleTimeString([], {
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit',
+	});
+
+	return event;
+}
+
+const enhancer = _flowRight(withNetwork, withStyles(styles));
+export default enhancer(CreateVoteForm);

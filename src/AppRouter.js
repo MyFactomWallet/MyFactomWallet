@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { withWalletContext } from './context/WalletContext';
 import WalletManager from './walletManager/WalletManager';
 import AddInitialWallet from './addWallet/AddInitialWallet';
-import Vote from './vote/listing/VoteListing';
+import VoteListing from './vote/listing/VoteListing';
 import ViewVote from './vote/view/ViewVote';
 import CreateVoteStepper from './vote/create/CreateVoteStepper';
 import Typography from '@material-ui/core/Typography';
@@ -39,15 +39,11 @@ class AppRouter extends Component {
 							)
 						}
 					/>
-					{/*
-					<Route exact path="/vote" component={ComingSoon} />
-					<Route exact path="/createVote" component={ComingSoon} />
 
-					
-					<Route exact path="/vote" component={Vote} />
+					<Route exact path="/vote" component={VoteListing} />
 					<Route exact path="/viewVote" component={ViewVote} />
 					<Route exact path="/createVote" component={CreateVoteStepper} />
-					 
+					{/*
 					<Route exact path="/manageVoters" component={ManageVoterList} /> 
 					<Route exact path="/help" component={Help} />
 					<Route exact path="/" component={LandingPage} />
@@ -58,14 +54,6 @@ class AppRouter extends Component {
 		);
 	}
 }
-
-const ComingSoon = () => {
-	return (
-		<Typography variant="h5" align="center">
-			Coming soon...
-		</Typography>
-	);
-};
 
 const enhancer = _flowRight(withWalletContext);
 

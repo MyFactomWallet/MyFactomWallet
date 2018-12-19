@@ -76,8 +76,6 @@ class ButtonAppBar extends React.Component {
 	};
 
 	handleCustomNode = (host, port) => {
-		console.log('Host: ' + host);
-		console.log('Port: ' + port);
 		/* this.setState({
 			network: host + ':' + port,
 		}); */
@@ -116,7 +114,7 @@ class ButtonAppBar extends React.Component {
 							)}
 						</Link>
 					</Typography>
-					{/* <div>
+					<React.Fragment>
 						<Button
 							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
 							aria-haspopup="true"
@@ -147,7 +145,7 @@ class ButtonAppBar extends React.Component {
 								Create Poll
 							</MenuItem>
 						</Menu>
-					</div> */}
+					</React.Fragment>
 					<Button
 						href="#/"
 						onClick={this.handleWallet}

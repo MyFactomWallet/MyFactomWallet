@@ -141,6 +141,7 @@ class WalletController extends React.Component {
 		await this.smartSetState({ isStateHydrated: false });
 		await this.props.networkController.changeNetwork(network);
 		await this.props.factomCliController.connectToServer();
+		// set new FactomVoteManager cli
 		this.hydrateStateWithLocalStorage();
 	};
 
