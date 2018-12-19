@@ -227,7 +227,11 @@ class SendFactoidForm extends Component {
 					handleReset,
 					handleChange,
 				}) => (
-					<Form autoComplete="nope" autoComplete="off">
+					<Form
+						autoComplete="nope"
+						// eslint-disable-next-line
+						autoComplete="off"
+					>
 						<AddressInfoHeader />
 						<Field name={recipientAddressPath}>
 							{({ field, form }) => (
@@ -256,6 +260,7 @@ class SendFactoidForm extends Component {
 										spellCheck: false,
 										maxLength: FCT_ADDRESS_LENGTH,
 										autoComplete: 'nope',
+										// eslint-disable-next-line
 										autoComplete: 'off',
 									}}
 								/>
@@ -362,6 +367,7 @@ class SendFactoidForm extends Component {
 												spellCheck: false,
 												maxLength: FCT_ADDRESS_LENGTH,
 												autoComplete: 'nope',
+												// eslint-disable-next-line
 												autoComplete: 'off',
 											}}
 										/>
@@ -382,6 +388,7 @@ class SendFactoidForm extends Component {
 										<TextField
 											inputProps={{
 												autoComplete: 'nope',
+												// eslint-disable-next-line
 												autoComplete: 'off',
 											}}
 											error={

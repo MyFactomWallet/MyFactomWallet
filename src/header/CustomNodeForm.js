@@ -76,6 +76,7 @@ const FormTextField = (props) => {
 						spellCheck: false,
 						maxLength: props.maxLength,
 						autoComplete: 'nope',
+						// eslint-disable-next-line
 						autoComplete: 'off',
 					}}
 					{...field}

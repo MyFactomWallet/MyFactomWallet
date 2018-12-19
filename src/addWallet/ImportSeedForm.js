@@ -43,6 +43,7 @@ class ImportSeedForm extends React.Component {
 					<Form
 						style={{ width: '500px' }}
 						autoComplete="nope"
+						// eslint-disable-next-line
 						autoComplete="off"
 					>
 						<React.Fragment>
@@ -100,6 +101,7 @@ const FormTextField = (props) => {
 				<TextField
 					inputProps={{
 						autoComplete: 'nope',
+						// eslint-disable-next-line
 						autoComplete: 'off',
 					}}
 					{...field}

@@ -50,6 +50,7 @@ class NewSeedForm extends React.Component {
 					<Form
 						style={{ width: '500px' }}
 						autoComplete="nope"
+						// eslint-disable-next-line
 						autoComplete="off"
 					>
 						{this.state.step === 1 && (
@@ -135,6 +136,7 @@ const FormTextField = (props) => {
 				<TextField
 					inputProps={{
 						autoComplete: 'nope',
+						// eslint-disable-next-line
 						autoComplete: 'off',
 					}}
 					{...field}

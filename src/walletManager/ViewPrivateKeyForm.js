@@ -65,7 +65,11 @@ class ViewPrivateKeyForm extends Component {
 						.test(seedPath, 'Invalid Seed Phrase', this.verifySeed),
 				})}
 				render={({ isSubmitting, errors, touched, values, setFieldValue }) => (
-					<Form autoComplete="nope" autoComplete="off">
+					<Form
+						autoComplete="nope"
+						// eslint-disable-next-line
+						autoComplete="off"
+					>
 						<AddressInfoHeader />
 						{_isEmpty(_get(values, privateKeyPath)) && (
 							<FormTextField
@@ -151,6 +155,7 @@ const FormTextField = (props) => {
 							spellCheck: props.enableSpellCheck,
 							maxLength: props.maxLength,
 							autoComplete: 'nope',
+							// eslint-disable-next-line
 							autoComplete: 'off',
 						}}
 						error={props.error}
