@@ -30,8 +30,16 @@ class WalletTabContent extends React.Component {
 
 		let tabValue = this.state.tabValue;
 
-		if (tabValue === 3 && activeAddress.importType !== 'seed') {
+		if (
+			type === 'fct' &&
+			tabValue === 3 &&
+			activeAddress.importType !== 'seed'
+		) {
 			//only seeds have tab 3
+			tabValue = 0;
+		}
+
+		if (type === 'ec' && tabValue === 1 && activeAddress.importType != 'seed') {
 			tabValue = 0;
 		}
 
@@ -85,18 +93,27 @@ class WalletTabContent extends React.Component {
 				{type === 'ec' && (
 					<div>
 						<Tabs
-							value={0}
+							value={tabValue}
 							onChange={this.handleChange}
 							indicatorColor="primary"
 							textColor="primary"
 							centered
 						>
 							<Tab label="Address Info" />
+							{activeAddress.importType === 'seed' && (
+								<Tab label="View Private Key" />
+							)}
 						</Tabs>
-
-						<TabContainer classes={classes}>
-							<AddressInfoTab />
-						</TabContainer>
+						{tabValue === 0 && (
+							<TabContainer classes={classes}>
+								<AddressInfoTab />
+							</TabContainer>
+						)}
+						{tabValue === 1 && (
+							<TabContainer classes={classes}>
+								<ViewPrivateKeyForm />
+							</TabContainer>
+						)}
 					</div>
 				)}
 			</div>

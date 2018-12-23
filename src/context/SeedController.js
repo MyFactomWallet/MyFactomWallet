@@ -87,16 +87,22 @@ class SeedController extends React.Component {
 		return signedTX;
 	};
 
-	verifySeed = (mnemonic, { address, index }) => {
+	verifySeed = (mnemonic, { address, index }, type) => {
 		try {
-			// for factom addresses
 			const wallet = new factombip44.FactomBIP44(mnemonic);
 			const bip32Account = this.props.networkController.networkProps
 				.bip32Account;
 
-			const derivedAddress = keyToFctAddress(
-				wallet.generateFactoidPrivateKey(bip32Account, 0, index)
-			);
+			let derivedAddress = null;
+			if (type === 'fct') {
+				derivedAddress = keyToFctAddress(
+					wallet.generateFactoidPrivateKey(bip32Account, 0, index)
+				);
+			} else if (type === 'ec') {
+				derivedAddress = keyToECAddress(
+					wallet.generateEntryCreditPrivateKey(bip32Account, 0, index)
+				);
+			}
 
 			return derivedAddress.valueOf() === address.valueOf(); // memoize
 		} catch (err) {
@@ -108,12 +114,17 @@ class SeedController extends React.Component {
 		return factombip44.randomMnemonic();
 	}
 
-	getPrivateKey = (mnemonic, index) => {
+	getPrivateKey = (mnemonic, index, type) => {
 		const bip32Account = this.props.networkController.networkProps.bip32Account;
 		const wallet = new factombip44.FactomBIP44(mnemonic);
-		const key = wallet.generateFactoidPrivateKey(bip32Account, 0, index);
-		const privateKey = keyToPrivateFctAddress(key);
-
+		let privateKey = null;
+		if (type === 'fct') {
+			const key = wallet.generateFactoidPrivateKey(bip32Account, 0, index);
+			privateKey = keyToPrivateFctAddress(key);
+		} else if (type === 'ec') {
+			const key = wallet.generateEntryCreditPrivateKey(bip32Account, 0, index);
+			privateKey = keyToPrivateEcAddress(key);
+		}
 		return privateKey;
 	};
 
