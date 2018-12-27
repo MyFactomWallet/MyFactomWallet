@@ -15,10 +15,11 @@ import Button from '@material-ui/core/Button';
 import SectionHeader from '../shared/SectionHeader';
 import FormTextField from '../../component/form/FormTextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { EC_PRIV } from './VOTE_EXAMPLE_DATA';
 import { isValidEcPrivateAddress } from 'factom/dist/factom';
 import { computeVoteCreationCost } from 'factom-vote/dist/factom-vote';
 import { digital } from 'factom-identity-lib';
+import { REGEX_CHAIN_ID } from './VOTE_CONSTANTS';
+import { EC_PRIV, IDENTITY } from './VOTE_EXAMPLE_DATA';
 
 /**
  * Constants
@@ -78,11 +79,9 @@ class SubmitVoteForm extends React.Component {
 			<Formik
 				enableReinitialize
 				initialValues={{
-					identityChainID:
-						'039b14a782008c1b1543b1542941756e6f01a0d68372ff61163642382af70fc9',
-					identityKey:
-						'idsec2wH72BNR9QZhTMGDbxwLWGrghZQexZvLTros2wCekkc62N9h7s',
-					ecPrivateKey: EC_PRIV,
+					identityChainID: '',
+					identityKey: '',
+					ecPrivateKey: '',
 					transactionError: null,
 					processing: false,
 				}}
@@ -91,7 +90,7 @@ class SubmitVoteForm extends React.Component {
 					actions.setFieldValue(processingPath, true);
 
 					// set identity
-					const IDENTITY = {
+					const identity = {
 						chainId: _get(values, identityChainIDPath),
 						key: _get(values, identityKeyPath),
 					};
@@ -100,7 +99,7 @@ class SubmitVoteForm extends React.Component {
 						definition: poll.pollJSON,
 						registrationChainId: networkProps.voteRegistrationChainID,
 						eligibleVoters,
-						identity: IDENTITY,
+						identity,
 					};
 
 					try {
@@ -123,7 +122,12 @@ class SubmitVoteForm extends React.Component {
 					}
 				}}
 				validationSchema={Yup.object().shape({
-					[identityChainIDPath]: Yup.string().required('Required'),
+					[identityChainIDPath]: Yup.string()
+						.required('Required')
+						.matches(REGEX_CHAIN_ID, {
+							message: 'Invalid Chain ID',
+							excludeEmptyString: true,
+						}),
 					[identityKeyPath]: Yup.string()
 						.required('Required')
 						.test(
@@ -132,17 +136,28 @@ class SubmitVoteForm extends React.Component {
 							digital.isValidSecretIdentityKey
 						),
 				})}
-				render={({ isSubmitting, errors, touched, values }) => (
+				render={({ isSubmitting, errors, touched, values, setFieldValue }) => (
 					<Form>
 						<Grid container>
-							<Grid item xs={12}>
+							<Grid item container justify="space-between" xs={12}>
 								<SectionHeader disableGutterBottom text="Sign Transaction" />
+								<Button
+									onClick={() => {
+										setFieldValue(identityChainIDPath, IDENTITY.chainId);
+										setFieldValue(identityKeyPath, IDENTITY.key);
+										setFieldValue(ecPrivateKeyPath, EC_PRIV);
+									}}
+									variant="contained"
+									color="default"
+								>
+									Use Test Data
+								</Button>
 							</Grid>
 
 							<Grid xs={9} item>
 								<FormTextField
 									name={identityChainIDPath}
-									label="Identity Chain ID *"
+									label="Initiator Identity Chain ID *"
 									error={
 										_get(errors, identityChainIDPath) &&
 										_get(touched, identityChainIDPath)
@@ -154,7 +169,7 @@ class SubmitVoteForm extends React.Component {
 							<Grid xs={9} item>
 								<FormTextField
 									name={identityKeyPath}
-									label="Identity Private Key *"
+									label="Initiator Identity Private Key *"
 									error={
 										_get(errors, identityKeyPath) &&
 										_get(touched, identityKeyPath)

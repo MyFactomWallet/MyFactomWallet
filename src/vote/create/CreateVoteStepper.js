@@ -41,6 +41,9 @@ class CreateVoteStepper extends React.Component {
 						handleBack={this.handleBack}
 						eligibleVotersForm={createVoteSnapshot.eligibleVotersForm}
 						updateParticipants={createVoteSnapshot.updateParticipants}
+						useEligibleVoterTestData={
+							createVoteSnapshot.useEligibleVoterTestData
+						}
 					/>
 				);
 			case 1:
@@ -50,6 +53,7 @@ class CreateVoteStepper extends React.Component {
 						handleBack={this.handleBack}
 						updatePoll={createVoteSnapshot.updatePoll}
 						pollForm={createVoteSnapshot.pollForm}
+						usePollTestData={createVoteSnapshot.usePollTestData}
 					/>
 				);
 			case 2:
