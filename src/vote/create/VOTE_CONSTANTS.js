@@ -37,3 +37,8 @@ export const HASH_ALGO_VALUES = [
 	{ value: 'sha256', text: 'sha256' },
 	{ value: 'sha512', text: 'sha512' },
 ];
+
+/**
+ * Supported Hashing Algorithms
+ */
+export const REGEX_CHAIN_ID = /^[a-f0-9]{64}$/;

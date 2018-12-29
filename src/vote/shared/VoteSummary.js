@@ -12,8 +12,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Info from '@material-ui/icons/InfoOutlined';
-import Tooltip from '@material-ui/core/Tooltip';
 import LabelImportant from '@material-ui/icons/LabelImportant';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import SectionHeader from '../shared/SectionHeader';
@@ -60,7 +58,7 @@ const unweightedMinTurnoutPath =
 
 //unique so far
 const protocolVersionPath = 'formFields.protocolVersion';
-const pollAdminIDPath = 'formFields.pollAdminID';
+const pollInitiatorIdPath = 'formFields.pollInitiatorID';
 const pollChainIDPath = 'formFields.pollChainID';
 
 class VoteSummary extends React.Component {
@@ -80,7 +78,6 @@ class VoteSummary extends React.Component {
 		const { classes, eligibleVoters } = this.props;
 		const poll = this.props.poll;
 
-		// minimum support
 		const minSupportOption = Object.keys(_get(poll, minSupportPath))[0];
 
 		const weightedMinSupportPath =
@@ -137,7 +134,7 @@ class VoteSummary extends React.Component {
 		return (
 			<Grid item xs={12} container>
 				<Grid item xs={9}>
-					<SectionHeader text="Configure Poll" />
+					<SectionHeader text="Poll Configuration" />
 				</Grid>
 				<Grid item xs={3}>
 					<Typography>Current Height: {this.state.currentHeight}</Typography>
@@ -225,14 +222,14 @@ class VoteSummary extends React.Component {
 						</Grid>
 					</Grid>
 				)}
-				{_get(poll, pollAdminIDPath) && (
+				{_get(poll, pollInitiatorIdPath) && (
 					<Grid item xs={12} container>
 						<Grid item xs={3} className={classes.smallGridColumn}>
-							<Typography gutterBottom>Poll Admin ID:</Typography>
+							<Typography gutterBottom>Poll Initiator ID:</Typography>
 						</Grid>
 						<Grid item xs={9}>
 							<Typography>
-								{_get(poll, pollAdminIDPath)}
+								{_get(poll, pollInitiatorIdPath)}
 								&nbsp;
 								<a
 									target="_blank"

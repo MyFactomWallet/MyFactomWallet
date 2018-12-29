@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import { Field, FastField, ErrorMessage } from 'formik';
 
 const FormTextField = ({
+	accept,
 	autoComplete = false,
 	classes,
 	disabled = false,
@@ -17,6 +18,7 @@ const FormTextField = ({
 	name,
 	onChange,
 	onKeyPress,
+	shrink = false,
 	spellCheck = false,
 	type = 'text',
 	validate,
@@ -43,8 +45,12 @@ const FormTextField = ({
 							autoComplete: autoComplete ? 'on' : 'off',
 							maxLength,
 							spellCheck,
+							...(accept ? { accept } : {}),
 						}}
 						style={{ width }}
+						InputLabelProps={{
+							...(shrink ? { shrink } : {}),
+						}}
 					/>
 				)}
 			</FieldType>

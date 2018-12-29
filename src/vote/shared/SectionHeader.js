@@ -1,10 +1,18 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
-function SectionHeader(props) {
+function SectionHeader({ disableGutterBottom, text, color }) {
+	const textColor = {
+		color: color ? color : null,
+	};
+
 	return (
-		<Typography gutterBottom={!props.disableGutterBottom} variant="h6">
-			{props.text}
+		<Typography
+			gutterBottom={!disableGutterBottom}
+			variant="h6"
+			style={textColor}
+		>
+			{text}
 		</Typography>
 	);
 }

@@ -1,7 +1,4 @@
 import React from 'react';
-import _get from 'lodash/get';
-import _isEmpty from 'lodash/isEmpty';
-import _isNumber from 'lodash/isNumber';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
@@ -15,11 +12,12 @@ import Paper from '@material-ui/core/Paper';
 
 class EligibleVotersList extends React.Component {
 	render() {
-		const { classes, eligibleVoters, arrayHelpers } = this.props;
+		const { classes, eligibleVoters, arrayHelpers, errorMessage } = this.props;
 
 		return (
 			<Paper elevation={2} className={classes.listContainer}>
 				<Typography variant="subtitle1">Eligible Voter List</Typography>
+				{errorMessage}
 				<List className={classes.list} dense>
 					{eligibleVoters.length > 0 ? (
 						eligibleVoters.map((voter, index) => (

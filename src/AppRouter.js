@@ -5,9 +5,8 @@ import { withWalletContext } from './context/WalletContext';
 import WalletManager from './walletManager/WalletManager';
 import AddInitialWallet from './addWallet/AddInitialWallet';
 import VoteListing from './vote/listing/VoteListing';
-import ViewVote from './vote/view/ViewVote';
+import VoteTabContent from './vote/view/VoteTabContent';
 import CreateVoteStepper from './vote/create/CreateVoteStepper';
-import Typography from '@material-ui/core/Typography';
 //import Help from './help/Help';
 //import ManageVoterList from './vote/voterList/ManageVoterList.js';
 //import LandingPage from './landingPage/LandingPage';
@@ -41,7 +40,7 @@ class AppRouter extends Component {
 					/>
 
 					<Route exact path="/vote" component={VoteListing} />
-					<Route exact path="/viewVote" component={ViewVote} />
+					<Route exact path="/viewVote" component={VoteTabContent} />
 					<Route exact path="/createVote" component={CreateVoteStepper} />
 					{/*
 					<Route exact path="/manageVoters" component={ManageVoterList} /> 
