@@ -5,6 +5,8 @@ import { withFactomCli } from './FactomCliContext';
 import { withNetwork } from './NetworkContext';
 import { withWalletContext } from './WalletContext';
 import {
+	isValidFctPublicAddress,
+	isValidEcPublicAddress,
 	keyToPrivateFctAddress,
 	keyToPrivateEcAddress,
 	getPublicAddress,
@@ -87,18 +89,18 @@ class SeedController extends React.Component {
 		return signedTX;
 	};
 
-	verifySeed = (mnemonic, { address, index }, type) => {
+	verifySeed = (mnemonic, { address, index }) => {
 		try {
 			const wallet = new factombip44.FactomBIP44(mnemonic);
 			const bip32Account = this.props.networkController.networkProps
 				.bip32Account;
 
 			let derivedAddress = null;
-			if (type === 'fct') {
+			if (isValidFctPublicAddress(address)) {
 				derivedAddress = keyToFctAddress(
 					wallet.generateFactoidPrivateKey(bip32Account, 0, index)
 				);
-			} else if (type === 'ec') {
+			} else if (isValidEcPublicAddress(address)) {
 				derivedAddress = keyToECAddress(
 					wallet.generateEntryCreditPrivateKey(bip32Account, 0, index)
 				);
@@ -114,14 +116,14 @@ class SeedController extends React.Component {
 		return factombip44.randomMnemonic();
 	}
 
-	getPrivateKey = (mnemonic, index, type) => {
+	getPrivateKey = (mnemonic, { address, index }) => {
 		const bip32Account = this.props.networkController.networkProps.bip32Account;
 		const wallet = new factombip44.FactomBIP44(mnemonic);
 		let privateKey = null;
-		if (type === 'fct') {
+		if (isValidFctPublicAddress(address)) {
 			const key = wallet.generateFactoidPrivateKey(bip32Account, 0, index);
 			privateKey = keyToPrivateFctAddress(key);
-		} else if (type === 'ec') {
+		} else if (isValidEcPublicAddress(address)) {
 			const key = wallet.generateEntryCreditPrivateKey(bip32Account, 0, index);
 			privateKey = keyToPrivateEcAddress(key);
 		}
