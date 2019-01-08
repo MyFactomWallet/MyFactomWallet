@@ -17,6 +17,7 @@ import CustomNodeForm from './CustomNodeForm';
 import Modal from '@material-ui/core/Modal';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
+import { withFactomCli } from '../context/FactomCliContext';
 import HelpModal from './HelpModal';
 
 //import CloudOff from '@material-ui/icons/CloudOff';
@@ -86,6 +87,7 @@ class ButtonAppBar extends React.Component {
 		const {
 			classes,
 			networkController: { networkProps },
+			factomCliController: { blockHeight },
 		} = this.props;
 		const { voteAnchorEl, networkAnchorEl } = this.state;
 
@@ -161,7 +163,7 @@ class ButtonAppBar extends React.Component {
 							onClick={this.handleNetworkClick}
 							className={classes.menuText}
 						>
-							Node: {networkProps.network}
+							{networkProps.network}: {blockHeight}
 							&nbsp;
 							<CloudDone
 								titleAccess="Network Operational"
@@ -253,5 +255,10 @@ const styles = (theme) => ({
 	testnetHeader: { color: '#ffa000' },
 });
 
-const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
+const enhancer = _flowRight(
+	withNetwork,
+	withFactomCli,
+	withWalletContext,
+	withStyles(styles)
+);
 export default enhancer(ButtonAppBar);
