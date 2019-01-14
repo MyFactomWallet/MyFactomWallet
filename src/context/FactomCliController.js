@@ -39,7 +39,11 @@ class FactomCliController extends React.Component {
 	async componentDidMount() {
 		// get latest block height
 		this.updateBlockHeight();
-		setInterval(this.updateBlockHeight, 60000);
+		this.blockHeightTimerId = setInterval(this.updateBlockHeight, 60000);
+	}
+
+	componentWillUnmount() {
+		clearInterval(this.blockHeightTimerId);
 	}
 
 	updateBlockHeight = async () => {

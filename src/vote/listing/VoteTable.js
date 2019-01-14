@@ -1,6 +1,8 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
+import _flowRight from 'lodash/flowRight';
+import _isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,6 +13,14 @@ import TablePagination from '@material-ui/core/TablePagination';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import Grid from '@material-ui/core/Grid';
+import { Typography } from '@material-ui/core';
+import { POLL_STATUSES } from '../create/VOTE_CONSTANTS';
+import { withVote } from '../../context/VoteContext';
+
+/**
+ * Constants
+ */
+const RPP_OPTIONS = [5, 10, 25, 50];
 
 let id = 0;
 const createRow = (
@@ -27,33 +37,41 @@ const createRow = (
 
 class VoteTable extends React.Component {
 	render() {
-		const { classes, data } = this.props;
+		const {
+			classes,
+			data,
+			title,
+			status,
+			initiatorId,
+			pollChainId,
+			handleFilterChange,
+			filterTable,
+			voteController: { getPollStatus },
+		} = this.props;
 		const expanded = this.props.expanded;
-		console.log('Vote Table Data');
-		console.log(data.allProposals.voteList);
+
 		let tableRows = [];
 
-		data.allProposals.voteList.map((voteList_o, index) => {
+		data.voteList.forEach((poll_o) => {
 			const row = createRow(
-				voteList_o.voteChainId,
-				voteList_o.admin.voteInitiator,
-				voteList_o.proposal.title,
-				'status',
+				poll_o.voteChainId,
+				poll_o.admin.voteInitiator,
+				poll_o.proposal.title,
+				getPollStatus(poll_o.vote.phasesBlockHeights).displayValue,
 				<span>
-					{'Start: ' + voteList_o.vote.phasesBlockHeights.commitStart}
-					<br />
-					{'End: ' + voteList_o.vote.phasesBlockHeights.commitStop}
+					{poll_o.vote.phasesBlockHeights.commitStart +
+						' - ' +
+						poll_o.vote.phasesBlockHeights.commitEnd}
 				</span>,
 				<span>
-					{'Start: ' + voteList_o.vote.phasesBlockHeights.revealStart}
-					<br />
-					{'End: ' + voteList_o.vote.phasesBlockHeights.reavealStop}
+					{poll_o.vote.phasesBlockHeights.commitEnd +
+						1 +
+						' - ' +
+						poll_o.vote.phasesBlockHeights.revealEnd}
 				</span>
 			);
 			tableRows.push(row);
 		});
-
-		console.log(tableRows);
 
 		return (
 			<Grid container>
@@ -65,17 +83,17 @@ class VoteTable extends React.Component {
 									{expanded ? (
 										<ExpandLess
 											style={{ cursor: 'pointer' }}
-											titleAccess="Collapse"
+											titleAccess="Collapse Table"
 											onClick={this.props.toggleExpand}
-											title="Collapse Row"
+											title="Collapse Table"
 											className={classes.expandIcon}
 										/>
 									) : (
 										<ExpandMore
 											style={{ cursor: 'pointer' }}
-											titleAccess="Expand"
+											titleAccess="Expand Table"
 											onClick={this.props.toggleExpand}
-											title="Expand Row"
+											title="Expand Table"
 											className={classes.expandIcon}
 										/>
 									)}
@@ -87,7 +105,12 @@ class VoteTable extends React.Component {
 									{expanded && (
 										<span>
 											<br />
-											<input type="text" />
+											<input
+												name="title"
+												type="text"
+												value={title}
+												onChange={handleFilterChange}
+											/>
 										</span>
 									)}
 								</TableCell>
@@ -98,13 +121,22 @@ class VoteTable extends React.Component {
 									{expanded && (
 										<span>
 											<br />
-											<select>
+											<select
+												name="status"
+												value={status}
+												onChange={async (e) => {
+													await handleFilterChange(e);
+													filterTable();
+												}}
+											>
 												<option defaultValue value="" />
-												<option>Discussion Phase</option>
-												<option>Commit Phase</option>
-												<option>Reveal Phase</option>
-												<option>Complete</option>
-												<option>Invalidated</option>
+												{Object.values(POLL_STATUSES).map((option_o, index) => {
+													return (
+														<option key={index} value={option_o.value}>
+															{option_o.displayValue}
+														</option>
+													);
+												})}
 											</select>
 										</span>
 									)}
@@ -127,7 +159,12 @@ class VoteTable extends React.Component {
 									>
 										Poll Chain ID
 										<br />
-										<input type="text" />
+										<input
+											type="text"
+											name="pollChainId"
+											value={pollChainId}
+											onChange={handleFilterChange}
+										/>
 									</TableCell>
 								) : (
 									<TableCell
@@ -144,9 +181,14 @@ class VoteTable extends React.Component {
 											classes.columnHeader
 										}`}
 									>
-										Poll Admin ID
+										Poll Initiator ID
 										<br />
-										<input type="text" />
+										<input
+											type="text"
+											name="initiatorId"
+											value={initiatorId}
+											onChange={handleFilterChange}
+										/>
 									</TableCell>
 								) : (
 									<TableCell
@@ -154,12 +196,25 @@ class VoteTable extends React.Component {
 											classes.columnHeader
 										}`}
 									>
-										Poll Admin ID
+										Poll Initiator ID
 									</TableCell>
 								)}
 							</TableRow>
 						</TableHead>
 						<TableBody>
+							{_isEmpty(tableRows) && (
+								<TableRow>
+									<td className={classes.expandColumn} />
+									<TableCell>
+										<Typography>No Matching Results</Typography>
+									</TableCell>
+									<TableCell />
+									<TableCell />
+									<TableCell />
+									<TableCell />
+									<TableCell />
+								</TableRow>
+							)}
 							{tableRows.map((row) => {
 								return (
 									<TableRow key={row.id} hover={true}>
@@ -203,10 +258,16 @@ class VoteTable extends React.Component {
 				<Grid item xs={2}>
 					<TablePagination
 						component={Grid}
-						onChangePage={() => {}}
-						count={tableRows.length}
-						rowsPerPage={25}
-						page={0}
+						onChangePage={(event, page) => {
+							this.props.handlePageChange(page);
+						}}
+						onChangeRowsPerPage={(e) => {
+							this.props.handleRowsPerPageChange(e.target.value);
+						}}
+						count={this.props.count}
+						rowsPerPage={this.props.rowsPerPage}
+						rowsPerPageOptions={RPP_OPTIONS}
+						page={this.props.page}
 					/>
 				</Grid>
 			</Grid>
@@ -220,11 +281,7 @@ VoteTable.propTypes = {
 
 const styles = (theme) => ({
 	tableWrapper: {
-		//width: '100%',
 		overflowX: 'auto',
-	},
-	table: {
-		//minWidth: 750,
 	},
 	titleColumn: {
 		minWidth: '252',
@@ -271,4 +328,5 @@ const styles = (theme) => ({
 	},
 });
 
-export default withStyles(styles)(VoteTable);
+const enhancer = _flowRight(withVote, withStyles(styles));
+export default enhancer(VoteTable);

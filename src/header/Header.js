@@ -143,6 +143,7 @@ class ButtonAppBar extends React.Component {
 								component={Link}
 								to={'/createVote'}
 								onClick={this.handleVoteClose}
+								replace={true}
 							>
 								Create Poll
 							</MenuItem>

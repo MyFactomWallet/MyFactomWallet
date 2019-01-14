@@ -16,7 +16,6 @@ import Button from '@material-ui/core/Button';
 import SectionHeader from '../shared/SectionHeader';
 import FormTextField from '../../component/form/FormTextField';
 import OpenInNew from '@material-ui/icons/OpenInNew';
-import { Link } from 'react-router-dom';
 import { ApolloConsumer } from 'react-apollo';
 import gql from 'graphql-tag';
 import EligibleVotersList from '../shared/EligibleVotersList';
@@ -59,13 +58,9 @@ function formatVoter(voterId, weight) {
 	};
 }
 
-class SelectParticipants extends React.Component {
+class EligibleVotersForm extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			fileVoters: null,
-		};
 
 		this.reader = new FileReader();
 	}
@@ -168,11 +163,9 @@ class SelectParticipants extends React.Component {
 			// if voter exists
 			if (voterIndex !== -1) {
 				// replace voter
-				console.log('Replace Voter');
 				this.arrayHelpers.replace(voterIndex, voter_o);
 			} else {
 				// add new voter
-				console.log('Add New Voter');
 				this.arrayHelpers.push(voter_o);
 			}
 		}
@@ -593,8 +586,6 @@ class SelectParticipants extends React.Component {
 																	/>
 																</Grid>
 															)}
-
-															{/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
 															<Grid
 																item
 																xs={12}
@@ -632,7 +623,7 @@ class SelectParticipants extends React.Component {
 	}
 }
 
-SelectParticipants.propTypes = {
+EligibleVotersForm.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
@@ -673,4 +664,4 @@ const styles = (theme) => ({
 	},
 });
 
-export default withStyles(styles)(SelectParticipants);
+export default withStyles(styles)(EligibleVotersForm);

@@ -20,7 +20,6 @@ export default class VoteConfiguration extends React.Component {
 					phasesBlockHeights: {
 						commitStart: '',
 						commitEnd: '',
-						revealStart: '',
 						revealEnd: '',
 					},
 					eligibleVotersChainId: null,
@@ -39,7 +38,6 @@ export default class VoteConfiguration extends React.Component {
 			formFields: {
 				commitStartDate: '',
 				commitEndDate: '',
-				revealStartDate: '',
 				revealEndDate: '',
 				voteTypeText: '',
 				questionSource: 'text',
