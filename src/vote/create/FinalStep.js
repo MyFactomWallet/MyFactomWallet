@@ -2,11 +2,11 @@ import React from 'react';
 import _flowRight from 'lodash/flowRight';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import OpenInNew from '@material-ui/icons/OpenInNew';
 import { withNetwork } from '../../context/NetworkContext';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import SectionHeader from '../shared/SectionHeader';
+import ExplorerLink from '../shared/ExplorerLink';
 
 function FinalStep(props) {
 	const {
@@ -33,22 +33,22 @@ function FinalStep(props) {
 			<Grid item xs={12}>
 				<ExplorerLink
 					label="Eligible Voters"
-					URL={entryHashURL}
-					ID={createPollResult.eligibleVoters.entryHash}
+					value={createPollResult.eligibleVoters.entryHash}
+					href={entryHashURL + createPollResult.eligibleVoters.entryHash}
 				/>
 			</Grid>
 			<Grid item xs={12}>
 				<ExplorerLink
 					label="Vote Configuration"
-					URL={entryHashURL}
-					ID={createPollResult.vote.entryHash}
+					value={createPollResult.vote.entryHash}
+					href={entryHashURL + createPollResult.vote.entryHash}
 				/>
 			</Grid>
 			<Grid item xs={12}>
 				<ExplorerLink
 					label="Vote Registration"
-					URL={entryHashURL}
-					ID={createPollResult.registration.entryHash}
+					value={createPollResult.registration.entryHash}
+					href={entryHashURL + createPollResult.registration.entryHash}
 				/>
 			</Grid>
 		</Grid>
@@ -60,24 +60,6 @@ const styles = (theme) => ({
 		padding: '15px',
 	},
 });
-
-const ExplorerLink = ({ label, URL, ID }) => {
-	return (
-		<>
-			<a target="_blank" rel="noopener noreferrer" href={URL + ID}>
-				<Typography gutterBottom variant="subtitle1">
-					{label}&nbsp;
-					<OpenInNew
-						color="primary"
-						style={{
-							fontSize: 15,
-						}}
-					/>
-				</Typography>
-			</a>
-		</>
-	);
-};
 
 FinalStep.propTypes = {
 	classes: PropTypes.object,

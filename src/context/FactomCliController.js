@@ -16,6 +16,8 @@ class FactomCliController extends React.Component {
 			factomCli: this.newFactomCli(),
 			connectToServer: this.connectToServer,
 			getDefaultConnectionParams: this.getDefaultConnectionParams,
+			updateBlockHeight: this.updateBlockHeight,
+			blockHeight: null,
 		};
 	}
 
@@ -32,6 +34,23 @@ class FactomCliController extends React.Component {
 			minTimeout: 500,
 			maxTimeout: 2000,
 		},
+	};
+
+	async componentDidMount() {
+		// get latest block height
+		this.updateBlockHeight();
+		this.blockHeightTimerId = setInterval(this.updateBlockHeight, 60000);
+	}
+
+	componentWillUnmount() {
+		clearInterval(this.blockHeightTimerId);
+	}
+
+	updateBlockHeight = async () => {
+		const result = await this.state.factomCli.getHeights();
+		if (result.directoryBlockHeight) {
+			this.setState({ blockHeight: result.directoryBlockHeight });
+		}
 	};
 
 	getDefaultConnectionParams = () => {

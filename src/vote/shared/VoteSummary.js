@@ -13,19 +13,20 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import LabelImportant from '@material-ui/icons/LabelImportant';
-import OpenInNew from '@material-ui/icons/OpenInNew';
 import SectionHeader from '../shared/SectionHeader';
 import { withNetwork } from '../../context/NetworkContext';
+import { withFactomCli } from '../../context/FactomCliContext';
+import { withVote } from '../../context/VoteContext';
 import EligibleVotersList from '../shared/EligibleVotersList';
+import ExplorerLink from './ExplorerLink';
+import OpenInNew from '@material-ui/icons/OpenInNew';
 
 import {
 	BINARY_CONFIG,
-	SINGLE_OPTION_CONFIG,
 	APPROVAL_CONFIG,
 	INSTANT_RUNOFF_CONFIG,
 	ALL_ELIGIBLE_VOTERS,
 	PARTICIPANTS_ONLY,
-	VOTE_TYPES,
 } from '../create/VOTE_CONSTANTS';
 
 /**
@@ -36,7 +37,6 @@ import {
 const titlePath = 'pollJSON.proposal.title';
 const commitStartPath = 'pollJSON.vote.phasesBlockHeights.commitStart';
 const commitEndPath = 'pollJSON.vote.phasesBlockHeights.commitEnd';
-const revealStartPath = 'pollJSON.vote.phasesBlockHeights.revealStart';
 const revealEndPath = 'pollJSON.vote.phasesBlockHeights.revealEnd';
 const hrefPath = 'pollJSON.proposal.externalRef.href';
 const hashValuePath = 'pollJSON.proposal.externalRef.hash.value';
@@ -55,28 +55,26 @@ const weightedMinTurnoutPath =
 	'pollJSON.vote.config.acceptanceCriteria.minTurnout.weighted';
 const unweightedMinTurnoutPath =
 	'pollJSON.vote.config.acceptanceCriteria.minTurnout.unweighted';
+const pollChainIdPath = 'pollJSON.voteChainId';
 
 //unique so far
-const protocolVersionPath = 'formFields.protocolVersion';
-const pollInitiatorIdPath = 'formFields.pollInitiatorID';
-const pollChainIDPath = 'formFields.pollChainID';
+const protocolVersionPath = 'pollJSON.admin.protocolVersion';
+const pollInitiatorIdPath = 'pollJSON.admin.voteInitiator';
 
 class VoteSummary extends React.Component {
-	state = { currentHeight: null };
-
 	async componentDidMount() {
 		window.scrollTo(0, 0);
-
-		const tfaURL = this.props.networkController.networkProps.explorerApiURL;
-
-		fetch(tfaURL + '/top')
-			.then((response) => response.json())
-			.then((data) => this.setState({ currentHeight: data.result.top }));
 	}
 
 	render() {
-		const { classes, eligibleVoters } = this.props;
-		const poll = this.props.poll;
+		const {
+			classes,
+			eligibleVoters,
+			poll,
+			factomCliController: { blockHeight },
+			networkController: { networkProps },
+			voteController: { getPollType },
+		} = this.props;
 
 		const minSupportOption = Object.keys(_get(poll, minSupportPath))[0];
 
@@ -85,23 +83,13 @@ class VoteSummary extends React.Component {
 		const unweightedMinSupportPath =
 			minSupportPath + '.' + minSupportOption + '.unweighted';
 
-		// vote type text
-		const voteTypeValue = _get(poll, voteTypePath);
+		// poll type text
+		const pollType_o = getPollType(
+			_get(poll, voteTypePath),
+			_get(poll, maxOptionsPath)
+		);
 
-		let voteTypeText = '';
-
-		if (voteTypeValue === 1) {
-			if (
-				_get(poll, minOptionsPath) === 1 &&
-				_get(poll, maxOptionsPath) === 1
-			) {
-				voteTypeText = SINGLE_OPTION_CONFIG.name;
-			} else {
-				voteTypeText = APPROVAL_CONFIG.name;
-			}
-		} else {
-			voteTypeText = VOTE_TYPES[voteTypeValue].name;
-		}
+		const pollTypeText = pollType_o.name;
 
 		// minimum turnout
 		const hasMinTurnoutCritiera = !_isNil(_get(poll, minTurnoutPath));
@@ -112,43 +100,69 @@ class VoteSummary extends React.Component {
 		let revealStartDate = null;
 		let revealEndDate = null;
 
-		if (this.state.currentHeight) {
+		if (blockHeight) {
 			commitStartDate = calculateWriteTime(
-				this.state.currentHeight,
+				blockHeight,
 				_get(poll, commitStartPath)
 			);
 			commitEndDate = calculateWriteTime(
-				this.state.currentHeight,
+				blockHeight,
 				_get(poll, commitEndPath)
 			);
 			revealStartDate = calculateWriteTime(
-				this.state.currentHeight,
-				_get(poll, revealStartPath)
+				blockHeight,
+				_get(poll, commitEndPath) + 1
 			);
 			revealEndDate = calculateWriteTime(
-				this.state.currentHeight,
+				blockHeight,
 				_get(poll, revealEndPath)
 			);
 		}
 
 		return (
 			<Grid item xs={12} container>
-				<Grid item xs={9}>
+				<Grid item xs={12}>
 					<SectionHeader text="Poll Configuration" />
 				</Grid>
-				<Grid item xs={3}>
-					<Typography>Current Height: {this.state.currentHeight}</Typography>
-				</Grid>
+				{_get(poll, pollChainIdPath) && (
+					<Grid item xs={12} container>
+						<ExplorerLink
+							label="Poll Chain ID"
+							value={_get(poll, pollChainIdPath)}
+							href={
+								networkProps.explorerURL +
+								'/data?type=chain&key=' +
+								_get(poll, pollChainIdPath)
+							}
+						/>
+					</Grid>
+				)}
+				{_get(poll, pollInitiatorIdPath) && (
+					<Grid item xs={12} container>
+						<ExplorerLink
+							label="Poll Initiator"
+							value={_get(poll, pollInitiatorIdPath)}
+							href={
+								networkProps.explorerURL +
+								'/data?type=chain&key=' +
+								_get(poll, pollInitiatorIdPath)
+							}
+						/>
+						<br />
+						<br />
+					</Grid>
+				)}
+
 				<Grid item container xs={6}>
 					<Grid item xs={12}>
 						<Typography gutterBottom>Title: {_get(poll, titlePath)}</Typography>
 					</Grid>
 					<Grid item xs={12}>
-						<Typography gutterBottom>Type: {voteTypeText}</Typography>
+						<Typography gutterBottom>Type: {pollTypeText}</Typography>
 					</Grid>
 					<Grid item xs={12}>
 						<Typography gutterBottom>
-							Compute Results Against:{' '}
+							Compute Results Against:&nbsp;
 							{_get(poll, computeResultsAgainstPath) ===
 							ALL_ELIGIBLE_VOTERS.value
 								? ALL_ELIGIBLE_VOTERS.text
@@ -157,7 +171,8 @@ class VoteSummary extends React.Component {
 					</Grid>
 					<Grid item xs={12}>
 						<Typography gutterBottom>
-							Allow Abstain: {_get(poll, abstentionPath) ? 'True' : 'False'}
+							Allow Abstain:&nbsp;
+							{_get(poll, abstentionPath) ? 'True' : 'False'}
 						</Typography>
 					</Grid>
 				</Grid>
@@ -175,7 +190,7 @@ class VoteSummary extends React.Component {
 					<Grid item xs={12}>
 						<Typography gutterBottom>
 							Reveal Start Block:&nbsp;&nbsp;&nbsp;&nbsp;
-							{_get(poll, revealStartPath)}
+							{_get(poll, commitEndPath) + 1}
 						</Typography>
 					</Grid>
 					<Grid item xs={12}>
@@ -199,60 +214,14 @@ class VoteSummary extends React.Component {
 						<Typography>{revealEndDate}</Typography>
 					</Grid>
 				</Grid>
-
-				{_get(poll, pollChainIDPath) && (
-					<Grid item xs={12} container>
-						<Grid item xs={3} className={classes.smallGridColumn}>
-							<Typography gutterBottom>Poll Chain ID:</Typography>
-						</Grid>
-						<Grid item xs={9}>
+				{!_isNil(_get(poll, protocolVersionPath)) && (
+					<>
+						<Grid item xs={12} container>
 							<Typography>
-								{_get(poll, pollChainIDPath)}
-								&nbsp;
-								<a
-									target="_blank"
-									rel="noopener noreferrer"
-									href={
-										'https://explorer.factom.com/eblocks/0e5570917c25c6b35dbf67c802958d802e43fd9f48dd0c35a01feec1235de267'
-									}
-								>
-									<OpenInNew color="primary" style={{ fontSize: 15 }} />
-								</a>
+								Protocol Version: {_get(poll, protocolVersionPath)}
 							</Typography>
 						</Grid>
-					</Grid>
-				)}
-				{_get(poll, pollInitiatorIdPath) && (
-					<Grid item xs={12} container>
-						<Grid item xs={3} className={classes.smallGridColumn}>
-							<Typography gutterBottom>Poll Initiator ID:</Typography>
-						</Grid>
-						<Grid item xs={9}>
-							<Typography>
-								{_get(poll, pollInitiatorIdPath)}
-								&nbsp;
-								<a
-									target="_blank"
-									rel="noopener noreferrer"
-									href={
-										'https://explorer.factom.com/eblocks/0e5570917c25c6b35dbf67c802958d802e43fd9f48dd0c35a01feec1235de267'
-									}
-								>
-									<OpenInNew color="primary" style={{ fontSize: 15 }} />
-								</a>
-							</Typography>
-						</Grid>
-					</Grid>
-				)}
-				{_get(poll, protocolVersionPath) && (
-					<Grid item xs={12} container>
-						<Grid item xs={3} className={classes.smallGridColumn}>
-							<Typography gutterBottom>Protocol Version:</Typography>
-						</Grid>
-						<Grid item xs={9}>
-							<Typography>{_get(poll, protocolVersionPath)}</Typography>
-						</Grid>
-					</Grid>
+					</>
 				)}
 				<Grid item xs={12}>
 					<br />
@@ -264,8 +233,22 @@ class VoteSummary extends React.Component {
 							<Typography gutterBottom>URL Link:</Typography>
 						</Grid>
 						<Grid item xs={9}>
-							<a href={_get(poll, hrefPath)}>
-								<Typography>{_get(poll, hrefPath)}</Typography>
+							<a
+								href={_get(poll, hrefPath)}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<Typography>
+									{_get(poll, hrefPath)}&nbsp;
+									<OpenInNew
+										color="primary"
+										style={{
+											fontSize: 15,
+											position: 'relative',
+											top: '1px',
+										}}
+									/>
+								</Typography>
 							</a>
 						</Grid>
 						<Grid item xs={3} className={classes.smallGridColumn}>
@@ -314,8 +297,8 @@ class VoteSummary extends React.Component {
 								</List>
 							</Grid>
 							<Grid item xs={6}>
-								{(_get(poll, voteTypePath) === APPROVAL_CONFIG.type ||
-									_get(poll, voteTypePath) === INSTANT_RUNOFF_CONFIG.type) && (
+								{(pollType_o.name === APPROVAL_CONFIG.name ||
+									pollType_o.name === INSTANT_RUNOFF_CONFIG.name) && (
 									<Grid container item xs={12}>
 										<Grid item xs={12}>
 											<Typography gutterBottom>
@@ -344,8 +327,14 @@ class VoteSummary extends React.Component {
 							<Grid container>
 								<Grid item xs={4}>
 									<FormControlLabel
+										className={classes.defaultCursor}
 										control={
-											<Checkbox disableRipple color="default" checked={true} />
+											<Checkbox
+												disableRipple
+												color="default"
+												checked={true}
+												className={classes.defaultCursor}
+											/>
 										}
 										label="Minimum Support"
 									/>
@@ -373,7 +362,7 @@ class VoteSummary extends React.Component {
 									</Grid>
 								</Grid>
 								<Grid item xs={4}>
-									{_get(poll, voteTypePath) === 0 ? (
+									{pollType_o.name === BINARY_CONFIG.name ? (
 										<Typography>
 											Applies to option: {minSupportOption}
 										</Typography>
@@ -394,11 +383,13 @@ class VoteSummary extends React.Component {
 								<Grid container>
 									<Grid item xs={4}>
 										<FormControlLabel
+											className={classes.defaultCursor}
 											control={
 												<Checkbox
 													disableRipple
 													color="default"
 													checked={hasMinTurnoutCritiera}
+													className={classes.defaultCursor}
 												/>
 											}
 											label="Minimum Turnout"
@@ -464,6 +455,9 @@ const styles = (theme) => ({
 		width: '350px',
 		overflow: 'auto',
 	},
+	defaultCursor: {
+		cursor: 'default',
+	},
 });
 
 function calculateWriteTime(currentHeight, writeHeight) {
@@ -485,5 +479,10 @@ function calculateWriteTime(currentHeight, writeHeight) {
 	return event;
 }
 
-const enhancer = _flowRight(withNetwork, withStyles(styles));
+const enhancer = _flowRight(
+	withNetwork,
+	withFactomCli,
+	withVote,
+	withStyles(styles)
+);
 export default enhancer(VoteSummary);

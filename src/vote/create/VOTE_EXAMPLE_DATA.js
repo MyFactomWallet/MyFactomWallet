@@ -31,10 +31,9 @@ export const VOTE_EXAMPLE_CONFIG = {
 			},
 			vote: {
 				phasesBlockHeights: {
-					commitStart: 61258,
-					commitEnd: 61259,
-					revealStart: 61260,
-					revealEnd: 61261,
+					commitStart: 64917,
+					commitEnd: 64918,
+					revealEnd: 64919,
 				},
 				eligibleVotersChainId: null,
 				type: 1,
@@ -62,10 +61,9 @@ export const VOTE_EXAMPLE_CONFIG = {
 			},
 		},
 		formFields: {
-			commitStartDate: '2019-01-06T03:00:00.000',
-			commitEndDate: '2019-01-06T03:10:00.000',
-			revealStartDate: '2019-01-06T03:20:00.000',
-			revealEndDate: '2019-01-06T03:30:00.000',
+			commitStartDate: '2019-01-31T12:59',
+			commitEndDate: '2019-01-31T13:08:00.000',
+			revealEndDate: '2019-01-31T13:18:00.000',
 			voteTypeText: 'Approval Voting',
 			questionSource: 'text',
 			workingText: 'What is the answer to life, the universe, and everything?',
@@ -92,6 +90,11 @@ export const VOTE_EXAMPLE_CONFIG = {
 				voterId:
 					'89aa72a260fd88c6a813d9157a863db83b2327e9935a30f0e8303ae944c5b653',
 				weight: 1,
+			},
+			{
+				voterId:
+					'06edc595df8bcfa5646097bfdb444321eeb169ec4fa6d545f8f4d3d7ee93b1c6',
+				weight: 1.5,
 			},
 		],
 		formFields: {

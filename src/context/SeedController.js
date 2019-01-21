@@ -9,6 +9,8 @@ import {
 	isValidEcPublicAddress,
 	keyToPrivateFctAddress,
 	keyToPrivateEcAddress,
+	seedToPrivateFctAddress,
+	seedToPrivateEcAddress,
 	getPublicAddress,
 } from 'factom/dist/factom';
 import factombip44 from 'factombip44/dist/factombip44';
@@ -16,8 +18,8 @@ import factombip44 from 'factombip44/dist/factombip44';
 /**
  * Constants
  */
-const keyToFctAddress = (key) => getPublicAddress(keyToPrivateFctAddress(key));
-const keyToECAddress = (key) => getPublicAddress(keyToPrivateEcAddress(key));
+const keyToFctAddress = (key) => getPublicAddress(seedToPrivateFctAddress(key));
+const keyToECAddress = (key) => getPublicAddress(seedToPrivateEcAddress(key));
 
 class SeedController extends React.Component {
 	constructor(props) {
@@ -68,7 +70,7 @@ class SeedController extends React.Component {
 
 		const wallet = new factombip44.FactomBIP44(mnemonic);
 
-		const privateKey = keyToPrivateFctAddress(
+		const privateKey = seedToPrivateFctAddress(
 			wallet.generateFactoidPrivateKey(bip32Account, 0, index)
 		);
 

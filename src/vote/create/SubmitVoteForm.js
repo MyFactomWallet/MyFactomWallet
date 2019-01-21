@@ -73,6 +73,7 @@ class SubmitVoteForm extends React.Component {
 			handleBack,
 			handleNext,
 			networkController: { networkProps },
+			voteController: { submitVote },
 		} = this.props;
 
 		return (
@@ -103,7 +104,7 @@ class SubmitVoteForm extends React.Component {
 					};
 
 					try {
-						const result = await this.props.voteController.submitVote(
+						const result = await submitVote(
 							voteData,
 							_get(values, ecPrivateKeyPath)
 						);

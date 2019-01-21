@@ -7,14 +7,7 @@ import _flowRight from 'lodash/flowRight';
 import _isNil from 'lodash/isNil';
 import _isFinite from 'lodash/isFinite';
 import PropTypes from 'prop-types';
-import {
-	Formik,
-	Field,
-	FastField,
-	Form,
-	FieldArray,
-	ErrorMessage,
-} from 'formik';
+import { Formik, Field, Form, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -35,7 +28,7 @@ import SectionHeader from '../shared/SectionHeader';
 import FormTextField from '../../component/form/FormTextField';
 import FormSelectField from '../../component/form/FormSelectField';
 import { withNetwork } from '../../context/NetworkContext';
-//import FormHelperText from '@material-ui/core/FormHelperText';
+import { withFactomCli } from '../../context/FactomCliContext';
 
 import {
 	BINARY_CONFIG,
@@ -74,7 +67,6 @@ const QUESTION_MAX_LENGTH = 250;
 const titlePath = 'pollJSON.proposal.title';
 const commitStartPath = 'pollJSON.vote.phasesBlockHeights.commitStart';
 const commitEndPath = 'pollJSON.vote.phasesBlockHeights.commitEnd';
-const revealStartPath = 'pollJSON.vote.phasesBlockHeights.revealStart';
 const revealEndPath = 'pollJSON.vote.phasesBlockHeights.revealEnd';
 const proposalPath = 'pollJSON.proposal';
 const externalRefPath = 'pollJSON.proposal.externalRef';
@@ -93,7 +85,6 @@ const minSupportPath = 'pollJSON.vote.config.winnerCriteria.minSupport';
 // form specific fields
 const commitStartDatePath = 'formFields.commitStartDate';
 const commitEndDatePath = 'formFields.commitEndDate';
-const revealStartDatePath = 'formFields.revealStartDate';
 const revealEndDatePath = 'formFields.revealEndDate';
 const voteTypeTextPath = 'formFields.voteTypeText';
 const questionSourcePath = 'formFields.questionSource';
@@ -111,16 +102,8 @@ const workingUnweightMinSupportPath = 'formFields.workingUnweightMinSupport';
 const workingMinSupportOptionPath = 'formFields.workingMinSupportOption';
 
 class CreateVoteForm extends React.Component {
-	state = { currentHeight: null };
-
 	async componentDidMount() {
 		window.scrollTo(0, 0);
-
-		const tfaURL = this.props.networkController.networkProps.explorerApiURL;
-
-		fetch(tfaURL + '/top')
-			.then((response) => response.json())
-			.then((data) => this.setState({ currentHeight: data.result.top }));
 	}
 
 	handleKeyPress(event) {
@@ -155,15 +138,20 @@ class CreateVoteForm extends React.Component {
 	handleTime = (value, path) => {
 		this.setFieldValue(
 			path,
-			calculateWriteHeight(this.state.currentHeight, value)
+			calculateWriteHeight(this.props.factomCliController.blockHeight, value)
 		);
 	};
 
 	handleBlock = (value, path) => {
-		if (this.validateWriteHeight(this.state.currentHeight, value)) {
+		if (
+			this.validateWriteHeight(
+				this.props.factomCliController.blockHeight,
+				value
+			)
+		) {
 			this.setFieldValue(
 				path,
-				calculateWriteTime(this.state.currentHeight, value)
+				calculateWriteTime(this.props.factomCliController.blockHeight, value)
 			);
 		} else {
 			this.setFieldValue(path, '');
@@ -220,7 +208,13 @@ class CreateVoteForm extends React.Component {
 	};
 
 	render() {
-		const { pollForm, updatePoll, classes, usePollTestData } = this.props;
+		const {
+			pollForm,
+			updatePoll,
+			classes,
+			usePollTestData,
+			factomCliController: { blockHeight },
+		} = this.props;
 
 		return (
 			<Formik
@@ -238,8 +232,8 @@ class CreateVoteForm extends React.Component {
 									.transform((cv) => (isNaN(cv) ? undefined : cv))
 									.required('Required')
 									.moreThan(
-										this.state.currentHeight,
-										'Must be greater Current Height'
+										blockHeight + 1,
+										'Must be 2 blocks higher than Current Height'
 									),
 								commitEnd: Yup.number()
 									.transform((cv) => (isNaN(cv) ? undefined : cv))
@@ -248,19 +242,12 @@ class CreateVoteForm extends React.Component {
 										Yup.ref('commitStart'),
 										'Must be greater than Commit Start Block'
 									),
-								revealStart: Yup.number()
+								revealEnd: Yup.number()
 									.transform((cv) => (isNaN(cv) ? undefined : cv))
 									.required('Required')
 									.moreThan(
 										Yup.ref('commitEnd'),
 										'Must be greater than Commit End Block'
-									),
-								revealEnd: Yup.number()
-									.transform((cv) => (isNaN(cv) ? undefined : cv))
-									.required('Required')
-									.moreThan(
-										Yup.ref('revealStart'),
-										'Must be greater than Reveal Start Block'
 									),
 							}),
 							config: Yup.object().shape({
@@ -314,7 +301,9 @@ class CreateVoteForm extends React.Component {
 						}),
 						workingHref: Yup.string().when('questionSource', {
 							is: 'href',
-							then: Yup.string().required('Required'),
+							then: Yup.string()
+								.required('Required')
+								.url('Must be a valid URL'),
 							otherwise: Yup.string().notRequired(),
 						}),
 						workingHashValue: Yup.string().when('questionSource', {
@@ -486,9 +475,6 @@ class CreateVoteForm extends React.Component {
 											>
 												Use Test Data
 											</Button>
-											<Typography>
-												Current Block Height: {this.state.currentHeight}
-											</Typography>
 										</div>
 									</Grid>
 									<Grid container item xs={5}>
@@ -669,41 +655,6 @@ class CreateVoteForm extends React.Component {
 										<Grid item xs={6}>
 											<div className={classes.blockFields}>
 												<FormTextField
-													name={revealStartPath}
-													label="Reveal Start Block *"
-													type="number"
-													error={
-														_get(errors, revealStartPath) &&
-														_get(touched, revealStartPath)
-													}
-													onChange={(e) => {
-														handleChange(e);
-														this.handleBlock(
-															e.target.value,
-															revealStartDatePath
-														);
-													}}
-												/>
-											</div>
-										</Grid>
-										<Grid item xs={6}>
-											<FormTextField
-												name={revealStartDatePath}
-												label="Estimated Date"
-												type="datetime-local"
-												shrink={true}
-												isNotFast
-												width={220}
-												onChange={(e) => {
-													handleChange(e);
-													this.handleTime(e.target.value, revealStartPath);
-													setFieldTouched(revealStartPath, true);
-												}}
-											/>
-										</Grid>
-										<Grid item xs={6}>
-											<div className={classes.blockFields}>
-												<FormTextField
 													name={revealEndPath}
 													label="Reveal End Block *"
 													type="number"
@@ -732,6 +683,9 @@ class CreateVoteForm extends React.Component {
 													setFieldTouched(revealEndPath, true);
 												}}
 											/>
+										</Grid>
+										<Grid item xs={12}>
+											<div style={{ height: '48px' }} />
 										</Grid>
 									</Grid>
 								</Grid>
@@ -1052,6 +1006,7 @@ class CreateVoteForm extends React.Component {
 													name={workingWeightMinSupportPath}
 													label="Weighted Ratio"
 													type="number"
+													step="any"
 													error={
 														_get(errors, workingWeightMinSupportPath) &&
 														_get(touched, workingWeightMinSupportPath)
@@ -1064,6 +1019,7 @@ class CreateVoteForm extends React.Component {
 													name={workingUnweightMinSupportPath}
 													label="Unweighted Ratio"
 													type="number"
+													step="any"
 													error={
 														_get(errors, workingUnweightMinSupportPath) &&
 														_get(touched, workingUnweightMinSupportPath)
@@ -1185,6 +1141,7 @@ class CreateVoteForm extends React.Component {
 												label={'Weighted Ratio'}
 												disabled={!_get(values, checkedTurnoutPath)}
 												type="number"
+												step="any"
 												error={
 													_get(errors, workingWeightMinTurnoutPath) &&
 													_get(touched, workingWeightMinTurnoutPath)
@@ -1199,6 +1156,7 @@ class CreateVoteForm extends React.Component {
 												label={'Unweighted Ratio'}
 												disabled={!_get(values, checkedTurnoutPath)}
 												type="number"
+												step="any"
 												error={
 													_get(errors, workingUnweightMinTurnoutPath) &&
 													_get(touched, workingUnweightMinTurnoutPath)
@@ -1219,8 +1177,6 @@ class CreateVoteForm extends React.Component {
 										</Grid>
 									</Grid>
 								</Grid>
-								{/* <pre>{JSON.stringify(errors, null, 2)}</pre> */}
-								{/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
 								<Grid item xs={12} className={classes.stepperButtons}>
 									<br />
 									<Button onClick={this.props.handleBack}>Back</Button>
@@ -1313,5 +1269,5 @@ function calculateWriteHeight(currentHeight, writeTime) {
 	return estWriteHeight;
 }
 
-const enhancer = _flowRight(withNetwork, withStyles(styles));
+const enhancer = _flowRight(withNetwork, withFactomCli, withStyles(styles));
 export default enhancer(CreateVoteForm);
