@@ -13,14 +13,15 @@ class FactomCliController extends React.Component {
 		super(props);
 
 		this.state = {
-			factomCli: this.newFactomCli(),
 			connectToServer: this.connectToServer,
 		};
 	}
 
+	componentDidMount = () => {
+		this.connectToServer();
+	};
+
 	defaultConnectionParams = {
-		host: 'api.myfactomwallet.com',
-		port: this.props.networkController.networkProps.apiPort,
 		path: '/v2',
 		debugPath: '/debug',
 		protocol: 'https',
@@ -33,14 +34,15 @@ class FactomCliController extends React.Component {
 		},
 	};
 
-	newFactomCli = (connectionParams = {}) =>
+	newFactomCli = (connectionParams) =>
 		new FactomCli(defaultsDeep(this.defaultConnectionParams, connectionParams));
 
-	connectToServer = async (
-		connectionParams = {
+	connectToServer = async () => {
+		const connectionParams = {
+			host: this.props.networkController.networkProps.apiHost,
 			port: this.props.networkController.networkProps.apiPort,
-		}
-	) => {
+		};
+
 		await this.smartSetState({
 			factomCli: this.newFactomCli(connectionParams),
 		});

@@ -23,7 +23,8 @@ class NetworkController extends React.Component {
 			factoidAbbreviationFull: 'Factoid',
 			ecAbbreviation: 'EC',
 			ecAbbreviationFull: 'Entry Credit',
-			apiPort: 8188,
+			apiPort: 443,
+			apiHost: 'api.factomd.net',
 			explorerURL: 'https://explorer.factoid.org',
 		},
 		testnet: {
@@ -34,6 +35,7 @@ class NetworkController extends React.Component {
 			ecAbbreviation: 'TC',
 			ecAbbreviationFull: 'Test Credit',
 			apiPort: 8288,
+			apiHost: 'api.myfactomwallet.com',
 			explorerURL: 'https://testnet.factoid.org',
 		},
 	};
