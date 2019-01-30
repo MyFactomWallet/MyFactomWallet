@@ -1,4 +1,4 @@
-View [MyFactomWallet](https://www.myfactomwallet.com) (Deployed branch: feature_vote)
+View [MyFactomWallet](https://www.myfactomwallet.com)
 
 ## Table of Contents
 
