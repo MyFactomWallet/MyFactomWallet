@@ -34,7 +34,7 @@ class SeedForm extends React.Component {
 	}
 
 	componentDidMount() {
-		this.getNextFive(0);
+		this.getNextFive();
 	}
 
 	getNextFive = async () => {

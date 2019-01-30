@@ -28,16 +28,16 @@ const NICKNAME_MAX_LENGTH = 25;
 class GenerateAddressTable extends React.Component {
 	state = { loading: false };
 
-	addGeneratedAddress = (nickname, address_o, arrayHelpers) => {
+	addGeneratedAddress = (nickname, address_o, index, arrayHelpers) => {
 		if (nickname) {
 			const addr_o = this.props.newAddress(
 				address_o.address,
 				nickname.trim(),
-				address_o.index
+				index
 			);
-			arrayHelpers.replace(address_o.index, addr_o);
+			arrayHelpers.replace(index, addr_o);
 		} else {
-			arrayHelpers.replace(address_o.index, null);
+			arrayHelpers.replace(index, null);
 		}
 	};
 
@@ -100,15 +100,15 @@ class GenerateAddressTable extends React.Component {
 						</TableHead>
 						<TableBody>
 							{!_isEmpty(generatedAddressList) &&
-								generatedAddressList.map((address_o) => {
-									const checkboxPath = 'checkbox_' + address_o.index;
-									const nicknamePath = 'nickname_' + address_o.index;
+								generatedAddressList.map((address_o, index) => {
+									const checkboxPath = 'checkbox_' + index;
+									const nicknamePath = 'nickname_' + index;
 									const duplicate =
 										userAddresses.indexOf(address_o.address) === -1
 											? false
 											: true;
 									return (
-										<TableRow key={address_o.index}>
+										<TableRow key={index}>
 											<FieldArray
 												name={addressesPath}
 												render={(arrayHelpers) => (
@@ -125,7 +125,7 @@ class GenerateAddressTable extends React.Component {
 																				color="primary"
 																			/>
 																		}
-																		label={address_o.index + 1}
+																		label={index + 1}
 																		labelPlacement="start"
 																	/>
 																</Tooltip>
@@ -139,16 +139,13 @@ class GenerateAddressTable extends React.Component {
 																					name={checkboxPath}
 																					color="primary"
 																					onChange={(e) => {
-																						arrayHelpers.replace(
-																							address_o.index,
-																							null
-																						);
+																						arrayHelpers.replace(index, null);
 																						setFieldValue(nicknamePath, '');
 																						handleChange(e);
 																					}}
 																				/>
 																			}
-																			label={address_o.index + 1}
+																			label={index + 1}
 																			labelPlacement="start"
 																		/>
 																	)}
@@ -183,6 +180,7 @@ class GenerateAddressTable extends React.Component {
 																							this.addGeneratedAddress(
 																								e.target.value,
 																								address_o,
+																								index,
 																								arrayHelpers
 																							);
 																						}}
