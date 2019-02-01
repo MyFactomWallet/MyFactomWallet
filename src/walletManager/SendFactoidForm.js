@@ -79,7 +79,7 @@ class SendFactoidForm extends Component {
 				activeAddressIndex_o,
 				addAddressTransaction,
 			},
-			ledgerController: { signWithLedger },
+			ledgerController: { signTransaction },
 			networkController: { networkProps },
 			seedController: { signWithSeed },
 		} = this.props;
@@ -171,7 +171,7 @@ class SendFactoidForm extends Component {
 								index,
 							};
 
-							transaction = await signWithLedger(ledgerTrans_o);
+							transaction = await signTransaction(ledgerTrans_o);
 						}
 
 						const txId = await factomCli.sendTransaction(transaction);

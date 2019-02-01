@@ -52,7 +52,12 @@ class FactomCliController extends React.Component {
 	};
 
 	getDefaultConnectionParams = () => {
-		return this.defaultConnectionParams;
+		const connectionParams = {
+			host: this.props.networkController.networkProps.apiHost,
+			port: this.props.networkController.networkProps.apiPort,
+		};
+
+		return defaultsDeep(this.defaultConnectionParams, connectionParams);
 	};
 
 	newFactomCli = (connectionParams) =>
