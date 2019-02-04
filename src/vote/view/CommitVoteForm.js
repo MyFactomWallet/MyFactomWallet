@@ -5,11 +5,14 @@ import _flowRight from 'lodash/flowRight';
 import _includes from 'lodash/includes';
 import Grid from '@material-ui/core/Grid';
 import * as Yup from 'yup';
-import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { Formik, Form, FieldArray } from 'formik';
+import { Formik, Form, FieldArray, ErrorMessage } from 'formik';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import { withVote } from '../../context/VoteContext';
+import { withNetwork } from '../../context/NetworkContext';
+import { withStyles } from '@material-ui/core/styles';
+import { withLedger } from '../../context/LedgerContext';
 import SectionHeader from '../shared/SectionHeader';
 import ExplorerLink from '../shared/ExplorerLink';
 import { isValidEcPrivateAddress } from 'factom/dist/factom';
@@ -27,8 +30,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import FormTextField from '../../component/form/FormTextField';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Save from '@material-ui/icons/Save';
-import { withVote } from '../../context/VoteContext';
-import { withNetwork } from '../../context/NetworkContext';
 import BinaryVoteForm from './BinaryVoteForm';
 import { randomBytes } from 'crypto-browserify';
 import Paper from '@material-ui/core/Paper';
@@ -45,6 +46,9 @@ const TEST_VOTER_ID = {
 /**
  * Constants
  */
+const MANUAL_SIG = 'manual';
+const LEDGER_SIG = 'ledger';
+
 const identityChainIDPath = 'identityChainID';
 const identityKeyPath = 'identityKey';
 const ecPrivateKeyPath = 'ecPrivateKey';
@@ -56,6 +60,8 @@ const resultPath = 'result';
 const resetAnswerFormPath = 'resetAnswerForm';
 const abstainCheckboxPath = 'abstainCheckbox';
 const revealDataPath = 'revealData';
+const signatureTypePath = 'signatureType';
+const ledgerStatusPath = 'ledgerStatus';
 
 const titlePath = 'pollJSON.proposal.title';
 const pollChainIdPath = 'pollJSON.voteChainId';
@@ -80,6 +86,7 @@ class CommitVoteForm extends React.Component {
 			proposalEntries,
 			voteController: { commitVote, getPollType },
 			networkController: { networkProps },
+			ledgerController: { signMessageRaw },
 		} = this.props;
 
 		const voterList = proposalEntries.map((value) => value.voterId);
@@ -120,10 +127,15 @@ class CommitVoteForm extends React.Component {
 					resetAnswerForm: false,
 					abstainCheckbox: false,
 					revealData: '',
+					signatureType: null,
+					ledgerStatus: null,
 				}}
 				onSubmit={async (values, actions) => {
 					actions.setFieldValue(transactionErrorPath, null);
 					actions.setFieldValue(processingPath, true);
+
+					const signatureType = _get(values, signatureTypePath);
+					let identityChainId;
 
 					const commit_args = {
 						voteChainId: _get(poll, pollChainIdPath),
@@ -132,14 +144,51 @@ class CommitVoteForm extends React.Component {
 							secret: _get(values, secretPath),
 							hmacAlgo: COMMIT_HMAC_ALGO,
 						},
-						voter: {
-							chainId: _get(values, identityChainIDPath),
-							key: _get(values, identityKeyPath),
-						},
 						ecPrivateAddress: _get(values, ecPrivateKeyPath),
 					};
 
 					try {
+						// set voter identity
+						if (signatureType === MANUAL_SIG) {
+							identityChainId = _get(values, identityChainIDPath);
+
+							commit_args.voter = {
+								chainId: identityChainId,
+								key: _get(values, identityKeyPath),
+							};
+						} else if (signatureType === LEDGER_SIG) {
+							actions.setFieldValue(
+								ledgerStatusPath,
+								'Connecting to Ledger Nano S'
+							);
+							const ledgerConnected = await this.props.ledgerController.isLedgerConnected();
+
+							if (ledgerConnected) {
+								actions.setFieldValue(
+									ledgerStatusPath,
+									'Waiting for user to confirm signature on Ledger Nano S device.'
+								);
+							} else {
+								throw new Error(
+									'Ledger Nano S Not Found. Please connect your Ledger Nano S and try again.'
+								);
+							}
+
+							const ledgerIdentity_o = await this.props.ledgerController.getLedgerIdentityAddress(
+								0
+							);
+
+							identityChainId = ledgerIdentity_o.chainid;
+
+							commit_args.voter = {
+								chainId: ledgerIdentity_o.chainid,
+								key: ledgerIdentity_o.address,
+								sign: signMessageRaw,
+							};
+						}
+						console.log('Commit Vote Args');
+						console.log(commit_args);
+
 						//commit vote
 						const result = await commitVote(commit_args);
 
@@ -154,7 +203,7 @@ class CommitVoteForm extends React.Component {
 								secret: _get(values, secretPath),
 								hmacAlgo: COMMIT_HMAC_ALGO,
 							},
-							voterId: _get(values, identityChainIDPath),
+							voterId: identityChainId,
 						};
 
 						actions.setFieldValue(revealDataPath, JSON.stringify(reveal_args));
@@ -172,22 +221,31 @@ class CommitVoteForm extends React.Component {
 						then: Yup.array().required('Required'),
 						otherwise: Yup.array().notRequired(),
 					}),
-					[identityChainIDPath]: Yup.string()
-						.required('Required')
-						.matches(REGEX_CHAIN_ID, {
-							message: 'Invalid Chain ID',
-							excludeEmptyString: true,
-						})
-						.test(identityChainIDPath, 'Not an eligible voter', (value) =>
-							_includes(voterList, value)
-						),
-					[identityKeyPath]: Yup.string()
-						.required('Required')
-						.test(
-							identityKeyPath,
-							'Invalid Identity Key',
-							digital.isValidSecretIdentityKey
-						),
+					[signatureTypePath]: Yup.string(),
+					[identityChainIDPath]: Yup.string().when(signatureTypePath, {
+						is: MANUAL_SIG,
+						then: Yup.string()
+							.required('Required')
+							.matches(REGEX_CHAIN_ID, {
+								message: 'Invalid Chain ID',
+								excludeEmptyString: true,
+							})
+							.test(identityChainIDPath, 'Not an eligible voter', (value) =>
+								_includes(voterList, value)
+							),
+						otherwise: Yup.string().notRequired(),
+					}),
+					[identityKeyPath]: Yup.string().when(signatureTypePath, {
+						is: MANUAL_SIG,
+						then: Yup.string()
+							.required('Required')
+							.test(
+								identityKeyPath,
+								'Invalid Identity Key',
+								digital.isValidSecretIdentityKey
+							),
+						otherwise: Yup.string().notRequired(),
+					}),
 					[ecPrivateKeyPath]: Yup.string()
 						.required('Required')
 						.test(ecPrivateKeyPath, 'Invalid Key', isValidEcPrivateAddress),
@@ -201,6 +259,10 @@ class CommitVoteForm extends React.Component {
 					touched,
 					resetForm,
 				}) => {
+					let signTransactionTitle = 'Sign Transaction';
+					if (_get(values, signatureTypePath) === LEDGER_SIG) {
+						signTransactionTitle += ' with Ledger Nano S';
+					}
 					return (
 						<Form onKeyPress={this.handleKeyPress}>
 							<Grid container className={classes.pad}>
@@ -287,7 +349,19 @@ class CommitVoteForm extends React.Component {
 									<br />
 								</Grid>
 								<Grid item container justify="space-between" xs={12}>
-									<SectionHeader disableGutterBottom text="Sign Transaction" />
+									{_get(errors, signatureTypePath) && submitCount > 0 ? (
+										<SectionHeader
+											disableGutterBottom
+											text={signTransactionTitle + ' *'}
+											color="red"
+										/>
+									) : (
+										<SectionHeader
+											disableGutterBottom
+											text={signTransactionTitle}
+										/>
+									)}
+
 									<Button
 										onClick={() => {
 											setFieldValue(identityChainIDPath, TEST_VOTER_ID.chainId);
@@ -300,45 +374,81 @@ class CommitVoteForm extends React.Component {
 										Use Test Data
 									</Button>
 								</Grid>
-								<Grid xs={9} item>
-									<FormTextField
-										name={identityChainIDPath}
-										label="Voter Identity Chain ID *"
-										error={
-											_get(errors, identityChainIDPath) &&
-											_get(touched, identityChainIDPath)
-										}
-										disabled={isSubmitting}
-										fullWidth
-									/>
-								</Grid>
-								<Grid xs={3} item />
-								<Grid xs={9} item>
-									<FormTextField
-										name={identityKeyPath}
-										label="Voter Identity Private Key *"
-										error={
-											_get(errors, identityKeyPath) &&
-											_get(touched, identityKeyPath)
-										}
-										disabled={isSubmitting}
-										fullWidth
-									/>
-								</Grid>
-								<Grid xs={3} item />
-								<Grid xs={9} item>
-									<FormTextField
-										name={ecPrivateKeyPath}
-										label="EC Private Key *"
-										error={
-											_get(errors, ecPrivateKeyPath) &&
-											_get(touched, ecPrivateKeyPath)
-										}
-										disabled={isSubmitting}
-										fullWidth
-									/>
-								</Grid>
-								<Grid xs={3} item />
+								{_isNil(_get(values, signatureTypePath)) && (
+									<Grid xs={12} item>
+										<Button
+											onClick={() => {
+												setFieldValue(transactionErrorPath, null);
+												setFieldValue(signatureTypePath, MANUAL_SIG);
+											}}
+											variant="outlined"
+											size="small"
+											disabled={isSubmitting}
+										>
+											Manual Entry
+										</Button>
+										&nbsp;
+										<Button
+											onClick={() => {
+												setFieldValue(transactionErrorPath, null);
+												setFieldValue(signatureTypePath, LEDGER_SIG);
+											}}
+											variant="outlined"
+											size="small"
+											disabled={isSubmitting}
+										>
+											Ledger Nano S
+										</Button>
+									</Grid>
+								)}
+								{_get(values, signatureTypePath) === MANUAL_SIG && (
+									<Grid xs={12} item container>
+										<Grid xs={9} item>
+											<FormTextField
+												name={identityChainIDPath}
+												label="Voter Identity Chain ID *"
+												error={
+													_get(errors, identityChainIDPath) &&
+													_get(touched, identityChainIDPath)
+												}
+												disabled={isSubmitting}
+												fullWidth
+											/>
+										</Grid>
+										<Grid xs={3} item />
+										<Grid xs={9} item>
+											<FormTextField
+												name={identityKeyPath}
+												label="Voter Identity Private Key *"
+												error={
+													_get(errors, identityKeyPath) &&
+													_get(touched, identityKeyPath)
+												}
+												disabled={isSubmitting}
+												fullWidth
+											/>
+										</Grid>
+										<Grid xs={3} item />
+									</Grid>
+								)}
+								{_get(values, signatureTypePath) && (
+									<Grid item xs={12} container>
+										<Grid xs={9} item>
+											<FormTextField
+												name={ecPrivateKeyPath}
+												label="EC Private Key *"
+												error={
+													_get(errors, ecPrivateKeyPath) &&
+													_get(touched, ecPrivateKeyPath)
+												}
+												disabled={isSubmitting}
+												fullWidth
+											/>
+										</Grid>
+										<Grid xs={3} item />
+									</Grid>
+								)}
+
 								{!_isNil(_get(values, transactionErrorPath)) && (
 									<Grid item xs={12}>
 										<br />
@@ -394,7 +504,9 @@ class CommitVoteForm extends React.Component {
 										color="primary"
 										disabled={isSubmitting}
 									>
-										Commit Vote
+										{_get(values, signatureTypePath) === LEDGER_SIG
+											? 'Sign and Submit'
+											: 'Submit'}
 										{_get(values, processingPath) && (
 											<>
 												&nbsp;&nbsp;
@@ -402,6 +514,11 @@ class CommitVoteForm extends React.Component {
 											</>
 										)}
 									</Button>
+									{isSubmitting && _get(values, ledgerStatusPath) && (
+										<Typography className={classes.ledgerStatus}>
+											{_get(values, ledgerStatusPath)}
+										</Typography>
+									)}
 									{isSubmitting && _get(values, resultPath) && (
 										<Button
 											variant="outlined"
@@ -445,8 +562,14 @@ const styles = (theme) => ({
 	},
 	transactionErrorText: { color: 'red', fontSize: '16px' },
 	errorText: { color: 'red', fontSize: '13px' },
+	ledgerStatus: { display: 'inline-block', paddingLeft: '10px' },
 	resetButton: { marginLeft: 2 },
 });
 
-const enhancer = _flowRight(withNetwork, withVote, withStyles(styles));
+const enhancer = _flowRight(
+	withNetwork,
+	withVote,
+	withLedger,
+	withStyles(styles)
+);
 export default enhancer(CommitVoteForm);

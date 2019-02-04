@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { withVote } from '../../context/VoteContext';
 import { withNetwork } from '../../context/NetworkContext';
 import { withFactomCli } from '../../context/FactomCliContext';
+import { withLedger } from '../../context/LedgerContext';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -24,11 +25,14 @@ import { EC_PRIV, IDENTITY } from './VOTE_EXAMPLE_DATA';
 /**
  * Constants
  */
+const MANUAL_SIG = 'manual';
+const LEDGER_SIG = 'ledger';
 const identityChainIDPath = 'identityChainID';
 const identityKeyPath = 'identityKey';
 const ecPrivateKeyPath = 'ecPrivateKey';
 const transactionErrorPath = 'transactionError';
-const processingPath = 'processing';
+const ledgerStatusPath = 'ledgerStatus';
+const signatureTypePath = 'signatureType';
 
 const EXAMPLE_IDENTITY = {
 	chainId: '039b14a782008c1b1543b1542941756e6f01a0d68372ff61163642382af70fc9',
@@ -74,6 +78,7 @@ class SubmitVoteForm extends React.Component {
 			handleNext,
 			networkController: { networkProps },
 			voteController: { submitVote },
+			ledgerController: { signMessageRaw },
 		} = this.props;
 
 		return (
@@ -84,26 +89,54 @@ class SubmitVoteForm extends React.Component {
 					identityKey: '',
 					ecPrivateKey: '',
 					transactionError: null,
-					processing: false,
+					signatureType: null,
+					ledgerStatus: null,
 				}}
 				onSubmit={async (values, actions) => {
 					actions.setFieldValue(transactionErrorPath, null);
-					actions.setFieldValue(processingPath, true);
 
-					// set identity
-					const identity = {
-						chainId: _get(values, identityChainIDPath),
-						key: _get(values, identityKeyPath),
-					};
+					const signatureType = _get(values, signatureTypePath);
 
 					const voteData = {
 						definition: poll.pollJSON,
 						registrationChainId: networkProps.voteRegistrationChainID,
 						eligibleVoters,
-						identity,
 					};
 
 					try {
+						if (signatureType === MANUAL_SIG) {
+							voteData.identity = {
+								chainId: _get(values, identityChainIDPath),
+								key: _get(values, identityKeyPath),
+							};
+						} else if (signatureType === LEDGER_SIG) {
+							actions.setFieldValue(
+								ledgerStatusPath,
+								'Connecting to Ledger Nano S'
+							);
+							const ledgerConnected = await this.props.ledgerController.isLedgerConnected();
+
+							if (ledgerConnected) {
+								actions.setFieldValue(
+									ledgerStatusPath,
+									'Waiting for user to confirm signature two times on Ledger Nano S device.'
+								);
+							} else {
+								throw new Error(
+									'Ledger Nano S Not Found. Please connect your Ledger Nano S and try again.'
+								);
+							}
+
+							const ledgerIdentity_o = await this.props.ledgerController.getLedgerIdentityAddress(
+								0
+							);
+
+							voteData.identity = {
+								chainId: ledgerIdentity_o.chainid,
+								key: ledgerIdentity_o.address,
+								sign: signMessageRaw,
+							};
+						}
 						const result = await submitVote(
 							voteData,
 							_get(values, ecPrivateKeyPath)
@@ -123,116 +156,190 @@ class SubmitVoteForm extends React.Component {
 					}
 				}}
 				validationSchema={Yup.object().shape({
-					[identityChainIDPath]: Yup.string()
-						.required('Required')
-						.matches(REGEX_CHAIN_ID, {
-							message: 'Invalid Chain ID',
-							excludeEmptyString: true,
-						}),
-					[identityKeyPath]: Yup.string()
-						.required('Required')
-						.test(
-							identityKeyPath,
-							'Invalid Identity Key',
-							digital.isValidSecretIdentityKey
-						),
+					[signatureTypePath]: Yup.string(),
+					[identityChainIDPath]: Yup.string().when(signatureTypePath, {
+						is: MANUAL_SIG,
+						then: Yup.string()
+							.required('Required')
+							.matches(REGEX_CHAIN_ID, {
+								message: 'Invalid Chain ID',
+								excludeEmptyString: true,
+							}),
+						otherwise: Yup.string().notRequired(),
+					}),
+					[identityKeyPath]: Yup.string().when(signatureTypePath, {
+						is: MANUAL_SIG,
+						then: Yup.string()
+							.required('Required')
+							.test(
+								identityKeyPath,
+								'Invalid Identity Key',
+								digital.isValidSecretIdentityKey
+							),
+						otherwise: Yup.string().notRequired(),
+					}),
 				})}
-				render={({ isSubmitting, errors, touched, values, setFieldValue }) => (
-					<Form>
-						<Grid container>
-							<Grid item container justify="space-between" xs={12}>
-								<SectionHeader disableGutterBottom text="Sign Transaction" />
-								<Button
-									onClick={() => {
-										setFieldValue(identityChainIDPath, IDENTITY.chainId);
-										setFieldValue(identityKeyPath, IDENTITY.key);
-										setFieldValue(ecPrivateKeyPath, EC_PRIV);
-									}}
-									variant="contained"
-									color="default"
-								>
-									Use Test Data
-								</Button>
-							</Grid>
+				render={({
+					isSubmitting,
+					errors,
+					touched,
+					values,
+					setFieldValue,
+					submitCount,
+				}) => {
+					let title = 'Sign Transaction';
+					if (_get(values, signatureTypePath) === LEDGER_SIG) {
+						title += ' with Ledger Nano S';
+					}
 
-							<Grid xs={9} item>
-								<FormTextField
-									name={identityChainIDPath}
-									label="Initiator Identity Chain ID *"
-									error={
-										_get(errors, identityChainIDPath) &&
-										_get(touched, identityChainIDPath)
-									}
-									fullWidth
-								/>
-							</Grid>
-							<Grid xs={3} item />
-							<Grid xs={9} item>
-								<FormTextField
-									name={identityKeyPath}
-									label="Initiator Identity Private Key *"
-									error={
-										_get(errors, identityKeyPath) &&
-										_get(touched, identityKeyPath)
-									}
-									fullWidth
-								/>
-							</Grid>
-							<Grid xs={3} item />
-							<Grid xs={9} item>
-								<FormTextField
-									name={ecPrivateKeyPath}
-									label="EC Private Key *"
-									error={
-										_get(errors, ecPrivateKeyPath) &&
-										_get(touched, ecPrivateKeyPath)
-									}
-									fullWidth
-									validate={this.validateEcPrivateKey}
-								/>
-							</Grid>
-							<Grid xs={3} item>
-								{this.state.voteCreationCost && (
-									<>
-										<br />
-										<Typography>
-											{'Cost: ' +
-												this.state.voteCreationCost +
-												' Entry Credits'}
-										</Typography>
-									</>
-								)}
-							</Grid>
-							{!_isNil(_get(values, transactionErrorPath)) && (
-								<Grid item xs={12}>
-									<br />
-
-									<Typography className={classes.transactionErrorText}>
-										{_get(values, transactionErrorPath)}
-									</Typography>
-								</Grid>
-							)}
-							<Grid item xs={12} className={classes.stepperButtons}>
-								<br />
-								<Button onClick={handleBack}>Back</Button>
-								<Button
-									type="submit"
-									variant="contained"
-									color="primary"
-									disabled={isSubmitting}
-								>
-									Submit Poll
-									{_get(values, processingPath) && (
-										<>
-											&nbsp;&nbsp;
-											<CircularProgress thickness={5} size={20} />
-										</>
+					return (
+						<Form>
+							<Grid container>
+								<Grid item container justify="space-between" xs={12}>
+									{_get(errors, signatureTypePath) && submitCount > 0 ? (
+										<SectionHeader
+											disableGutterBottom
+											text={title + ' *'}
+											color="red"
+										/>
+									) : (
+										<SectionHeader disableGutterBottom text={title} />
 									)}
-								</Button>
+									<Button
+										onClick={() => {
+											setFieldValue(identityChainIDPath, IDENTITY.chainId);
+											setFieldValue(identityKeyPath, IDENTITY.key);
+											setFieldValue(ecPrivateKeyPath, EC_PRIV);
+										}}
+										variant="contained"
+										color="default"
+									>
+										Use Test Data
+									</Button>
+								</Grid>
+								{_isNil(_get(values, signatureTypePath)) && (
+									<Grid xs={12} item>
+										<Button
+											onClick={() => {
+												setFieldValue(transactionErrorPath, null);
+												setFieldValue(signatureTypePath, MANUAL_SIG);
+											}}
+											variant="outlined"
+											size="small"
+											disabled={isSubmitting}
+										>
+											Manual Entry
+										</Button>
+										&nbsp;
+										<Button
+											onClick={() => {
+												setFieldValue(transactionErrorPath, null);
+												setFieldValue(signatureTypePath, LEDGER_SIG);
+											}}
+											variant="outlined"
+											size="small"
+											disabled={isSubmitting}
+										>
+											Ledger Nano S
+										</Button>
+									</Grid>
+								)}
+
+								{_get(values, signatureTypePath) === MANUAL_SIG && (
+									<Grid xs={12} item container>
+										<Grid xs={9} item>
+											<FormTextField
+												name={identityChainIDPath}
+												label="Initiator Identity Chain ID *"
+												error={
+													_get(errors, identityChainIDPath) &&
+													_get(touched, identityChainIDPath)
+												}
+												fullWidth
+											/>
+										</Grid>
+										<Grid xs={3} item />
+										<Grid xs={9} item>
+											<FormTextField
+												name={identityKeyPath}
+												label="Initiator Identity Private Key *"
+												error={
+													_get(errors, identityKeyPath) &&
+													_get(touched, identityKeyPath)
+												}
+												fullWidth
+											/>
+										</Grid>
+										<Grid xs={3} item />
+									</Grid>
+								)}
+								{_get(values, signatureTypePath) && (
+									<Grid item xs={12} container>
+										<Grid xs={9} item>
+											<FormTextField
+												name={ecPrivateKeyPath}
+												label="EC Private Key *"
+												error={
+													_get(errors, ecPrivateKeyPath) &&
+													_get(touched, ecPrivateKeyPath)
+												}
+												fullWidth
+												validate={this.validateEcPrivateKey}
+											/>
+										</Grid>
+										<Grid xs={3} item>
+											{this.state.voteCreationCost && (
+												<>
+													<br />
+													<Typography>
+														{'Cost: ' +
+															this.state.voteCreationCost +
+															' Entry Credits'}
+													</Typography>
+												</>
+											)}
+										</Grid>
+									</Grid>
+								)}
+
+								{!_isNil(_get(values, transactionErrorPath)) && (
+									<Grid item xs={12}>
+										<br />
+
+										<Typography className={classes.errorText}>
+											{_get(values, transactionErrorPath)}
+										</Typography>
+									</Grid>
+								)}
+								<Grid item xs={12} className={classes.stepperButtons}>
+									<br />
+									<Button onClick={handleBack}>Back</Button>
+									<Button
+										type="submit"
+										variant="contained"
+										color="primary"
+										disabled={isSubmitting}
+									>
+										{_get(values, signatureTypePath) === LEDGER_SIG
+											? 'Sign and Submit'
+											: 'Submit'}
+										{isSubmitting && (
+											<>
+												&nbsp;&nbsp;
+												<CircularProgress thickness={5} size={20} />
+											</>
+										)}
+									</Button>
+									{isSubmitting && _get(values, ledgerStatusPath) && (
+										<Typography className={classes.ledgerStatus}>
+											{_get(values, ledgerStatusPath)}
+										</Typography>
+									)}
+								</Grid>
 							</Grid>
-						</Grid>
-					</Form>
-				)}
+						</Form>
+					);
+				}}
 			/>
 		);
 	}
@@ -246,13 +353,15 @@ const styles = (theme) => ({
 	stepperButtons: {
 		marginLeft: '-15px',
 	},
-	transactionErrorText: { color: 'red', fontSize: '16px' },
+	errorText: { color: 'red', fontSize: '16px' },
+	ledgerStatus: { display: 'inline-block', paddingLeft: '10px' },
 });
 
 const enhancer = _flowRight(
 	withNetwork,
 	withFactomCli,
 	withVote,
+	withLedger,
 	withStyles(styles)
 );
 

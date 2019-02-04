@@ -38,22 +38,26 @@ class LedgerForm extends React.Component {
 	}
 
 	componentDidMount() {
-		this.getNextFive(0);
+		this.getNextFive();
 	}
 
 	retryConnection = () => {
 		this.setState({
 			ledgerStatus: null,
 		});
-		this.getNextFive(0);
+		this.getNextFive();
 	};
 
-	getNextFive = async (startIndex) => {
+	getNextFive = async () => {
 		try {
-			const generatedAddressList = await this.props.ledgerController.getLedgerAddresses(
+			const addressList = await this.props.ledgerController.getLedgerAddresses(
 				this.state.generatedAddressList.length,
 				5,
 				this.props.type
+			);
+
+			const generatedAddressList = await Promise.all(
+				addressList.map(this.props.walletController.updateWalletBalance)
 			);
 
 			this.setState((prevState) => ({

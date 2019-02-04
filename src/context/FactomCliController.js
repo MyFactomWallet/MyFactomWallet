@@ -13,7 +13,6 @@ class FactomCliController extends React.Component {
 		super(props);
 
 		this.state = {
-			factomCli: this.newFactomCli(),
 			connectToServer: this.connectToServer,
 			getDefaultConnectionParams: this.getDefaultConnectionParams,
 			updateBlockHeight: this.updateBlockHeight,
@@ -22,8 +21,6 @@ class FactomCliController extends React.Component {
 	}
 
 	defaultConnectionParams = {
-		host: 'api.myfactomwallet.com',
-		port: this.props.networkController.networkProps.apiPort,
 		path: '/v2',
 		debugPath: '/debug',
 		protocol: 'https',
@@ -37,6 +34,7 @@ class FactomCliController extends React.Component {
 	};
 
 	async componentDidMount() {
+		await this.connectToServer();
 		// get latest block height
 		this.updateBlockHeight();
 		this.blockHeightTimerId = setInterval(this.updateBlockHeight, 60000);
@@ -54,17 +52,23 @@ class FactomCliController extends React.Component {
 	};
 
 	getDefaultConnectionParams = () => {
-		return this.defaultConnectionParams;
+		const connectionParams = {
+			host: this.props.networkController.networkProps.apiHost,
+			port: this.props.networkController.networkProps.apiPort,
+		};
+
+		return defaultsDeep(this.defaultConnectionParams, connectionParams);
 	};
 
-	newFactomCli = (connectionParams = {}) =>
+	newFactomCli = (connectionParams) =>
 		new FactomCli(defaultsDeep(this.defaultConnectionParams, connectionParams));
 
-	connectToServer = async (
-		connectionParams = {
+	connectToServer = async () => {
+		const connectionParams = {
+			host: this.props.networkController.networkProps.apiHost,
 			port: this.props.networkController.networkProps.apiPort,
-		}
-	) => {
+		};
+
 		await this.smartSetState({
 			factomCli: this.newFactomCli(connectionParams),
 		});
