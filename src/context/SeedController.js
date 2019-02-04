@@ -124,10 +124,10 @@ class SeedController extends React.Component {
 		let privateKey = null;
 		if (isValidFctPublicAddress(address)) {
 			const key = wallet.generateFactoidPrivateKey(bip32Account, 0, index);
-			privateKey = keyToPrivateFctAddress(key);
+			privateKey = seedToPrivateFctAddress(key);
 		} else if (isValidEcPublicAddress(address)) {
 			const key = wallet.generateEntryCreditPrivateKey(bip32Account, 0, index);
-			privateKey = keyToPrivateEcAddress(key);
+			privateKey = seedToPrivateEcAddress(key);
 		}
 		return privateKey;
 	};
