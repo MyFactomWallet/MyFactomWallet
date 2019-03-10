@@ -1,4 +1,4 @@
-View [MyFactomWallet](https://www.myfactomwallet.com)
+View [MyFactomWallet](https://myfactomwallet.com)
 
 ## Table of Contents
 
@@ -7,7 +7,15 @@ View [MyFactomWallet](https://www.myfactomwallet.com)
 
 ## Getting Started
 
-This README is a work in progress.
+Run MyFactomWallet locally:
+
+```bash
+git clone https://github.com/MyFactomWallet/MyFactomWallet.git
+cd MyFactomWallet
+npm ci
+HTTPS=true npm start #Linux, macOS (Bash)
+set HTTPS=true&&npm start #Windows (cmd.exe)
+```
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
@@ -15,7 +23,7 @@ Many thanks to [MyEtherWallet](https://github.com/MyEtherWallet/) for inspiratio
 
 ## Tools
 
-[factomjs](https://github.com/PaulBernier/factomjs)
-Library to interact easily with Factom blockchain.  
-[Material-UI](https://material-ui.com/) React components that implement Google's Material Design.  
-[Prettier](https://prettier.io/) An opinionated code formatter.
+[factomjs](https://github.com/PaulBernier/factomjs) Library to interact easily with Factom blockchain.  
+[factombip44](https://github.com/MyFactomWallet/factombip44) BIP44 for Factom in JavaScript.  
+[ledger-factomjs](https://github.com/MyFactomWallet/ledger-factomjs) JavaScript Factom Interface for the Ledger Nano S.  
+[factom-vote](https://github.com/PaulBernier/factom-vote) JavaScript implementation of the Factom voting specification.
