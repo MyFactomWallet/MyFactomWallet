@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { isValidEcPublicAddress } from 'factom/dist/factom';
+import { isValidPublicEcAddress } from 'factom/dist/factom';
 import _get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
 import { withWalletContext } from '../context/WalletContext';
@@ -51,7 +51,7 @@ class ImportEcForm extends React.Component {
 				validationSchema={Yup.object().shape({
 					[ecAddrNamePath]: Yup.string()
 						.required('Required')
-						.test(ecAddrNamePath, 'Invalid Address', isValidEcPublicAddress)
+						.test(ecAddrNamePath, 'Invalid Address', isValidPublicEcAddress)
 						.test(
 							ecAddrNamePath,
 							'Enter unique address',

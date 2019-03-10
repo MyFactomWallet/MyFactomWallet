@@ -16,7 +16,7 @@ import Button from '@material-ui/core/Button';
 import SectionHeader from '../shared/SectionHeader';
 import FormTextField from '../../component/form/FormTextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { isValidEcPrivateAddress } from 'factom/dist/factom';
+import { isValidPrivateEcAddress } from 'factom/dist/factom';
 import { computeVoteCreationCost } from 'factom-vote/dist/factom-vote';
 import { digital } from 'factom-identity-lib';
 import { REGEX_CHAIN_ID } from './VOTE_CONSTANTS';
@@ -55,7 +55,7 @@ class SubmitVoteForm extends React.Component {
 	};
 
 	validateEcPrivateKey = async (value) => {
-		if (!isValidEcPrivateAddress(value)) {
+		if (!isValidPrivateEcAddress(value)) {
 			return 'Invalid Key';
 		}
 

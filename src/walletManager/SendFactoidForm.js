@@ -23,7 +23,7 @@ import { withWalletContext } from '../context/WalletContext';
 import { withSeed } from '../context/SeedContext';
 import { withNetwork } from '../context/NetworkContext';
 import { withLedger } from '../context/LedgerContext';
-import { isValidFctPublicAddress } from 'factom/dist/factom';
+import { isValidPublicFctAddress } from 'factom/dist/factom';
 import SendTransactionPreview from './SendTransactionPreview';
 
 /**
@@ -195,7 +195,7 @@ class SendFactoidForm extends Component {
 						.test(
 							recipientAddressPath,
 							'Invalid Address',
-							isValidFctPublicAddress
+							isValidPublicFctAddress
 						),
 					[sendFactoidAmountPath]: Yup.number()
 						.required('Required')

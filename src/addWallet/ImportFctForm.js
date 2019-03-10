@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { isValidFctPublicAddress } from 'factom/dist/factom';
+import { isValidPublicFctAddress } from 'factom/dist/factom';
 import get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
 import { withWalletContext } from '../context/WalletContext';
@@ -47,7 +47,7 @@ class ImportFctForm extends React.Component {
 				validationSchema={Yup.object().shape({
 					[fctAddrPath]: Yup.string()
 						.required('Required')
-						.test(fctAddrPath, 'Invalid Address', isValidFctPublicAddress)
+						.test(fctAddrPath, 'Invalid Address', isValidPublicFctAddress)
 						.test(
 							fctAddrPath,
 							'Enter unique address',
