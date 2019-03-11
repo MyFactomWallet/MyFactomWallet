@@ -20,6 +20,7 @@ const FormTextField = ({
 	onKeyPress,
 	shrink = false,
 	spellCheck = false,
+	step = false,
 	type = 'text',
 	validate,
 	width,
@@ -46,6 +47,7 @@ const FormTextField = ({
 							maxLength,
 							spellCheck,
 							...(accept ? { accept } : {}),
+							...(step ? { step } : {}),
 						}}
 						style={{ width }}
 						InputLabelProps={{
