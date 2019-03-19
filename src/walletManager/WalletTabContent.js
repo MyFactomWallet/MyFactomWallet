@@ -43,6 +43,10 @@ class WalletTabContent extends React.Component {
 			tabValue = 0;
 		}
 
+		if (type === 'ec' && tabValue > 1) {
+			tabValue = 0;
+		}
+
 		return (
 			<div className={classes.root}>
 				{type === 'fct' && (
