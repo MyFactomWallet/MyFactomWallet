@@ -21,6 +21,9 @@ import { computeVoteCreationCost } from 'factom-vote/dist/factom-vote';
 import { digital } from 'factom-identity-lib';
 import { REGEX_CHAIN_ID } from './VOTE_CONSTANTS';
 import { EC_PRIV, IDENTITY } from './VOTE_EXAMPLE_DATA';
+import LedgerLogo from '../../component/logo/ledgerLogo.svg';
+import Create from '@material-ui/icons/Create';
+import { SVGLogo } from '../../component/logo/SVGLogo';
 
 /**
  * Constants
@@ -240,7 +243,11 @@ class SubmitVoteForm extends React.Component {
 											size="small"
 											disabled={isSubmitting}
 										>
-											Manual Entry
+											<Create
+												style={{ height: 17 }}
+												titleAccess={'Manual Entry'}
+											/>
+											&nbsp;Manual Entry
 										</Button>
 										&nbsp;
 										<Button
@@ -252,7 +259,13 @@ class SubmitVoteForm extends React.Component {
 											size="small"
 											disabled={isSubmitting}
 										>
-											Ledger Nano S
+											&nbsp;
+											<SVGLogo
+												className={classes.ledgerLogo}
+												src={LedgerLogo}
+												alt="Ledger Logo"
+											/>
+											&nbsp;&nbsp;&nbsp;Ledger Nano S
 										</Button>
 									</Grid>
 								)}
@@ -378,6 +391,7 @@ const styles = (theme) => ({
 	},
 	errorText: { color: 'red', fontSize: '16px' },
 	ledgerStatus: { display: 'inline-block', paddingLeft: '10px' },
+	ledgerLogo: { height: 16 },
 });
 
 const enhancer = _flowRight(

@@ -1,7 +1,8 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import FactomProtocolLogo from '../../factomProtocolLogo.svg';
+import { SVGLogo } from '../../component/logo/SVGLogo';
+import FactomProtocolLogo from '../../component/logo/factomProtocolLogo.svg';
 import Grid from '@material-ui/core/Grid';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 
@@ -30,7 +31,7 @@ class ExplorerLink extends React.Component {
 		return (
 			<Grid container alignItems="center" className={classes.root}>
 				<Grid item>
-					<img
+					<SVGLogo
 						className={classes.logo}
 						src={FactomProtocolLogo}
 						alt="Factom Protocol Logo"

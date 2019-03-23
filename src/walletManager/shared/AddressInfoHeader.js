@@ -4,7 +4,6 @@ import _isNil from 'lodash/isNil';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import VerifiedUser from '@material-ui/icons/VerifiedUser';
 import Grid from '@material-ui/core/Grid';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import FormatBalance from './BalanceFormatter.js';
@@ -12,6 +11,8 @@ import { withWalletContext } from '../../context/WalletContext';
 import { withLedger } from '../../context/LedgerContext';
 import Tooltip from '@material-ui/core/Tooltip';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import LedgerLogo from '../../component/logo/ledgerLogo.svg';
+import { SVGLogo } from '../../component/logo/SVGLogo';
 
 const AddressInfoHeader = (props) => {
 	const {
@@ -80,7 +81,10 @@ const AddressInfoHeader = (props) => {
 								title="Verify Ledger Nano S Address"
 								className={classes.pointer}
 							>
-								<VerifiedUser
+								<SVGLogo
+									className={classes.logo}
+									src={LedgerLogo}
+									alt="Ledger Logo"
 									onClick={async () => {
 										await checkAddress(
 											activeAddress_o,
@@ -102,6 +106,7 @@ const styles = (theme) => ({
 	pointer: {
 		cursor: 'pointer',
 	},
+	logo: { height: 20 },
 });
 
 const enhancer = _flowRight(withWalletContext, withLedger, withStyles(styles));

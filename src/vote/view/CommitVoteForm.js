@@ -38,6 +38,9 @@ import SingleOptionVoteForm from './SingleOptionVoteForm';
 import InstantRunoffVoteForm from './InstantRunoffVoteForm';
 import fileDownload from 'js-file-download';
 import sanitize from 'sanitize-filename';
+import LedgerLogo from '../../component/logo/ledgerLogo.svg';
+import Create from '@material-ui/icons/Create';
+import { SVGLogo } from '../../component/logo/SVGLogo';
 
 const TEST_VOTER_ID = {
 	chainId: 'd12c0c85b1731a9a5108b86cd084db6230ced269d86c6aad91168d39955cbf2c',
@@ -385,7 +388,11 @@ class CommitVoteForm extends React.Component {
 											size="small"
 											disabled={isSubmitting}
 										>
-											Manual Entry
+											<Create
+												style={{ height: 17 }}
+												titleAccess={'Manual Entry'}
+											/>
+											&nbsp;Manual Entry
 										</Button>
 										&nbsp;
 										<Button
@@ -397,7 +404,13 @@ class CommitVoteForm extends React.Component {
 											size="small"
 											disabled={isSubmitting}
 										>
-											Ledger Nano S
+											&nbsp;
+											<SVGLogo
+												className={classes.ledgerLogo}
+												src={LedgerLogo}
+												alt="Ledger Logo"
+											/>
+											&nbsp;&nbsp;&nbsp;Ledger Nano S
 										</Button>
 									</Grid>
 								)}
@@ -564,6 +577,7 @@ const styles = (theme) => ({
 	errorText: { color: 'red', fontSize: '13px' },
 	ledgerStatus: { display: 'inline-block', paddingLeft: '10px' },
 	resetButton: { marginLeft: 2 },
+	ledgerLogo: { height: 16 },
 });
 
 const enhancer = _flowRight(
