@@ -16,6 +16,7 @@ import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
 import { POLL_STATUSES } from '../create/VOTE_CONSTANTS';
 import { withVote } from '../../context/VoteContext';
+import { withNetwork } from '../../context/NetworkContext';
 
 /**
  * Constants
@@ -47,6 +48,7 @@ class VoteTable extends React.Component {
 			handleFilterChange,
 			filterTable,
 			voteController: { getPollStatus },
+			networkController: { networkProps },
 		} = this.props;
 		const expanded = this.props.expanded;
 
@@ -220,7 +222,16 @@ class VoteTable extends React.Component {
 									<TableRow key={row.id} hover={true}>
 										<td className={classes.expandColumn} />
 										<TableCell className={classes.titleColumn}>
-											<Link to={'/viewVote?id=' + row.voteID}>{row.title}</Link>
+											<Link
+												to={
+													'/viewVote?network=' +
+													networkProps.network +
+													'&id=' +
+													row.voteID
+												}
+											>
+												{row.title}
+											</Link>
 										</TableCell>
 										<TableCell className={classes.statusColumn}>
 											{row.status}
@@ -328,5 +339,5 @@ const styles = (theme) => ({
 	},
 });
 
-const enhancer = _flowRight(withVote, withStyles(styles));
+const enhancer = _flowRight(withNetwork, withVote, withStyles(styles));
 export default enhancer(VoteTable);

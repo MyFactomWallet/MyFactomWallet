@@ -14,6 +14,8 @@ import VoteSummary from '../shared/VoteSummary';
 import ParticipantsTab from './ParticipantsTab';
 import VoteResult from './VoteResult';
 import { withVote } from '../../context/VoteContext';
+import { withWalletContext } from '../../context/WalletContext';
+import { withNetwork } from '../../context/NetworkContext';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import SectionHeader from '../shared/SectionHeader';
@@ -98,9 +100,24 @@ class VoteTabContent extends React.Component {
 		const {
 			classes,
 			voteController: { getPollStatus },
+			networkController: { networkProps },
+			walletController: { handleNetworkChange },
 		} = this.props;
 
-		const pollChainId = QS.parse(this.props.location.search)['?id'];
+		const queryParams = QS.parse(this.props.location.search, {
+			ignoreQueryPrefix: true,
+		});
+
+		const pollChainId = queryParams.id;
+
+		// check network
+		const requestedNetwork = queryParams.network;
+		const currentNetwork = networkProps.network;
+
+		if (requestedNetwork !== currentNetwork) {
+			//switch networks
+			handleNetworkChange(requestedNetwork);
+		}
 
 		return (
 			<Grid container spacing={24}>
@@ -298,5 +315,10 @@ const styles = (theme) => ({
 	},
 });
 
-const enhancer = _flowRight(withVote, withStyles(styles));
+const enhancer = _flowRight(
+	withNetwork,
+	withWalletContext,
+	withVote,
+	withStyles(styles)
+);
 export default enhancer(VoteTabContent);
