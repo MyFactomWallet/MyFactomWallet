@@ -32,14 +32,18 @@ class WalletTabContent extends React.Component {
 
 		if (
 			type === 'fct' &&
-			tabValue === 3 &&
+			tabValue >= 3 &&
 			activeAddress.importType !== 'seed'
 		) {
 			//only seeds have tab 3
 			tabValue = 0;
 		}
 
-		if (type === 'ec' && tabValue === 1 && activeAddress.importType != 'seed') {
+		if (
+			type === 'ec' &&
+			tabValue === 1 &&
+			activeAddress.importType !== 'seed'
+		) {
 			tabValue = 0;
 		}
 
