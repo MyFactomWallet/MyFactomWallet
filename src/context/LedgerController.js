@@ -10,7 +10,7 @@ import { Transaction } from 'factom/dist/factom';
 /**
  * Constants
  */
-const BIP_32_COIN_TYPES = { fct: 131, ec: 132, identity: 143165576 };
+const BIP_32_COIN_TYPES = { fct: 131, ec: 132, identity: 281 };
 
 class LedgerController extends React.Component {
 	constructor(props) {

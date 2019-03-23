@@ -142,7 +142,6 @@ class WalletController extends React.Component {
 		await this.props.networkController.changeNetwork(network);
 		await this.props.factomCliController.connectToServer();
 		await this.props.factomCliController.updateBlockHeight();
-		// set new FactomVoteManager cli
 		this.hydrateStateWithLocalStorage();
 	};
 

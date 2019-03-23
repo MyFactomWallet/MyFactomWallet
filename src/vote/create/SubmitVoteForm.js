@@ -1,5 +1,5 @@
 import React from 'react';
-import { Formik, Form } from 'formik';
+import { Formik, Form, ErrorMessage } from 'formik';
 import _isNil from 'lodash/isNil';
 import _flowRight from 'lodash/flowRight';
 import _get from 'lodash/get';
@@ -16,7 +16,7 @@ import Button from '@material-ui/core/Button';
 import SectionHeader from '../shared/SectionHeader';
 import FormTextField from '../../component/form/FormTextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { isValidEcPrivateAddress } from 'factom/dist/factom';
+import { isValidPrivateEcAddress } from 'factom/dist/factom';
 import { computeVoteCreationCost } from 'factom-vote/dist/factom-vote';
 import { digital } from 'factom-identity-lib';
 import { REGEX_CHAIN_ID } from './VOTE_CONSTANTS';
@@ -30,9 +30,12 @@ const LEDGER_SIG = 'ledger';
 const identityChainIDPath = 'identityChainID';
 const identityKeyPath = 'identityKey';
 const ecPrivateKeyPath = 'ecPrivateKey';
+const commitStartBlockPath = 'commitStartBlock';
 const transactionErrorPath = 'transactionError';
 const ledgerStatusPath = 'ledgerStatus';
 const signatureTypePath = 'signatureType';
+
+const commitStartPath = 'pollJSON.vote.phasesBlockHeights.commitStart';
 
 const EXAMPLE_IDENTITY = {
 	chainId: '039b14a782008c1b1543b1542941756e6f01a0d68372ff61163642382af70fc9',
@@ -55,7 +58,7 @@ class SubmitVoteForm extends React.Component {
 	};
 
 	validateEcPrivateKey = async (value) => {
-		if (!isValidEcPrivateAddress(value)) {
+		if (!isValidPrivateEcAddress(value)) {
 			return 'Invalid Key';
 		}
 
@@ -81,6 +84,10 @@ class SubmitVoteForm extends React.Component {
 			ledgerController: { signMessageRaw },
 		} = this.props;
 
+		const commitStartBlock = _get(poll, commitStartPath);
+
+		const currentBlockHeight = this.props.factomCliController.blockHeight;
+
 		return (
 			<Formik
 				enableReinitialize
@@ -88,6 +95,7 @@ class SubmitVoteForm extends React.Component {
 					identityChainID: '',
 					identityKey: '',
 					ecPrivateKey: '',
+					commitStartBlock: commitStartBlock,
 					transactionError: null,
 					signatureType: null,
 					ledgerStatus: null,
@@ -178,6 +186,10 @@ class SubmitVoteForm extends React.Component {
 							),
 						otherwise: Yup.string().notRequired(),
 					}),
+					[commitStartBlockPath]: Yup.number().moreThan(
+						currentBlockHeight + 2,
+						'Commit Start Block must be at least 3 blocks greater than the Current Height. Please go back and update the Commit Start Block to continue.'
+					),
 				})}
 				render={({
 					isSubmitting,
@@ -302,6 +314,17 @@ class SubmitVoteForm extends React.Component {
 									</Grid>
 								)}
 
+								<ErrorMessage
+									name={commitStartBlockPath}
+									render={(msg) => (
+										<Grid item xs={12}>
+											<br />
+											<Typography className={classes.errorText}>
+												{msg}
+											</Typography>
+										</Grid>
+									)}
+								/>
 								{!_isNil(_get(values, transactionErrorPath)) && (
 									<Grid item xs={12}>
 										<br />

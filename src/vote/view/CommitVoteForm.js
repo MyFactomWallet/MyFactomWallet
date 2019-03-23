@@ -15,7 +15,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { withLedger } from '../../context/LedgerContext';
 import SectionHeader from '../shared/SectionHeader';
 import ExplorerLink from '../shared/ExplorerLink';
-import { isValidEcPrivateAddress } from 'factom/dist/factom';
+import { isValidPrivateEcAddress } from 'factom/dist/factom';
 import {
 	REGEX_CHAIN_ID,
 	BINARY_CONFIG,
@@ -248,7 +248,7 @@ class CommitVoteForm extends React.Component {
 					}),
 					[ecPrivateKeyPath]: Yup.string()
 						.required('Required')
-						.test(ecPrivateKeyPath, 'Invalid Key', isValidEcPrivateAddress),
+						.test(ecPrivateKeyPath, 'Invalid Key', isValidPrivateEcAddress),
 				})}
 				render={({
 					values,

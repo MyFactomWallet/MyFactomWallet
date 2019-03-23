@@ -12,7 +12,7 @@ import SectionHeader from '../shared/SectionHeader';
 import FormTextField from '../../component/form/FormTextField';
 import { withVote } from '../../context/VoteContext';
 import { withNetwork } from '../../context/NetworkContext';
-import { isValidEcPrivateAddress } from 'factom/dist/factom';
+import { isValidPrivateEcAddress } from 'factom/dist/factom';
 import { EC_PRIV } from '../create/VOTE_EXAMPLE_DATA';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -111,7 +111,7 @@ class RevealVoteForm extends React.Component {
 				validationSchema={Yup.object().shape({
 					[ecPrivateKeyPath]: Yup.string()
 						.required('Required')
-						.test(ecPrivateKeyPath, 'Invalid Key', isValidEcPrivateAddress),
+						.test(ecPrivateKeyPath, 'Invalid Key', isValidPrivateEcAddress),
 				})}
 				render={({
 					values,

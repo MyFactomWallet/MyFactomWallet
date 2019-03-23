@@ -4,16 +4,13 @@ import _get from 'lodash/get';
 import _isNil from 'lodash/isNil';
 import { VoteContext } from './VoteContext';
 import { withFactomCli } from './FactomCliContext';
+import { withNetwork } from './NetworkContext';
 import { FactomVoteManager } from 'factom-vote/dist/factom-vote';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 import gql from 'graphql-tag';
 import { POLL_STATUSES } from '../vote/create/VOTE_CONSTANTS';
 import { VOTE_TYPE_DATA } from '../vote/create/VOTE_CONSTANTS';
-
-const client = new ApolloClient({
-	uri: 'https://vote.factoid.org/graphql',
-});
 
 /**
  * Queries
@@ -38,8 +35,12 @@ class VoteController extends React.Component {
 		};
 	}
 
+	client = new ApolloClient({
+		uri: this.props.networkController.networkProps.voteApiUrl,
+	});
+
 	publicKeysResolver = async (identityChainId, blockHeight) => {
-		const { data } = await client.query({
+		const { data } = await this.client.query({
 			query: PUBLIC_KEYS_RESOLVER,
 			variables: {
 				chain: identityChainId,
@@ -136,7 +137,7 @@ class VoteController extends React.Component {
 
 	render() {
 		return (
-			<ApolloProvider client={client}>
+			<ApolloProvider client={this.client}>
 				<VoteContext.Provider value={this.state}>
 					{this.props.children}
 				</VoteContext.Provider>
@@ -145,6 +146,6 @@ class VoteController extends React.Component {
 	}
 }
 
-const enhancer = _flowRight(withFactomCli);
+const enhancer = _flowRight(withNetwork, withFactomCli);
 
 export default enhancer(VoteController);

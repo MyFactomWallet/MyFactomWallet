@@ -28,6 +28,7 @@ class NetworkController extends React.Component {
 			explorerURL: 'https://explorer.factoid.org',
 			voteRegistrationChainID:
 				'a968e880ee3a7002f25ade15ae36a77c15f4dbc9d8c11fdd5fe86ba6af73a475',
+			voteApiUrl: 'https://mainnetvote.factoid.org/graphql',
 		},
 		testnet: {
 			network: 'testnet',
@@ -41,6 +42,7 @@ class NetworkController extends React.Component {
 			explorerURL: 'https://testnet.factoid.org',
 			voteRegistrationChainID:
 				'a968e880ee3a7002f25ade15ae36a77c15f4dbc9d8c11fdd5fe86ba6af73a475',
+			voteApiUrl: 'https://testnetvote.factoid.org/graphql',
 		},
 	};
 

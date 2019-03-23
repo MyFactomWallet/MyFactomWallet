@@ -22,7 +22,7 @@ import { withLedger } from '../context/LedgerContext';
 import { withSeed } from '../context/SeedContext';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
-import { isValidEcPublicAddress } from 'factom/dist/factom';
+import { isValidPublicEcAddress } from 'factom/dist/factom';
 import ConvertTransactionPreview from './ConvertTransactionPreview';
 import Paper from '@material-ui/core/Paper';
 import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
@@ -197,7 +197,7 @@ class ConvertECForm extends Component {
 						.test(
 							recipientAddressPath,
 							'Invalid Address',
-							isValidEcPublicAddress
+							isValidPublicEcAddress
 						),
 					[entryCreditAmountPath]: Yup.number()
 						.required('Required')

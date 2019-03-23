@@ -232,8 +232,8 @@ class CreateVoteForm extends React.Component {
 									.transform((cv) => (isNaN(cv) ? undefined : cv))
 									.required('Required')
 									.moreThan(
-										blockHeight + 1,
-										'Must be 2 blocks higher than Current Height'
+										blockHeight + 2,
+										'Must be at least 3 blocks greater than Current Height'
 									),
 								commitEnd: Yup.number()
 									.transform((cv) => (isNaN(cv) ? undefined : cv))
