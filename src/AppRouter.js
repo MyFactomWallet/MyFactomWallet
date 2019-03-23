@@ -7,10 +7,7 @@ import AddInitialWallet from './addWallet/AddInitialWallet';
 import VoteListing from './vote/listing/VoteListing';
 import VoteTabContent from './vote/view/VoteTabContent';
 import CreateVoteStepper from './vote/create/CreateVoteStepper';
-//import Help from './help/Help';
-//import ManageVoterList from './vote/voterList/ManageVoterList.js';
-//import LandingPage from './landingPage/LandingPage';
-//import Header from './header/Header';
+// import ManageVoterList from './vote/voterList/ManageVoterList.js';
 
 class AppRouter extends Component {
 	render() {
@@ -42,12 +39,7 @@ class AppRouter extends Component {
 					<Route exact path="/vote" component={VoteListing} />
 					<Route exact path="/viewVote" component={VoteTabContent} />
 					<Route exact path="/createVote" component={CreateVoteStepper} />
-					{/*
-					<Route exact path="/manageVoters" component={ManageVoterList} /> 
-					<Route exact path="/help" component={Help} />
-					<Route exact path="/" component={LandingPage} />
-					<Route path="/wallet/manage/" component={WalletManager} />
-					*/}
+					{/* <Route exact path="/manageVoters" component={ManageVoterList} /> */}
 				</React.Fragment>
 			</Router>
 		);
