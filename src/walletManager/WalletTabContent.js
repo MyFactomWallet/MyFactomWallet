@@ -30,6 +30,7 @@ class WalletTabContent extends React.Component {
 
 		let tabValue = this.state.tabValue;
 
+		// handle invalid FCT tab value
 		if (
 			type === 'fct' &&
 			tabValue >= 3 &&
@@ -39,15 +40,11 @@ class WalletTabContent extends React.Component {
 			tabValue = 0;
 		}
 
+		// handle invalid EC tab value
 		if (
 			type === 'ec' &&
-			tabValue === 1 &&
-			activeAddress.importType !== 'seed'
+			(tabValue > 1 || (tabValue === 1 && activeAddress.importType !== 'seed'))
 		) {
-			tabValue = 0;
-		}
-
-		if (type === 'ec' && tabValue > 1) {
 			tabValue = 0;
 		}
 
