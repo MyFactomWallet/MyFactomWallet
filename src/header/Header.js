@@ -116,6 +116,13 @@ class ButtonAppBar extends React.Component {
 							)}
 						</Link>
 					</Typography>
+					<Button
+						href="#/"
+						onClick={this.handleWallet}
+						className={classes.menuText}
+					>
+						Wallet
+					</Button>
 					<React.Fragment>
 						<Button
 							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
@@ -147,15 +154,17 @@ class ButtonAppBar extends React.Component {
 							>
 								Create Poll
 							</MenuItem>
+							{/* <MenuItem
+								component={Link}
+								to={'/ledgerId'}
+								onClick={this.handleVoteClose}
+								replace={true}
+							>
+								Ledger Identity
+							</MenuItem> */}
 						</Menu>
 					</React.Fragment>
-					<Button
-						href="#/"
-						onClick={this.handleWallet}
-						className={classes.menuText}
-					>
-						Wallet
-					</Button>
+
 					<HelpModal />
 					<div className={classes.network}>
 						<Button
