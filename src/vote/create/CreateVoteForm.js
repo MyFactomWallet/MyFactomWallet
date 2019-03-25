@@ -29,6 +29,7 @@ import FormTextField from '../../component/form/FormTextField';
 import FormSelectField from '../../component/form/FormSelectField';
 import { withNetwork } from '../../context/NetworkContext';
 import { withFactomCli } from '../../context/FactomCliContext';
+import * as moment from 'moment';
 
 import {
 	BINARY_CONFIG,
@@ -114,9 +115,13 @@ class CreateVoteForm extends React.Component {
 
 	validateWriteHeight = (currentHeight, writeHeight) => {
 		let validate = true;
-		isNaN(writeHeight) ? (validate = false) : (validate = true);
-		if (validate) {
-			writeHeight <= currentHeight ? (validate = false) : (validate = true);
+
+		if (isNaN(writeHeight)) {
+			validate = false;
+		}
+
+		if (writeHeight < currentHeight) {
+			validate = false;
 		}
 
 		return validate;
@@ -136,10 +141,7 @@ class CreateVoteForm extends React.Component {
 		optionList.findIndex((value) => value === option) !== -1;
 
 	handleTime = (value, path) => {
-		this.setFieldValue(
-			path,
-			calculateWriteHeight(this.props.factomCliController.blockHeight, value)
-		);
+		this.setFieldValue(path, this.calculateWriteHeight(value));
 	};
 
 	handleBlock = (value, path) => {
@@ -149,10 +151,7 @@ class CreateVoteForm extends React.Component {
 				value
 			)
 		) {
-			this.setFieldValue(
-				path,
-				calculateWriteTime(this.props.factomCliController.blockHeight, value)
-			);
+			this.setFieldValue(path, this.calculateWriteTimeValue(value));
 		} else {
 			this.setFieldValue(path, '');
 		}
@@ -205,6 +204,41 @@ class CreateVoteForm extends React.Component {
 		}
 
 		return maxOptionsList;
+	};
+
+	calculateWriteTimeValue = (writeHeight) => {
+		let result = '';
+		try {
+			const eventTimestamp = this.props.factomCliController.getEstimatedBlockTimestamp(
+				writeHeight
+			);
+			const eventDate = moment(eventTimestamp).utc();
+
+			// //format for date field
+			result = eventDate.toISOString().replace('Z', '');
+		} catch (err) {
+			console.log(err);
+		}
+
+		return result;
+	};
+
+	calculateWriteHeight = (dateTime) => {
+		const currentBlock = this.props.factomCliController.blockHeight;
+
+		const currentDate = moment
+			.unix(this.props.factomCliController.blockTimestamp)
+			.utc();
+
+		const writeDate = moment(dateTime.concat('Z')).utc();
+
+		const diffMins = writeDate.diff(currentDate, 'minutes');
+
+		const diffBlocks = Math.floor(diffMins / 10);
+
+		const result = currentBlock + diffBlocks;
+
+		return result;
 	};
 
 	render() {
@@ -608,7 +642,7 @@ class CreateVoteForm extends React.Component {
 										<Grid item xs={6}>
 											<FormTextField
 												name={commitStartDatePath}
-												label="Estimated Date"
+												label="Estimated Date (UTC)"
 												type="datetime-local"
 												shrink={true}
 												isNotFast
@@ -640,7 +674,7 @@ class CreateVoteForm extends React.Component {
 										<Grid item xs={6}>
 											<FormTextField
 												name={commitEndDatePath}
-												label="Estimated Date"
+												label="Estimated Date (UTC)"
 												type="datetime-local"
 												shrink={true}
 												isNotFast
@@ -672,7 +706,7 @@ class CreateVoteForm extends React.Component {
 										<Grid item xs={6}>
 											<FormTextField
 												name={revealEndDatePath}
-												label="Estimated Date"
+												label="Estimated Date (UTC)"
 												type="datetime-local"
 												shrink={true}
 												isNotFast
@@ -1232,42 +1266,6 @@ const styles = (theme) => ({
 		marginLeft: '22px',
 	},
 });
-function convertUTCToLocal(date) {
-	var newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
-	var offset = date.getTimezoneOffset() / 60;
-	var hours = date.getHours();
-
-	newDate.setHours(hours - offset);
-
-	return newDate;
-}
-
-function calculateWriteTime(currentHeight, writeHeight) {
-	const currentDate = new Date();
-
-	const blocks = writeHeight - currentHeight;
-	const minutes = blocks * 10;
-
-	let newDate = new Date(currentDate.getTime() + minutes * 60000);
-
-	//format for date field
-	newDate = convertUTCToLocal(newDate);
-	newDate.setSeconds(0, 0);
-	newDate = newDate.toISOString().replace('Z', '');
-
-	return newDate;
-}
-
-function calculateWriteHeight(currentHeight, writeTime) {
-	const currentDate = new Date();
-	const writeDate = new Date(writeTime);
-
-	const diffMs = writeDate - currentDate;
-	const diffBlocks = diffMs / 60000 / 10;
-	const estWriteHeight = Math.round(currentHeight + diffBlocks);
-
-	return estWriteHeight;
-}
 
 const enhancer = _flowRight(withNetwork, withFactomCli, withStyles(styles));
 export default enhancer(CreateVoteForm);

@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { FactomCliContext } from './FactomCliContext';
 import { FactomCli } from 'factom/dist/factom';
 import { withNetwork } from './NetworkContext';
-import _flowRight from 'lodash/flowRight';
 import defaultsDeep from 'lodash/fp/defaultsDeep';
+import _flowRight from 'lodash/flowRight';
 import _flow from 'lodash/flow';
 import _noop from 'lodash/noop';
+import * as moment from 'moment';
 
 class FactomCliController extends React.Component {
 	constructor(props) {
@@ -15,8 +16,10 @@ class FactomCliController extends React.Component {
 		this.state = {
 			connectToServer: this.connectToServer,
 			getDefaultConnectionParams: this.getDefaultConnectionParams,
+			getEstimatedBlockTimestamp: this.getEstimatedBlockTimestamp,
 			updateBlockHeight: this.updateBlockHeight,
 			blockHeight: null,
+			blockTimestamp: null,
 		};
 	}
 
@@ -45,10 +48,36 @@ class FactomCliController extends React.Component {
 	}
 
 	updateBlockHeight = async () => {
-		const result = await this.state.factomCli.getHeights();
-		if (result.directoryBlockHeight) {
-			this.setState({ blockHeight: result.directoryBlockHeight });
+		const result = await this.state.factomCli.getDirectoryBlockHead();
+
+		const { height, timestamp } = result;
+
+		if (height !== this.state.blockHeight) {
+			// process new block
+			this.setState({
+				blockHeight: height,
+				blockTimestamp: timestamp,
+			});
 		}
+	};
+
+	getEstimatedBlockTimestamp = (blockHeight) => {
+		const currentHeight = this.state.blockHeight;
+
+		const currentBlockStartDate = moment.unix(this.state.blockTimestamp).utc();
+
+		// get number of blocks between heights
+		const blocks = blockHeight - currentHeight;
+
+		// add time for blocks
+		const minutes = blocks * 10;
+
+		const estimatedDate = currentBlockStartDate
+			.clone()
+			.add(minutes * 60 * 1000, 'milliseconds');
+
+		// return Unix Timestamp (milliseconds)
+		return estimatedDate.valueOf();
 	};
 
 	getDefaultConnectionParams = () => {

@@ -20,6 +20,7 @@ import { withVote } from '../../context/VoteContext';
 import EligibleVotersList from '../shared/EligibleVotersList';
 import ExplorerLink from './ExplorerLink';
 import OpenInNew from '@material-ui/icons/OpenInNew';
+import * as moment from 'moment';
 
 import {
 	BINARY_CONFIG,
@@ -58,13 +59,24 @@ const unweightedMinTurnoutPath =
 const pollChainIdPath = 'pollJSON.voteChainId';
 
 //unique so far
-const protocolVersionPath = 'pollJSON.admin.protocolVersion';
 const pollInitiatorIdPath = 'pollJSON.admin.voteInitiator';
 
 class VoteSummary extends React.Component {
 	async componentDidMount() {
 		window.scrollTo(0, 0);
 	}
+
+	calculateWriteTimeDisplay = (writeHeight) => {
+		const eventTimestamp = this.props.factomCliController.getEstimatedBlockTimestamp(
+			writeHeight
+		);
+
+		const eventDate = moment(eventTimestamp).utc();
+
+		const displayValue = eventDate.format('MMM DD YYYY, h:mm A');
+
+		return displayValue;
+	};
 
 	render() {
 		const {
@@ -101,22 +113,14 @@ class VoteSummary extends React.Component {
 		let revealEndDate = null;
 
 		if (blockHeight) {
-			commitStartDate = calculateWriteTime(
-				blockHeight,
+			commitStartDate = this.calculateWriteTimeDisplay(
 				_get(poll, commitStartPath)
 			);
-			commitEndDate = calculateWriteTime(
-				blockHeight,
-				_get(poll, commitEndPath)
-			);
-			revealStartDate = calculateWriteTime(
-				blockHeight,
+			commitEndDate = this.calculateWriteTimeDisplay(_get(poll, commitEndPath));
+			revealStartDate = this.calculateWriteTimeDisplay(
 				_get(poll, commitEndPath) + 1
 			);
-			revealEndDate = calculateWriteTime(
-				blockHeight,
-				_get(poll, revealEndPath)
-			);
+			revealEndDate = this.calculateWriteTimeDisplay(_get(poll, revealEndPath));
 		}
 
 		return (
@@ -153,7 +157,7 @@ class VoteSummary extends React.Component {
 					</Grid>
 				)}
 
-				<Grid item container xs={6}>
+				<Grid item container xs={5}>
 					<Grid item xs={12}>
 						<Typography gutterBottom>Title: {_get(poll, titlePath)}</Typography>
 					</Grid>
@@ -200,29 +204,20 @@ class VoteSummary extends React.Component {
 						</Typography>
 					</Grid>
 				</Grid>
-				<Grid item container xs={3}>
+				<Grid item container xs={4}>
 					<Grid item xs={12}>
-						<Typography>{commitStartDate}</Typography>
+						<Typography>{commitStartDate} UTC</Typography>
 					</Grid>
 					<Grid item xs={12}>
-						<Typography>{commitEndDate}</Typography>
+						<Typography>{commitEndDate} UTC</Typography>
 					</Grid>
 					<Grid item xs={12}>
-						<Typography>{revealStartDate}</Typography>
+						<Typography>{revealStartDate} UTC</Typography>
 					</Grid>
 					<Grid item xs={12}>
-						<Typography>{revealEndDate}</Typography>
+						<Typography>{revealEndDate} UTC</Typography>
 					</Grid>
 				</Grid>
-				{!_isNil(_get(poll, protocolVersionPath)) && (
-					<>
-						<Grid item xs={12} container>
-							<Typography>
-								Protocol Version: {_get(poll, protocolVersionPath)}
-							</Typography>
-						</Grid>
-					</>
-				)}
 				<Grid item xs={12}>
 					<br />
 					<SectionHeader text="Question" />
@@ -459,25 +454,6 @@ const styles = (theme) => ({
 		cursor: 'default',
 	},
 });
-
-function calculateWriteTime(currentHeight, writeHeight) {
-	let blocks;
-	let minutes;
-	let event = new Date();
-
-	blocks = writeHeight - currentHeight;
-	minutes = blocks * 10;
-	event.setTime(event.getTime() + minutes * 60 * 1000);
-	event = event.toLocaleTimeString([], {
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit',
-		hour: '2-digit',
-		minute: '2-digit',
-	});
-
-	return event;
-}
 
 const enhancer = _flowRight(
 	withNetwork,

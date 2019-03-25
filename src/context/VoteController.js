@@ -29,6 +29,7 @@ class VoteController extends React.Component {
 			factomVoteManager: this.newFactomVoteManager(),
 			submitVote: this.submitVote,
 			getPollStatus: this.getPollStatus,
+			getPhaseEndBlock: this.getPhaseEndBlock,
 			getPollType: this.getPollType,
 			commitVote: this.commitVote,
 			revealVote: this.revealVote,
@@ -103,14 +104,31 @@ class VoteController extends React.Component {
 		return result;
 	};
 
-	getPollStatus = ({ commitStart, commitEnd, revealEnd }) => {
-		const currentHeight = this.props.factomCliController.blockHeight;
+	getPhaseEndBlock = ({ commitStart, commitEnd, revealEnd }) => {
+		const workingHeight = this.props.factomCliController.blockHeight + 1;
 
-		if (currentHeight < commitStart) {
+		if (workingHeight < commitStart) {
+			// discussion phase
+			return commitStart - 1;
+		} else if (workingHeight <= commitEnd) {
+			// commit phase
+			return commitEnd;
+		} else if (workingHeight <= revealEnd) {
+			// reveal phase
+			return revealEnd;
+		} else {
+			return null;
+		}
+	};
+
+	getPollStatus = ({ commitStart, commitEnd, revealEnd }) => {
+		const workingHeight = this.props.factomCliController.blockHeight + 1;
+
+		if (workingHeight < commitStart) {
 			return POLL_STATUSES.discussion;
-		} else if (currentHeight < commitEnd) {
+		} else if (workingHeight <= commitEnd) {
 			return POLL_STATUSES.commit;
-		} else if (currentHeight < revealEnd) {
+		} else if (workingHeight <= revealEnd) {
 			return POLL_STATUSES.reveal;
 		} else {
 			return POLL_STATUSES.complete;

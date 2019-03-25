@@ -14,11 +14,13 @@ import VoteSummary from '../shared/VoteSummary';
 import ParticipantsTab from './ParticipantsTab';
 import VoteResult from './VoteResult';
 import { withVote } from '../../context/VoteContext';
+import { withFactomCli } from '../../context/FactomCliContext';
 import { withWalletContext } from '../../context/WalletContext';
 import { withNetwork } from '../../context/NetworkContext';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import SectionHeader from '../shared/SectionHeader';
+import Countdown from 'react-countdown-now';
 
 const GET_VOTE = gql`
 	query Vote($chain: String!) {
@@ -99,9 +101,10 @@ class VoteTabContent extends React.Component {
 	render() {
 		const {
 			classes,
-			voteController: { getPollStatus },
+			voteController: { getPollStatus, getPhaseEndBlock },
 			networkController: { networkProps },
 			walletController: { handleNetworkChange },
+			factomCliController: { getEstimatedBlockTimestamp },
 		} = this.props;
 
 		const queryParams = QS.parse(this.props.location.search, {
@@ -142,7 +145,14 @@ class VoteTabContent extends React.Component {
 
 								const poll_o = data.proposal;
 
-								const status_o = getPollStatus(poll_o.vote.phasesBlockHeights);
+								const phasesBlockHeights = poll_o.vote.phasesBlockHeights;
+
+								const status_o = getPollStatus(phasesBlockHeights);
+								const phaseEndBlock = getPhaseEndBlock(phasesBlockHeights);
+
+								const countdownTimestamp = getEstimatedBlockTimestamp(
+									phaseEndBlock + 1
+								);
 
 								return (
 									<Query
@@ -197,6 +207,11 @@ class VoteTabContent extends React.Component {
 																	<Typography style={{ display: 'inline' }}>
 																		{status_o.displayValue}
 																	</Typography>
+
+																	<Countdown
+																		date={countdownTimestamp}
+																		renderer={RenderCountdown}
+																	/>
 																</>
 															)}
 
@@ -315,8 +330,35 @@ const styles = (theme) => ({
 	},
 });
 
+const RenderCountdown = ({ days, hours, minutes, seconds, completed }) => {
+	return (
+		<>
+			<br />
+			<Typography
+				style={{
+					display: 'inline',
+					fontWeight: 500,
+				}}
+				gutterBottom
+			>
+				Remaining Time:{' '}
+			</Typography>
+			<Typography style={{ display: 'inline' }}>
+				{completed ? (
+					'The final block in this phase is almost complete.'
+				) : (
+					<span>
+						{days} days, {hours} hours, {minutes} minutes, {seconds} seconds
+					</span>
+				)}
+			</Typography>
+		</>
+	);
+};
+
 const enhancer = _flowRight(
 	withNetwork,
+	withFactomCli,
 	withWalletContext,
 	withVote,
 	withStyles(styles)

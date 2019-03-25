@@ -31,9 +31,9 @@ export const VOTE_EXAMPLE_CONFIG = {
 			},
 			vote: {
 				phasesBlockHeights: {
-					commitStart: 71000,
-					commitEnd: 72000,
-					revealEnd: 73000,
+					commitStart: 76000,
+					commitEnd: 77000,
+					revealEnd: 78000,
 				},
 				eligibleVotersChainId: null,
 				type: 1,
@@ -61,9 +61,9 @@ export const VOTE_EXAMPLE_CONFIG = {
 			},
 		},
 		formFields: {
-			commitStartDate: '2019-03-20T17:06:00.000',
-			commitEndDate: '2019-03-27T15:46:00.000',
-			revealEndDate: '2019-04-03T14:26:00.000',
+			commitStartDate: '2019-04-24T14:12:00.000',
+			commitEndDate: '2019-05-01T12:52:00.000',
+			revealEndDate: '2019-05-08T11:32:00.000',
 			voteTypeText: 'Approval Voting',
 			questionSource: 'text',
 			workingText: 'What is the answer to life, the universe, and everything?',
