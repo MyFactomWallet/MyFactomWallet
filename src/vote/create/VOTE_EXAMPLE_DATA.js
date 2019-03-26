@@ -72,6 +72,7 @@ export const VOTE_EXAMPLE_CONFIG = {
 			workingHashAlgo: '',
 			workingOption: '',
 			checkedTurnout: true,
+			enableMinSupportConfig: true,
 			workingWeightMinTurnout: 0.1,
 			workingUnweightMinTurnout: 0.3,
 			workingWeightMinSupport: 0.3,

@@ -101,6 +101,7 @@ const requiredSupportPath = 'formFields.requiredSupport';
 const workingWeightMinSupportPath = 'formFields.workingWeightMinSupport';
 const workingUnweightMinSupportPath = 'formFields.workingUnweightMinSupport';
 const workingMinSupportOptionPath = 'formFields.workingMinSupportOption';
+const enableMinSupportConfigPath = 'formFields.enableMinSupportConfig';
 
 class CreateVoteForm extends React.Component {
 	async componentDidMount() {
@@ -135,6 +136,12 @@ class CreateVoteForm extends React.Component {
 		}
 
 		return error;
+	};
+
+	validateComputeResultsAgainst = (value) => {
+		if (this.enableMinSupportConfig && !value) {
+			return 'Required';
+		}
 	};
 
 	hasOption = (option, optionList) =>
@@ -241,6 +248,26 @@ class CreateVoteForm extends React.Component {
 		return result;
 	};
 
+	supportsMinSupportCriteria = (voteType) => {
+		let result = true;
+
+		if (voteType === INSTANT_RUNOFF_CONFIG.type) {
+			result = false;
+		}
+
+		return result;
+	};
+
+	supportsWeightedMinTurnoutCriteria = (voteType) => {
+		let result = true;
+
+		if (voteType === INSTANT_RUNOFF_CONFIG.type) {
+			result = false;
+		}
+
+		return result;
+	};
+
 	render() {
 		const {
 			pollForm,
@@ -295,11 +322,11 @@ class CreateVoteForm extends React.Component {
 									.transform((cv) => (isNaN(cv) ? undefined : cv))
 									.required('Required'),
 								allowAbstention: Yup.string().required('Required'),
-								computeResultsAgainst: Yup.string().required('Required'),
 							}),
 						}),
 					}),
 					formFields: Yup.object().shape({
+						enableMinSupportConfig: Yup.boolean(),
 						workingWeightMinSupport: Yup.number()
 							.transform((cv) => (isNaN(cv) ? undefined : cv))
 							.max(1, 'Too high')
@@ -315,8 +342,11 @@ class CreateVoteForm extends React.Component {
 								const {
 									workingWeightMinSupport,
 									workingUnweightMinSupport,
+									enableMinSupportConfig,
 								} = this.parent;
+
 								if (
+									enableMinSupportConfig &&
 									!_isFinite(workingWeightMinSupport) &&
 									!_isFinite(workingUnweightMinSupport)
 								) {
@@ -365,7 +395,7 @@ class CreateVoteForm extends React.Component {
 							.min(0, 'Too low'),
 						checkedTurnout: Yup.boolean().test(
 							'turnout-test',
-							'* Select weighted and/or unweighted ratio',
+							'* Select a Minimum Turnout ratio',
 							function(value) {
 								const {
 									workingWeightMinTurnout,
@@ -409,7 +439,7 @@ class CreateVoteForm extends React.Component {
 					}
 
 					/**
-					 * Handle Acceptance Citeria
+					 * Handle Acceptance Criteria
 					 */
 					if (_get(values, checkedTurnoutPath)) {
 						// reset acceptance criteria
@@ -436,33 +466,43 @@ class CreateVoteForm extends React.Component {
 					}
 
 					/**
-					 * Handle Winner Citeria
+					 * Handle Winner Criteria
 					 */
+					if (_get(values, enableMinSupportConfigPath)) {
+						// reset winner Criteria
+						_get(values, configPath).winnerCriteria = { minSupport: {} };
 
-					// reset winnerCriteria
-					_get(values, configPath).winnerCriteria = { minSupport: {} };
+						let winnerCriteriaOption;
+						if (_get(values, voteTypeTextPath) === BINARY_CONFIG.name) {
+							// add criteria for specific option
+							winnerCriteriaOption = _get(values, workingMinSupportOptionPath);
+						} else {
+							winnerCriteriaOption = '*';
+						}
+						_get(values, minSupportPath)[winnerCriteriaOption] = {};
 
-					let winnerCriteriaOption;
-					if (_get(values, voteTypeTextPath) === BINARY_CONFIG.name) {
-						// add criteria for specific option
-						winnerCriteriaOption = _get(values, workingMinSupportOptionPath);
+						// handle weighted support
+						if (_isFinite(_get(values, workingWeightMinSupportPath))) {
+							_get(values, winnerCriteriaPath).minSupport[
+								winnerCriteriaOption
+							].weighted = _get(values, workingWeightMinSupportPath);
+						}
+
+						// handle unweighted support
+						if (_isFinite(_get(values, workingUnweightMinSupportPath))) {
+							_get(values, winnerCriteriaPath).minSupport[
+								winnerCriteriaOption
+							].unweighted = _get(values, workingUnweightMinSupportPath);
+						}
 					} else {
-						winnerCriteriaOption = '*';
-					}
-					_get(values, minSupportPath)[winnerCriteriaOption] = {};
-
-					// handle weighted support
-					if (_isFinite(_get(values, workingWeightMinSupportPath))) {
-						_get(values, winnerCriteriaPath).minSupport[
-							winnerCriteriaOption
-						].weighted = _get(values, workingWeightMinSupportPath);
+						// no winner criteria
+						values = _omit(values, winnerCriteriaPath);
 					}
 
-					// handle unweighted support
-					if (_isFinite(_get(values, workingUnweightMinSupportPath))) {
-						_get(values, winnerCriteriaPath).minSupport[
-							winnerCriteriaOption
-						].unweighted = _get(values, workingUnweightMinSupportPath);
+					// placeholder until factom-vote.js is updated to fix computeResultsAgainst validation for IRV votes
+					if (!_get(values, enableMinSupportConfigPath)) {
+						_get(values, configPath).computeResultsAgainst =
+							ALL_ELIGIBLE_VOTERS.value;
 					}
 
 					// update Poll
@@ -483,6 +523,11 @@ class CreateVoteForm extends React.Component {
 					setFieldError,
 				}) => {
 					this.setFieldValue = setFieldValue;
+
+					this.enableMinSupportConfig = _get(
+						values,
+						enableMinSupportConfigPath
+					);
 
 					return (
 						<Form onKeyPress={this.handleKeyPress}>
@@ -542,9 +587,11 @@ class CreateVoteForm extends React.Component {
 													const newValue = e.target.value;
 
 													setFieldValue(workingMinSupportOptionPath, '');
+													let voteType;
 
 													if (newValue === BINARY_CONFIG.name) {
-														setFieldValue(voteTypePath, BINARY_CONFIG.type);
+														voteType = BINARY_CONFIG.type;
+														setFieldValue(voteTypePath, voteType);
 														setFieldValue(
 															minOptionsPath,
 															BINARY_CONFIG.numOptions
@@ -561,10 +608,8 @@ class CreateVoteForm extends React.Component {
 															setFieldValue(optionsPath, []);
 														}
 													} else if (newValue === SINGLE_OPTION_CONFIG.name) {
-														setFieldValue(
-															voteTypePath,
-															SINGLE_OPTION_CONFIG.type
-														);
+														voteType = SINGLE_OPTION_CONFIG.type;
+														setFieldValue(voteTypePath, voteType);
 														setFieldValue(
 															minOptionsPath,
 															SINGLE_OPTION_CONFIG.numOptions
@@ -574,30 +619,35 @@ class CreateVoteForm extends React.Component {
 															SINGLE_OPTION_CONFIG.numOptions
 														);
 													} else if (newValue === APPROVAL_CONFIG.name) {
-														setFieldValue(voteTypePath, APPROVAL_CONFIG.type);
+														voteType = APPROVAL_CONFIG.type;
+														setFieldValue(voteTypePath, voteType);
 														setFieldValue(minOptionsPath, '');
 														setFieldValue(maxOptionsPath, '');
 													} else if (newValue === INSTANT_RUNOFF_CONFIG.name) {
-														setFieldValue(
-															voteTypePath,
-															INSTANT_RUNOFF_CONFIG.type
-														);
+														voteType = INSTANT_RUNOFF_CONFIG.type;
+														setFieldValue(voteTypePath, voteType);
 														setFieldValue(minOptionsPath, '');
 														setFieldValue(maxOptionsPath, '');
+														setFieldValue(workingWeightMinTurnoutPath, '');
+													}
+
+													// reset minSupport form fields
+													if (!this.supportsMinSupportCriteria(voteType)) {
+														setFieldValue(enableMinSupportConfigPath, false);
+
+														// remove compute results against
+														setFieldValue(computeResultsAgainstPath, '');
+
+														// remove weight/unweight min support form values
+														setFieldValue(workingWeightMinSupportPath, '');
+														setFieldValue(workingUnweightMinSupportPath, '');
+
+														// remove min support option form value
+														setFieldValue(workingMinSupportOptionPath, '');
+													} else {
+														setFieldValue(enableMinSupportConfigPath, true);
 													}
 												}}
-											/>
-										</Grid>
-										<Grid item xs={12}>
-											<FormSelectField
-												name={computeResultsAgainstPath}
-												label="Compute Results Against *"
-												options={COMPUTE_AGAINST_VALUES}
-												error={
-													_get(errors, computeResultsAgainstPath) &&
-													_get(touched, computeResultsAgainstPath)
-												}
-												minWidth={215}
 											/>
 										</Grid>
 										<Grid item xs={12}>
@@ -615,6 +665,21 @@ class CreateVoteForm extends React.Component {
 												}
 												minWidth={215}
 											/>
+										</Grid>
+										<Grid item xs={12}>
+											{_get(values, enableMinSupportConfigPath) && (
+												<FormSelectField
+													name={computeResultsAgainstPath}
+													validate={this.validateComputeResultsAgainst}
+													label="Compute Results Against *"
+													options={COMPUTE_AGAINST_VALUES}
+													error={
+														_get(errors, computeResultsAgainstPath) &&
+														_get(touched, computeResultsAgainstPath)
+													}
+													minWidth={215}
+												/>
+											)}
 										</Grid>
 									</Grid>
 
@@ -1024,86 +1089,92 @@ class CreateVoteForm extends React.Component {
 										<SectionHeader text="Winner Criteria" />
 									</Grid>
 									<Grid item xs={12}>
-										<Grid container>
-											<Grid item xs={4}>
-												<br />
-												<Typography>Minimum Support *</Typography>
-												{submitCount > 0 &&
-													_get(errors, requiredSupportPath) && (
-														<div className={classes.errorText}>
-															{_get(errors, requiredSupportPath)}
-														</div>
-													)}
-											</Grid>
-											<Grid item xs={4}>
-												<FormTextField
-													name={workingWeightMinSupportPath}
-													label="Weighted Ratio"
-													type="number"
-													step="any"
-													error={
-														_get(errors, workingWeightMinSupportPath) &&
-														_get(touched, workingWeightMinSupportPath)
-													}
-													width={138}
-												/>
+										{_get(values, enableMinSupportConfigPath) ? (
+											<Grid container>
+												<Grid item xs={4}>
+													<br />
+													<Typography>Minimum Support *</Typography>
+													{submitCount > 0 &&
+														_get(errors, requiredSupportPath) && (
+															<div className={classes.errorText}>
+																{_get(errors, requiredSupportPath)}
+															</div>
+														)}
+												</Grid>
+												<Grid item xs={4}>
+													<FormTextField
+														name={workingWeightMinSupportPath}
+														label="Weighted Ratio"
+														type="number"
+														step="any"
+														error={
+															_get(errors, workingWeightMinSupportPath) &&
+															_get(touched, workingWeightMinSupportPath)
+														}
+														width={138}
+													/>
 
-												<br />
-												<FormTextField
-													name={workingUnweightMinSupportPath}
-													label="Unweighted Ratio"
-													type="number"
-													step="any"
-													error={
-														_get(errors, workingUnweightMinSupportPath) &&
-														_get(touched, workingUnweightMinSupportPath)
-													}
-													width={138}
-												/>
-											</Grid>
-											<Grid item xs={4}>
-												{_get(values, voteTypePath) !== '' ? (
-													// vote type is selected
-													_get(values, voteTypeTextPath) ===
-													BINARY_CONFIG.name ? (
-														// binary vote selected
-														!_isEmpty(_get(values, optionsPath)) ? (
-															// options exist
-															<FormSelectField
-																name={workingMinSupportOptionPath}
-																label="Applies to option *"
-																options={_get(values, optionsPath).map(
-																	(value) => {
-																		return { value, text: value };
+													<br />
+													<FormTextField
+														name={workingUnweightMinSupportPath}
+														label="Unweighted Ratio"
+														type="number"
+														step="any"
+														error={
+															_get(errors, workingUnweightMinSupportPath) &&
+															_get(touched, workingUnweightMinSupportPath)
+														}
+														width={138}
+													/>
+												</Grid>
+												<Grid item xs={4}>
+													{_get(values, voteTypePath) !== '' ? (
+														// vote type is selected
+														_get(values, voteTypeTextPath) ===
+														BINARY_CONFIG.name ? (
+															// binary vote selected
+															!_isEmpty(_get(values, optionsPath)) ? (
+																// options exist
+																<FormSelectField
+																	name={workingMinSupportOptionPath}
+																	label="Applies to option *"
+																	options={_get(values, optionsPath).map(
+																		(value) => {
+																			return { value, text: value };
+																		}
+																	)}
+																	error={
+																		_get(errors, workingMinSupportOptionPath) &&
+																		_get(touched, workingMinSupportOptionPath)
 																	}
-																)}
-																error={
-																	_get(errors, workingMinSupportOptionPath) &&
-																	_get(touched, workingMinSupportOptionPath)
-																}
-																minWidth={215}
-																isNotFast
-															/>
+																	minWidth={215}
+																	isNotFast
+																/>
+															) : (
+																<>
+																	<br />
+																	No Options Found
+																</>
+															)
 														) : (
 															<>
 																<br />
-																No Options Found
+																Applies to all options
 															</>
 														)
 													) : (
 														<>
 															<br />
-															Applies to all options
+															Select a Vote Type
 														</>
-													)
-												) : (
-													<>
-														<br />
-														Select a Vote Type
-													</>
-												)}
+													)}
+												</Grid>
 											</Grid>
-										</Grid>
+										) : (
+											<Grid item>
+												<Typography>Not Applicable</Typography>
+											</Grid>
+										)}
 									</Grid>
 								</Grid>
 								<Grid container item xs={12}>
@@ -1170,19 +1241,23 @@ class CreateVoteForm extends React.Component {
 											)}
 										</Grid>
 										<Grid item xs={4}>
-											<FormTextField
-												name={workingWeightMinTurnoutPath}
-												label={'Weighted Ratio'}
-												disabled={!_get(values, checkedTurnoutPath)}
-												type="number"
-												step="any"
-												error={
-													_get(errors, workingWeightMinTurnoutPath) &&
-													_get(touched, workingWeightMinTurnoutPath)
-												}
-												isNotFast
-												width={138}
-											/>
+											{this.supportsWeightedMinTurnoutCriteria(
+												_get(values, voteTypePath)
+											) && (
+												<FormTextField
+													name={workingWeightMinTurnoutPath}
+													label={'Weighted Ratio'}
+													disabled={!_get(values, checkedTurnoutPath)}
+													type="number"
+													step="any"
+													error={
+														_get(errors, workingWeightMinTurnoutPath) &&
+														_get(touched, workingWeightMinTurnoutPath)
+													}
+													isNotFast
+													width={138}
+												/>
+											)}
 
 											<br />
 											<FormTextField

@@ -16,12 +16,13 @@ const FormSelectField = ({
 	onChange,
 	options,
 	minWidth,
+	validate,
 }) => {
 	const FieldType = isNotFast ? Field : FastField;
 
 	return (
 		<React.Fragment>
-			<FieldType name={name}>
+			<FieldType name={name} {...(validate ? { validate } : {})}>
 				{({ field }) => (
 					<FormControl {...{ disabled, error }}>
 						<InputLabel htmlFor={name}>{label}</InputLabel>

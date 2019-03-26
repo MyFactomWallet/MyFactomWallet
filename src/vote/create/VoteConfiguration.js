@@ -47,6 +47,7 @@ export default class VoteConfiguration extends React.Component {
 				workingHashAlgo: '',
 				workingOption: '',
 				checkedTurnout: false,
+				enableMinSupportConfig: true,
 				workingWeightMinTurnout: '',
 				workingUnweightMinTurnout: '',
 				workingWeightMinSupport: '',

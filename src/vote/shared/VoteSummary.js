@@ -78,6 +78,26 @@ class VoteSummary extends React.Component {
 		return displayValue;
 	};
 
+	supportsMinSupportCriteria = (voteType) => {
+		let result = true;
+
+		if (voteType === INSTANT_RUNOFF_CONFIG.type) {
+			result = false;
+		}
+
+		return result;
+	};
+
+	supportsWeightedMinTurnoutCriteria = (voteType) => {
+		let result = true;
+
+		if (voteType === INSTANT_RUNOFF_CONFIG.type) {
+			result = false;
+		}
+
+		return result;
+	};
+
 	render() {
 		const {
 			classes,
@@ -88,13 +108,6 @@ class VoteSummary extends React.Component {
 			voteController: { getPollType },
 		} = this.props;
 
-		const minSupportOption = Object.keys(_get(poll, minSupportPath))[0];
-
-		const weightedMinSupportPath =
-			minSupportPath + '.' + minSupportOption + '.weighted';
-		const unweightedMinSupportPath =
-			minSupportPath + '.' + minSupportOption + '.unweighted';
-
 		// poll type text
 		const pollType_o = getPollType(
 			_get(poll, voteTypePath),
@@ -103,8 +116,29 @@ class VoteSummary extends React.Component {
 
 		const pollTypeText = pollType_o.name;
 
+		// minimum support
+		const supportsMinSupportConfig = this.supportsMinSupportCriteria(
+			pollType_o.type
+		);
+
+		let minSupportOption;
+		let weightedMinSupportPath;
+		let unweightedMinSupportPath;
+
+		if (supportsMinSupportConfig) {
+			minSupportOption = Object.keys(_get(poll, minSupportPath))[0];
+
+			weightedMinSupportPath =
+				minSupportPath + '.' + minSupportOption + '.weighted';
+			unweightedMinSupportPath =
+				minSupportPath + '.' + minSupportOption + '.unweighted';
+		}
+
 		// minimum turnout
-		const hasMinTurnoutCritiera = !_isNil(_get(poll, minTurnoutPath));
+		const hasMinTurnoutCriteria = !_isNil(_get(poll, minTurnoutPath));
+		const supportsWeightedMinTurnoutCriteria = this.supportsWeightedMinTurnoutCriteria(
+			pollType_o.type
+		);
 
 		// date estimations
 		let commitStartDate = null;
@@ -166,18 +200,20 @@ class VoteSummary extends React.Component {
 					</Grid>
 					<Grid item xs={12}>
 						<Typography gutterBottom>
-							Compute Results Against:&nbsp;
-							{_get(poll, computeResultsAgainstPath) ===
-							ALL_ELIGIBLE_VOTERS.value
-								? ALL_ELIGIBLE_VOTERS.text
-								: PARTICIPANTS_ONLY.text}
-						</Typography>
-					</Grid>
-					<Grid item xs={12}>
-						<Typography gutterBottom>
 							Allow Abstain:&nbsp;
 							{_get(poll, abstentionPath) ? 'True' : 'False'}
 						</Typography>
+					</Grid>
+					<Grid item xs={12}>
+						{supportsMinSupportConfig && (
+							<Typography gutterBottom>
+								Compute Results Against:&nbsp;
+								{_get(poll, computeResultsAgainstPath) ===
+								ALL_ELIGIBLE_VOTERS.value
+									? ALL_ELIGIBLE_VOTERS.text
+									: PARTICIPANTS_ONLY.text}
+							</Typography>
+						)}
 					</Grid>
 				</Grid>
 				<Grid item container xs={3}>
@@ -320,62 +356,7 @@ class VoteSummary extends React.Component {
 				<Grid item xs={12}>
 					<br />
 					<SectionHeader text="Winner Criteria" />
-					<List dense>
-						<ListItem>
-							<Grid container>
-								<Grid item xs={4}>
-									<FormControlLabel
-										className={classes.defaultCursor}
-										control={
-											<Checkbox
-												disableRipple
-												color="default"
-												checked={true}
-												className={classes.defaultCursor}
-											/>
-										}
-										label="Minimum Support"
-									/>
-								</Grid>
-								<Grid item xs={4}>
-									<Grid container>
-										{_get(poll, weightedMinSupportPath) && (
-											<Grid item xs={12}>
-												{!_get(poll, unweightedMinSupportPath) && <br />}
-												<Typography style={{ display: 'inline' }}>
-													Weighted Ratio:&nbsp;
-													{_get(poll, weightedMinSupportPath)}
-												</Typography>
-											</Grid>
-										)}
-										{_get(poll, unweightedMinSupportPath) && (
-											<Grid item xs={12}>
-												{!_get(poll, weightedMinSupportPath) && <br />}
-												<Typography style={{ display: 'inline' }}>
-													Unweighted Ratio:&nbsp;
-													{_get(poll, unweightedMinSupportPath)}
-												</Typography>
-											</Grid>
-										)}
-									</Grid>
-								</Grid>
-								<Grid item xs={4}>
-									{pollType_o.name === BINARY_CONFIG.name ? (
-										<Typography>
-											Applies to option: {minSupportOption}
-										</Typography>
-									) : (
-										<Typography>Applies to all options</Typography>
-									)}
-								</Grid>
-							</Grid>
-						</ListItem>
-					</List>
-				</Grid>
-				<Grid item xs={12}>
-					<br />
-					<SectionHeader text="Acceptance Criteria" />
-					{hasMinTurnoutCritiera ? (
+					{supportsMinSupportConfig ? (
 						<List dense>
 							<ListItem>
 								<Grid container>
@@ -386,7 +367,69 @@ class VoteSummary extends React.Component {
 												<Checkbox
 													disableRipple
 													color="default"
-													checked={hasMinTurnoutCritiera}
+													checked={true}
+													className={classes.defaultCursor}
+												/>
+											}
+											label="Minimum Support"
+										/>
+									</Grid>
+									<Grid item xs={4}>
+										<Grid container>
+											{_get(poll, weightedMinSupportPath) && (
+												<Grid item xs={12}>
+													{!_get(poll, unweightedMinSupportPath) && <br />}
+													<Typography style={{ display: 'inline' }}>
+														Weighted Ratio:&nbsp;
+														{_get(poll, weightedMinSupportPath)}
+													</Typography>
+												</Grid>
+											)}
+											{_get(poll, unweightedMinSupportPath) && (
+												<Grid item xs={12}>
+													{!_get(poll, weightedMinSupportPath) && <br />}
+													<Typography style={{ display: 'inline' }}>
+														Unweighted Ratio:&nbsp;
+														{_get(poll, unweightedMinSupportPath)}
+													</Typography>
+												</Grid>
+											)}
+										</Grid>
+									</Grid>
+									<Grid item xs={4}>
+										{pollType_o.name === BINARY_CONFIG.name ? (
+											<Typography>
+												Applies to option: {minSupportOption}
+											</Typography>
+										) : (
+											<Typography>Applies to all options</Typography>
+										)}
+									</Grid>
+								</Grid>
+							</ListItem>
+						</List>
+					) : (
+						<div>
+							<Typography>Not Applicable</Typography>
+							<br />
+						</div>
+					)}
+				</Grid>
+				<Grid item xs={12}>
+					<br />
+					<SectionHeader text="Acceptance Criteria" />
+					{hasMinTurnoutCriteria ? (
+						<List dense>
+							<ListItem>
+								<Grid container>
+									<Grid item xs={4}>
+										<FormControlLabel
+											className={classes.defaultCursor}
+											control={
+												<Checkbox
+													disableRipple
+													color="default"
+													checked={hasMinTurnoutCriteria}
 													className={classes.defaultCursor}
 												/>
 											}
@@ -395,15 +438,16 @@ class VoteSummary extends React.Component {
 									</Grid>
 									<Grid item xs={4}>
 										<Grid container>
-											{_get(poll, weightedMinTurnoutPath) && (
-												<Grid item xs={12}>
-													{!_get(poll, unweightedMinTurnoutPath) && <br />}
-													<Typography style={{ display: 'inline' }}>
-														Weighted Ratio:&nbsp;
-														{_get(poll, weightedMinTurnoutPath)}
-													</Typography>
-												</Grid>
-											)}
+											{supportsWeightedMinTurnoutCriteria &&
+												_get(poll, weightedMinTurnoutPath) && (
+													<Grid item xs={12}>
+														{!_get(poll, unweightedMinTurnoutPath) && <br />}
+														<Typography style={{ display: 'inline' }}>
+															Weighted Ratio:&nbsp;
+															{_get(poll, weightedMinTurnoutPath)}
+														</Typography>
+													</Grid>
+												)}
 											{_get(poll, unweightedMinTurnoutPath) && (
 												<Grid item xs={12}>
 													{!_get(poll, weightedMinTurnoutPath) && <br />}
