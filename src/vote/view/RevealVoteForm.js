@@ -12,6 +12,7 @@ import SectionHeader from '../shared/SectionHeader';
 import FormTextField from '../../component/form/FormTextField';
 import { withVote } from '../../context/VoteContext';
 import { withNetwork } from '../../context/NetworkContext';
+import { withFactomCli } from '../../context/FactomCliContext';
 import { isValidPrivateEcAddress } from 'factom/dist/factom';
 import { EC_PRIV } from '../create/VOTE_EXAMPLE_DATA';
 import Typography from '@material-ui/core/Typography';
@@ -73,6 +74,7 @@ class RevealVoteForm extends React.Component {
 		const {
 			classes,
 			networkController: { networkProps },
+			factomCliController: { blockHeight },
 		} = this.props;
 
 		const entryHashURL = networkProps.explorerURL + '/entry?hash=';
@@ -190,9 +192,9 @@ class RevealVoteForm extends React.Component {
 
 											<Typography gutterBottom>
 												Your vote is pending confirmation. The entry will be
-												visible in 10-15 minutes, after being included in the
-												next block currently being processed by the Factom
-												blockchain.
+												visible in 10-15 minutes, after being included in block
+												{' ' + (blockHeight + 1)}, currently being processed by
+												the Factom blockchain.
 											</Typography>
 											<br />
 											<ExplorerLink
@@ -260,5 +262,10 @@ const styles = (theme) => ({
 	},
 });
 
-const enhancer = _flowRight(withNetwork, withVote, withStyles(styles));
+const enhancer = _flowRight(
+	withNetwork,
+	withFactomCli,
+	withVote,
+	withStyles(styles)
+);
 export default enhancer(RevealVoteForm);

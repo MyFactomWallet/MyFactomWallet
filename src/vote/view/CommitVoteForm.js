@@ -6,11 +6,12 @@ import _includes from 'lodash/includes';
 import Grid from '@material-ui/core/Grid';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { Formik, Form, FieldArray, ErrorMessage } from 'formik';
+import { Formik, Form, FieldArray } from 'formik';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { withVote } from '../../context/VoteContext';
 import { withNetwork } from '../../context/NetworkContext';
+import { withFactomCli } from '../../context/FactomCliContext';
 import { withStyles } from '@material-ui/core/styles';
 import { withLedger } from '../../context/LedgerContext';
 import SectionHeader from '../shared/SectionHeader';
@@ -90,6 +91,7 @@ class CommitVoteForm extends React.Component {
 			voteController: { commitVote, getPollType },
 			networkController: { networkProps },
 			ledgerController: { signMessageRaw },
+			factomCliController: { blockHeight },
 		} = this.props;
 
 		const voterList = proposalEntries.map((value) => value.voterId);
@@ -479,9 +481,9 @@ class CommitVoteForm extends React.Component {
 
 											<Typography gutterBottom>
 												Your vote is pending confirmation. The entry will be
-												visible in 10-15 minutes, after being included in the
-												next block currently being processed by the Factom
-												blockchain.
+												visible in 10-15 minutes, after being included in block
+												{' ' + (blockHeight + 1)}, currently being processed by
+												the Factom blockchain.
 											</Typography>
 											<br />
 											<ExplorerLink
@@ -582,6 +584,7 @@ const styles = (theme) => ({
 
 const enhancer = _flowRight(
 	withNetwork,
+	withFactomCli,
 	withVote,
 	withLedger,
 	withStyles(styles)
