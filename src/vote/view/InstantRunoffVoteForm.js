@@ -151,6 +151,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 	userSelect: 'none',
 	padding: 16,
 	margin: `0 0 8px 0`,
+	overflowWrap: 'break-word',
 
 	// change background colour if dragging
 	background: isDragging ? 'mediumpurple' : 'lightgrey',

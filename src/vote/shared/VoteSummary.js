@@ -286,7 +286,10 @@ class VoteSummary extends React.Component {
 												divider={index < _get(poll, optionsPath).length - 1}
 											>
 												<LabelImportant style={{ fontSize: 15 }} />
-												<ListItemText primary={option} />
+												<ListItemText
+													primary={option}
+													className={classes.option}
+												/>
 											</ListItem>
 										))}
 								</List>
@@ -446,9 +449,8 @@ const styles = (theme) => ({
 	smallGridColumn: {
 		flexBasis: '19%',
 	},
-	optionList: {
-		width: '350px',
-		overflow: 'auto',
+	option: {
+		overflowWrap: 'break-word',
 	},
 	defaultCursor: {
 		cursor: 'default',
