@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NetworkContext } from './NetworkContext';
-import TestnetDisclaimer from '../TestnetDisclaimer';
 import _flow from 'lodash/flow';
 import _noop from 'lodash/noop';
 
@@ -59,7 +58,6 @@ class NetworkController extends React.Component {
 		return (
 			<NetworkContext.Provider value={this.state}>
 				{this.props.children}
-				{this.state.networkProps.network === 'testnet' && <TestnetDisclaimer />}
 			</NetworkContext.Provider>
 		);
 	}
