@@ -179,7 +179,6 @@ ViewPrivateKeyForm.propTypes = {
 const styles = {
 	sendButton: {
 		width: '50%',
-		height: '24px',
 	},
 	errorText: { color: 'red', fontSize: '12px', textAlign: 'left' },
 };

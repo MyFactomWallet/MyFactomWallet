@@ -219,23 +219,23 @@ class VoteSummary extends React.Component {
 				<Grid item container xs={3}>
 					<Grid item xs={12}>
 						<Typography gutterBottom>
-							Commit Start Block:&nbsp;{_get(poll, commitStartPath)}
+							Commit Start:&nbsp;{_get(poll, commitStartPath)}
 						</Typography>
 					</Grid>
 					<Grid item xs={12}>
 						<Typography gutterBottom>
-							Commit End Block:&nbsp;&nbsp;&nbsp;{_get(poll, commitEndPath)}
+							Commit End:&nbsp;&nbsp;&nbsp;{_get(poll, commitEndPath)}
 						</Typography>
 					</Grid>
 					<Grid item xs={12}>
 						<Typography gutterBottom>
-							Reveal Start Block:&nbsp;&nbsp;&nbsp;&nbsp;
+							Reveal Start:&nbsp;&nbsp;&nbsp;&nbsp;
 							{_get(poll, commitEndPath) + 1}
 						</Typography>
 					</Grid>
 					<Grid item xs={12}>
 						<Typography gutterBottom>
-							Reveal End Block:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							Reveal End:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							{_get(poll, revealEndPath)}
 						</Typography>
 					</Grid>
