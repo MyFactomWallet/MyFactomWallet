@@ -12,7 +12,7 @@
 		"crypto-browserify": "^3.12.0",
 		"factom": "1.0.0",
 		"factom-identity-lib": "0.2.0-rc4",
-		"factom-vote": "0.3.4",
+		"factom-vote": "0.3.5",
 		"factombip44": "0.1.8",
 		"formik": "1.5.1",
 		"gh-pages": "^2.0.1",

@@ -497,12 +497,7 @@ class CreateVoteForm extends React.Component {
 					} else {
 						// no winner criteria
 						values = _omit(values, winnerCriteriaPath);
-					}
-
-					// placeholder until factom-vote.js is updated to fix computeResultsAgainst validation for IRV votes
-					if (!_get(values, enableMinSupportConfigPath)) {
-						_get(values, configPath).computeResultsAgainst =
-							ALL_ELIGIBLE_VOTERS.value;
+						values = _omit(values, computeResultsAgainstPath);
 					}
 
 					// update Poll
