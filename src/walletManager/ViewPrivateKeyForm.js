@@ -26,7 +26,6 @@ const seedPath = 'seed';
 class ViewPrivateKeyForm extends Component {
 	verifySeed = (seed) => {
 		const activeAddress_o = this.props.walletController.getActiveAddress();
-
 		return this.props.seedController.verifySeed(seed, activeAddress_o);
 	};
 
@@ -52,7 +51,7 @@ class ViewPrivateKeyForm extends Component {
 					const { seed } = values;
 					try {
 						const mnemonic = seed.trim();
-						const privateKey = getPrivateKey(mnemonic, activeAddress_o.index);
+						const privateKey = getPrivateKey(mnemonic, activeAddress_o);
 						actions.setFieldValue(privateKeyPath, privateKey);
 					} catch (err) {
 						console.log(err);
