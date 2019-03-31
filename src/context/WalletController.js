@@ -141,7 +141,6 @@ class WalletController extends React.Component {
 		await this.smartSetState({ isStateHydrated: false });
 		await this.props.networkController.changeNetwork(network);
 		await this.props.factomCliController.connectToServer();
-		await this.props.factomCliController.updateBlockHeight();
 		this.hydrateStateWithLocalStorage();
 	};
 

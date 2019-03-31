@@ -17,9 +17,9 @@ class FactomCliController extends React.Component {
 			connectToServer: this.connectToServer,
 			getDefaultConnectionParams: this.getDefaultConnectionParams,
 			getEstimatedBlockTimestamp: this.getEstimatedBlockTimestamp,
-			updateBlockHeight: this.updateBlockHeight,
 			blockHeight: null,
 			blockTimestamp: null,
+			isStateHydrated: false,
 		};
 	}
 
@@ -38,9 +38,10 @@ class FactomCliController extends React.Component {
 
 	async componentDidMount() {
 		await this.connectToServer();
-		// get latest block height
-		this.updateBlockHeight();
+
 		this.blockHeightTimerId = setInterval(this.updateBlockHeight, 60000);
+
+		await this.smartSetState({ isStateHydrated: true });
 	}
 
 	componentWillUnmount() {
@@ -101,6 +102,8 @@ class FactomCliController extends React.Component {
 		await this.smartSetState({
 			factomCli: this.newFactomCli(connectionParams),
 		});
+
+		await this.updateBlockHeight();
 	};
 
 	smartSetState = (newState, afterSetState = _noop) =>
@@ -109,11 +112,15 @@ class FactomCliController extends React.Component {
 		);
 
 	render() {
-		return (
-			<FactomCliContext.Provider value={this.state}>
-				{this.props.children}
-			</FactomCliContext.Provider>
-		);
+		if (this.state.isStateHydrated) {
+			return (
+				<FactomCliContext.Provider value={this.state}>
+					{this.props.children}
+				</FactomCliContext.Provider>
+			);
+		} else {
+			return null;
+		}
 	}
 }
 
