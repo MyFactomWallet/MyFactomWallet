@@ -191,14 +191,13 @@ class CommitVoteForm extends React.Component {
 								sign: signMessageRaw,
 							};
 						}
-						console.log('Commit Vote Args');
-						console.log(commit_args);
 
 						//commit vote
 						const result = await commitVote(commit_args);
 
 						actions.setFieldValue(resultPath, result);
 						actions.setFieldValue(processingPath, false);
+						actions.setFieldValue(ledgerStatusPath, '');
 
 						// setup reveal file data
 						const reveal_args = {
