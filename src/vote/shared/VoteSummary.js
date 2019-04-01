@@ -376,7 +376,7 @@ class VoteSummary extends React.Component {
 									</Grid>
 									<Grid item xs={4}>
 										<Grid container>
-											{_get(poll, weightedMinSupportPath) && (
+											{!_isNil(_get(poll, weightedMinSupportPath)) && (
 												<Grid item xs={12}>
 													{!_get(poll, unweightedMinSupportPath) && <br />}
 													<Typography style={{ display: 'inline' }}>
@@ -385,7 +385,7 @@ class VoteSummary extends React.Component {
 													</Typography>
 												</Grid>
 											)}
-											{_get(poll, unweightedMinSupportPath) && (
+											{!_isNil(_get(poll, unweightedMinSupportPath)) && (
 												<Grid item xs={12}>
 													{!_get(poll, weightedMinSupportPath) && <br />}
 													<Typography style={{ display: 'inline' }}>
@@ -439,7 +439,7 @@ class VoteSummary extends React.Component {
 									<Grid item xs={4}>
 										<Grid container>
 											{supportsWeightedMinTurnoutCriteria &&
-												_get(poll, weightedMinTurnoutPath) && (
+												!_isNil(_get(poll, weightedMinTurnoutPath)) && (
 													<Grid item xs={12}>
 														{!_get(poll, unweightedMinTurnoutPath) && <br />}
 														<Typography style={{ display: 'inline' }}>
@@ -448,7 +448,7 @@ class VoteSummary extends React.Component {
 														</Typography>
 													</Grid>
 												)}
-											{_get(poll, unweightedMinTurnoutPath) && (
+											{!_isNil(_get(poll, unweightedMinTurnoutPath)) && (
 												<Grid item xs={12}>
 													{!_get(poll, weightedMinTurnoutPath) && <br />}
 													<Typography style={{ display: 'inline' }}>
