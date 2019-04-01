@@ -2,7 +2,6 @@ import React from 'react';
 import _get from 'lodash/get';
 import _flowRight from 'lodash/flowRight';
 import Grid from '@material-ui/core/Grid';
-import * as Yup from 'yup';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { Formik } from 'formik';

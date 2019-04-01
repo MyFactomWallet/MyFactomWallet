@@ -182,12 +182,7 @@ class EligibleVotersForm extends React.Component {
 	};
 
 	render() {
-		const {
-			eligibleVotersForm,
-			classes,
-			updateParticipants,
-			useEligibleVoterTestData,
-		} = this.props;
+		const { eligibleVotersForm, classes, updateParticipants } = this.props;
 
 		return (
 			<Formik
@@ -247,20 +242,8 @@ class EligibleVotersForm extends React.Component {
 
 												return (
 													<Grid container className={classes.pad}>
-														<Grid
-															item
-															container
-															justify="space-between"
-															xs={12}
-														>
+														<Grid item xs={12}>
 															<SectionHeader text="Select Voters" />
-															<Button
-																onClick={useEligibleVoterTestData}
-																variant="contained"
-																color="default"
-															>
-																Use Test Data
-															</Button>
 														</Grid>
 														<Grid item container xs={12}>
 															<Grid item xs={12} container>

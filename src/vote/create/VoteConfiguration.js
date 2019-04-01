@@ -1,5 +1,4 @@
 import React from 'react';
-import { VOTE_EXAMPLE_CONFIG } from './VOTE_EXAMPLE_DATA';
 
 export default class VoteConfiguration extends React.Component {
 	state = {
@@ -84,28 +83,12 @@ export default class VoteConfiguration extends React.Component {
 		this.setState({ createPollResult: result });
 	};
 
-	/**
-	 * For Testing
-	 */
-	useEligibleVoterTestData = () => {
-		this.updateParticipants(VOTE_EXAMPLE_CONFIG.eligibleVotersForm);
-	};
-
-	/**
-	 * For Testing
-	 */
-	usePollTestData = () => {
-		this.updatePoll(VOTE_EXAMPLE_CONFIG.pollForm);
-	};
-
 	render() {
 		return this.props.children({
 			...this.state,
 			updatePoll: this.updatePoll,
 			updateParticipants: this.updateParticipants,
 			updateCreatePollResult: this.updateCreatePollResult,
-			useEligibleVoterTestData: this.useEligibleVoterTestData,
-			usePollTestData: this.usePollTestData,
 		});
 	}
 }

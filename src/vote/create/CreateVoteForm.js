@@ -273,7 +273,6 @@ class CreateVoteForm extends React.Component {
 			pollForm,
 			updatePoll,
 			classes,
-			usePollTestData,
 			factomCliController: { blockHeight },
 		} = this.props;
 
@@ -528,28 +527,11 @@ class CreateVoteForm extends React.Component {
 						<Form onKeyPress={this.handleKeyPress}>
 							<Grid container className={classes.pad}>
 								<Grid container item spacing={16} xs={12}>
-									<Grid
-										item
-										container
-										justify="space-between"
-										alignItems="flex-end"
-										xs={12}
-									>
+									<Grid item xs={12}>
 										<SectionHeader
 											disableGutterBottom={true}
 											text="Configure Poll"
-											style={{ display: 'inline' }}
 										/>
-										<div>
-											<Button
-												onClick={usePollTestData}
-												variant="contained"
-												color="default"
-												style={{ display: 'inline' }}
-											>
-												Use Test Data
-											</Button>
-										</div>
 									</Grid>
 									<Grid container item xs={5}>
 										<Grid item xs={12}>

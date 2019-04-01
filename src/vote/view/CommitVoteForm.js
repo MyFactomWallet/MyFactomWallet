@@ -26,7 +26,6 @@ import {
 	INSTANT_RUNOFF_CONFIG,
 } from '../create/VOTE_CONSTANTS';
 import { digital } from 'factom-identity-lib';
-import { EC_PRIV } from '../create/VOTE_EXAMPLE_DATA';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormTextField from '../../component/form/FormTextField';
 import OpenInNew from '@material-ui/icons/OpenInNew';
@@ -43,10 +42,6 @@ import LedgerLogo from '../../component/logo/ledgerLogo.svg';
 import Create from '@material-ui/icons/Create';
 import { SVGLogo } from '../../component/logo/SVGLogo';
 
-const TEST_VOTER_ID = {
-	chainId: 'd12c0c85b1731a9a5108b86cd084db6230ced269d86c6aad91168d39955cbf2c',
-	key: 'idsec2nMgs9zSUuSvqkMyP28A1kmpbu24oDkoJnYQBJnv1XUpQBmmRG',
-};
 /**
  * Constants
  */
@@ -352,7 +347,7 @@ class CommitVoteForm extends React.Component {
 									<br />
 									<br />
 								</Grid>
-								<Grid item container justify="space-between" xs={12}>
+								<Grid item xs={12}>
 									{_get(errors, signatureTypePath) && submitCount > 0 ? (
 										<SectionHeader
 											disableGutterBottom
@@ -365,18 +360,6 @@ class CommitVoteForm extends React.Component {
 											text={signTransactionTitle}
 										/>
 									)}
-
-									<Button
-										onClick={() => {
-											setFieldValue(identityChainIDPath, TEST_VOTER_ID.chainId);
-											setFieldValue(identityKeyPath, TEST_VOTER_ID.key);
-											setFieldValue(ecPrivateKeyPath, EC_PRIV);
-										}}
-										variant="contained"
-										color="default"
-									>
-										Use Test Data
-									</Button>
 								</Grid>
 								{_isNil(_get(values, signatureTypePath)) && (
 									<Grid xs={12} item>

@@ -20,7 +20,6 @@ import { isValidPrivateEcAddress } from 'factom/dist/factom';
 import { computeVoteCreationCost } from 'factom-vote/dist/factom-vote';
 import { digital } from 'factom-identity-lib';
 import { REGEX_CHAIN_ID } from './VOTE_CONSTANTS';
-import { EC_PRIV, IDENTITY } from './VOTE_EXAMPLE_DATA';
 import LedgerLogo from '../../component/logo/ledgerLogo.svg';
 import Create from '@material-ui/icons/Create';
 import { SVGLogo } from '../../component/logo/SVGLogo';
@@ -210,7 +209,7 @@ class SubmitVoteForm extends React.Component {
 					return (
 						<Form>
 							<Grid container>
-								<Grid item container justify="space-between" xs={12}>
+								<Grid item xs={12}>
 									{_get(errors, signatureTypePath) && submitCount > 0 ? (
 										<SectionHeader
 											disableGutterBottom
@@ -220,17 +219,6 @@ class SubmitVoteForm extends React.Component {
 									) : (
 										<SectionHeader disableGutterBottom text={title} />
 									)}
-									<Button
-										onClick={() => {
-											setFieldValue(identityChainIDPath, IDENTITY.chainId);
-											setFieldValue(identityKeyPath, IDENTITY.key);
-											setFieldValue(ecPrivateKeyPath, EC_PRIV);
-										}}
-										variant="contained"
-										color="default"
-									>
-										Use Test Data
-									</Button>
 								</Grid>
 								{_isNil(_get(values, signatureTypePath)) && (
 									<Grid xs={12} item>

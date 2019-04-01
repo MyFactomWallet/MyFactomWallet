@@ -14,7 +14,6 @@ import { withVote } from '../../context/VoteContext';
 import { withNetwork } from '../../context/NetworkContext';
 import { withFactomCli } from '../../context/FactomCliContext';
 import { isValidPrivateEcAddress } from 'factom/dist/factom';
-import { EC_PRIV } from '../create/VOTE_EXAMPLE_DATA';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ExplorerLink from '../shared/ExplorerLink';
@@ -130,17 +129,8 @@ class RevealVoteForm extends React.Component {
 					return (
 						<Form onKeyPress={this.handleKeyPress}>
 							<Grid container className={classes.pad}>
-								<Grid container justify="space-between" item xs={12}>
+								<Grid item xs={12}>
 									<SectionHeader text="Reveal Vote" />
-									<Button
-										onClick={() => {
-											setFieldValue(ecPrivateKeyPath, EC_PRIV);
-										}}
-										variant="contained"
-										color="default"
-									>
-										Use Test EC
-									</Button>
 								</Grid>
 								<Grid item xs={9}>
 									<FormTextField
