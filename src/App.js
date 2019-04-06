@@ -11,6 +11,7 @@ import FactomCliController from './context/FactomCliController';
 import NetworkController from './context/NetworkController';
 import LedgerController from './context/LedgerController';
 import VoteController from './context/VoteController';
+import IdentityController from './context/IdentityController';
 import Disclaimer from './Disclaimer';
 import TestnetWarningBar from './TestnetWarningBar';
 import AppRouter from './AppRouter';
@@ -30,12 +31,14 @@ class App extends Component {
 									<VoteController>
 										<Header />
 										<SeedController>
-											<LedgerController>
-												<div className={classes.body}>
-													<AppRouter />
-													<TestnetWarningBar />
-												</div>
-											</LedgerController>
+											<IdentityController>
+												<LedgerController>
+													<div className={classes.body}>
+														<AppRouter />
+														<TestnetWarningBar />
+													</div>
+												</LedgerController>
+											</IdentityController>
 										</SeedController>
 									</VoteController>
 								</WalletController>

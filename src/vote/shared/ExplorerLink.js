@@ -22,11 +22,12 @@ class ExplorerLink extends React.Component {
 	};
 
 	render() {
-		const { classes, label, value, href } = this.props;
+		const { classes, label, value, href, extend = false } = this.props;
 
-		const valueClass = this.state.isHovered
-			? classes.value
-			: classes.value + ' ' + classes.short;
+		const valueClass =
+			this.state.isHovered || extend
+				? classes.value
+				: classes.value + ' ' + classes.short;
 
 		return (
 			<Grid container alignItems="center" className={classes.root}>

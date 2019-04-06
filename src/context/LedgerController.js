@@ -23,6 +23,7 @@ class LedgerController extends React.Component {
 			signTransaction: this.signTransaction,
 			signMessageRaw: this.signMessageRaw,
 			checkAddress: this.checkAddress,
+			storeChainId: this.storeChainId,
 		};
 	}
 
@@ -157,6 +158,21 @@ class LedgerController extends React.Component {
 			console.log('Transport Err:' + err);
 		}
 		return result;
+	};
+
+	storeChainId = async (chainId) => {
+		let transport = await TransportU2F.create();
+
+		try {
+			const fct = new Fct(transport);
+
+			await fct.storeChainId(chainId);
+		} catch (err) {
+			console.error('Failed to store chain ID to Ledger ' + ':', err);
+			throw err;
+		} finally {
+			transport.close();
+		}
 	};
 
 	render() {

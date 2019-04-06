@@ -154,14 +154,14 @@ class ButtonAppBar extends React.Component {
 							>
 								Create Poll
 							</MenuItem>
-							{/* <MenuItem
+							<MenuItem
 								component={Link}
 								to={'/ledgerId'}
 								onClick={this.handleVoteClose}
 								replace={true}
 							>
 								Ledger Identity
-							</MenuItem> */}
+							</MenuItem>
 						</Menu>
 					</React.Fragment>
 
