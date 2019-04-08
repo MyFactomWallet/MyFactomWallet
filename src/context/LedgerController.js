@@ -117,7 +117,7 @@ class LedgerController extends React.Component {
 
 			return result.s;
 		} catch (err) {
-			console.error('Failed to sign raw transaction from Ledger ' + ':', err);
+			console.error('Failed to sign raw transaction from Ledger :', err);
 			throw err;
 		} finally {
 			transport.close();
@@ -168,7 +168,7 @@ class LedgerController extends React.Component {
 
 			await fct.storeChainId(chainId);
 		} catch (err) {
-			console.error('Failed to store chain ID to Ledger ' + ':', err);
+			console.error('Failed to store chain ID to Ledger:', err);
 			throw err;
 		} finally {
 			transport.close();

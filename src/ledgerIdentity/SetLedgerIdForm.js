@@ -79,7 +79,7 @@ class SetLedgerIdForm extends React.Component {
 							<Grid container>
 								<Grid item xs={12}>
 									<SectionHeader
-										text="Store Factom Identity Chain on Ledger Nano S"
+										text="Set Factom Identity Chain on Ledger Nano S"
 										disableGutterBottom
 									/>
 									<FormTextField

@@ -332,6 +332,10 @@ class CreateLedgerIdForm extends React.Component {
 												the Factom blockchain.
 											</Typography>
 											<br />
+											<Typography variant="subtitle2">
+												Remember to copy down your Identity Chain ID.
+											</Typography>
+											<br />
 											<ExplorerLink
 												label="Identity Chain ID"
 												value={_get(values, identityChainIdPath)}
