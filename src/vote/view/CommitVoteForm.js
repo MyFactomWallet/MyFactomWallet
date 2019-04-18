@@ -25,7 +25,7 @@ import {
 	APPROVAL_CONFIG,
 	INSTANT_RUNOFF_CONFIG,
 } from '../create/VOTE_CONSTANTS';
-import { digital } from 'factom-identity-lib';
+import { app } from 'factom-identity-lib';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormTextField from '../../component/form/FormTextField';
 import OpenInNew from '@material-ui/icons/OpenInNew';
@@ -241,7 +241,7 @@ class CommitVoteForm extends React.Component {
 							.test(
 								identityKeyPath,
 								'Invalid Identity Key',
-								digital.isValidSecretIdentityKey
+								app.isValidSecretIdentityKey
 							),
 						otherwise: Yup.string().notRequired(),
 					}),

@@ -18,7 +18,7 @@ import FormTextField from '../../component/form/FormTextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { isValidPrivateEcAddress } from 'factom/dist/factom';
 import { computeVoteCreationCost } from 'factom-vote/dist/factom-vote';
-import { digital } from 'factom-identity-lib';
+import { app } from 'factom-identity-lib';
 import { REGEX_CHAIN_ID } from './VOTE_CONSTANTS';
 import LedgerLogo from '../../component/logo/ledgerLogo.svg';
 import Create from '@material-ui/icons/Create';
@@ -184,7 +184,7 @@ class SubmitVoteForm extends React.Component {
 							.test(
 								identityKeyPath,
 								'Invalid Identity Key',
-								digital.isValidSecretIdentityKey
+								app.isValidSecretIdentityKey
 							),
 						otherwise: Yup.string().notRequired(),
 					}),
