@@ -191,7 +191,7 @@ class ConfirmationDialogRaw extends React.Component {
 						</li>
 						<li>
 							<Typography>
-								Use a hardware wallet for added protection (Ledger Nano S
+								Use a hardware wallet for added protection (Ledger Nano X/S
 								supported at this time).
 							</Typography>
 						</li>

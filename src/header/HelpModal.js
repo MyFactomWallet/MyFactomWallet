@@ -49,7 +49,7 @@ class AddWalletModal extends React.Component {
 						</Typography>
 						<br />
 						<Typography>
-							Ledger Nano S documentation can be found{' '}
+							Ledger Nano X/S documentation can be found{' '}
 							<a
 								target="_blank"
 								rel="noopener noreferrer"

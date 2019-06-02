@@ -33,7 +33,7 @@ const getImportTypes = (networkProps) => {
 		},
 		{
 			value: 'ledger',
-			label: 'Import addresses from Ledger Nano S',
+			label: 'Import addresses from Ledger Nano X/S',
 		},
 	];
 };

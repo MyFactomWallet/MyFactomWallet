@@ -21,8 +21,9 @@ const addressesPath = 'addresses';
 
 const getTitle = (networkProps) => {
 	return {
-		fct: 'Ledger Nano S ' + networkProps.factoidAbbreviationFull + ' Addresses',
-		ec: 'Ledger Nano S ' + networkProps.ecAbbreviationFull + ' Addresses',
+		fct:
+			'Ledger Nano X/S ' + networkProps.factoidAbbreviationFull + ' Addresses',
+		ec: 'Ledger Nano X/S ' + networkProps.ecAbbreviationFull + ' Addresses',
 	};
 };
 
@@ -70,7 +71,7 @@ class LedgerForm extends React.Component {
 		} catch (err) {
 			console.log(err);
 			this.setState({
-				ledgerStatus: 'Ledger Nano S not found. Troubleshooting tips:',
+				ledgerStatus: 'Ledger Nano X/S not found. Troubleshooting tips:',
 				ledgerConnected: false,
 			});
 		}
@@ -151,7 +152,7 @@ class LedgerForm extends React.Component {
 										<ul>
 											<li>
 												<Typography>
-													Are you using a Ledger Nano S device?
+													Are you using a Ledger Nano X/S device?
 												</Typography>
 											</li>
 											<li>
@@ -217,7 +218,7 @@ class LedgerForm extends React.Component {
 								) : (
 									<React.Fragment>
 										<Typography>
-											<b>Connecting to Ledger Nano S</b>
+											<b>Connecting to Ledger Nano X/S</b>
 										</Typography>
 										<CircularProgress thickness={7} />
 									</React.Fragment>
@@ -231,7 +232,7 @@ class LedgerForm extends React.Component {
 									<ul>
 										<li>
 											<Typography>
-												The Ledger Nano S hardware wallet can be ordered
+												The Ledger Nano X/S hardware wallet can be ordered
 												from&nbsp;
 												<a
 													target="_blank"
@@ -246,7 +247,7 @@ class LedgerForm extends React.Component {
 										<li>
 											<Typography>
 												To function properly, the Factom application needs to be
-												launched on the Ledger Nano S. You can install the
+												launched on the Ledger Nano X/S. You can install the
 												application from the Ledger Live Manager.
 											</Typography>
 										</li>

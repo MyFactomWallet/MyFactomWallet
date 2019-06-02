@@ -140,7 +140,7 @@ class LedgerController extends React.Component {
 
 			transport.close();
 		} catch (err) {
-			console.error('Failed getFctAddr from Ledger Nano S :', err);
+			console.error('Failed getFctAddr from Ledger Nano X/S :', err);
 		}
 	};
 

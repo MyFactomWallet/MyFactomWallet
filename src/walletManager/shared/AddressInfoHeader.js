@@ -49,7 +49,7 @@ const AddressInfoHeader = (props) => {
 						{activeAddress_o.importType === 'ledger' && (
 							<Typography>
 								<i>Import Type:</i>
-								&nbsp;&nbsp;&nbsp;Ledger Nano S
+								&nbsp;&nbsp;&nbsp;Ledger Nano X/S
 							</Typography>
 						)}
 						{activeAddress_o.importType === 'seed' && (
@@ -78,7 +78,7 @@ const AddressInfoHeader = (props) => {
 					<Grid item>
 						{activeAddress_o.importType === 'ledger' && (
 							<Tooltip
-								title="Verify Ledger Nano S Address"
+								title="Verify Ledger Nano X/S Address"
 								className={classes.pointer}
 							>
 								<SVGLogo
