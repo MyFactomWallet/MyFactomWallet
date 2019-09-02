@@ -151,6 +151,12 @@ class LedgerForm extends React.Component {
 										<Typography>{values.ledgerStatus}</Typography>
 										<ul>
 											<li>
+												<Typography style={{ fontWeight: 500 }}>
+													Ledger devices are currently not working on Windows 10
+													due to an issue out of our control.
+												</Typography>
+											</li>
+											<li>
 												<Typography>
 													Are you using a Ledger Nano X/S device?
 												</Typography>
