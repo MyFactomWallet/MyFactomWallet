@@ -199,7 +199,8 @@ class SendFactoidForm extends Component {
 						),
 					[sendFactoidAmountPath]: Yup.number()
 						.required('Required')
-						.positive('Must be a positive number')
+						.typeError('Must be a number')
+						.positive('Must be greater than 0')
 						.max(maxAmount, 'Insufficient Funds'),
 					[walletImportTypePath]: Yup.string(),
 					[privateKeyPath]: Yup.string().when(walletImportTypePath, {
@@ -306,7 +307,6 @@ class SendFactoidForm extends Component {
 						<Field name={sendFactoidAmountPath}>
 							{({ field, form }) => (
 								<TextField
-									type="number"
 									error={
 										errors[sendFactoidAmountPath] &&
 										touched[sendFactoidAmountPath]
@@ -314,6 +314,12 @@ class SendFactoidForm extends Component {
 											: false
 									}
 									{...field}
+									onChange={(e) => {
+										let regex = /^[\d.]+$/;
+										if (e.target.value === '' || regex.test(e.target.value)) {
+											handleChange(e);
+										}
+									}}
 									placeholder={
 										'Enter Amount (' + networkProps.factoidAbbreviation + ')'
 									}
