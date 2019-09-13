@@ -201,7 +201,8 @@ class ConvertECForm extends Component {
 						),
 					[entryCreditAmountPath]: Yup.number()
 						.required('Required')
-						.positive('Must be a positive number')
+						.typeError('Must be a number')
+						.positive('Must be greater than 0')
 						.max(maxAmount, 'Insufficient Funds'),
 					[walletImportTypePath]: Yup.string(),
 					[privateKeyPath]: Yup.string().when(walletImportTypePath, {
@@ -310,7 +311,6 @@ class ConvertECForm extends Component {
 						<Field name={entryCreditAmountPath}>
 							{({ field, form }) => (
 								<TextField
-									type="number"
 									error={
 										errors[entryCreditAmountPath] &&
 										touched[entryCreditAmountPath]
@@ -318,6 +318,12 @@ class ConvertECForm extends Component {
 											: false
 									}
 									{...field}
+									onChange={(e) => {
+										let regex = /^[\d.]+$/;
+										if (e.target.value === '' || regex.test(e.target.value)) {
+											handleChange(e);
+										}
+									}}
 									placeholder={
 										'Enter Amount (' + networkProps.ecAbbreviation + ')'
 									}
