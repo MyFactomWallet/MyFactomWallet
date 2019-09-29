@@ -63,7 +63,7 @@ class Sidebar extends Component {
 								</Typography>
 							</Grid>
 							{!_isNil(wallet.balance) && (
-								<Grid item>
+								<Grid item xs={5}>
 									<Typography className={classes.break}>
 										<FormatBalance balance={wallet.balance} type="fct" />
 									</Typography>
@@ -113,13 +113,13 @@ class Sidebar extends Component {
 				>
 					<ExpansionPanelSummary className={classes.rootPadding}>
 						<Grid container justify="space-between" style={grid}>
-							<Grid item xs={9}>
+							<Grid item xs={6}>
 								<Typography className={classes.break} style={nicknameStyle}>
 									{wallet.nickname}
 								</Typography>
 							</Grid>
 							{!_isNil(wallet.balance) && (
-								<Grid item>
+								<Grid item xs={5}>
 									<Typography className={classes.break}>
 										<FormatBalance balance={wallet.balance} type="ec" />
 									</Typography>
