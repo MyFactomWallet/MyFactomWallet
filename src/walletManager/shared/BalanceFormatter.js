@@ -26,12 +26,14 @@ const FormatFCTBalance = (props) => {
 
 	const factoidBalance = parseInt(factoshiBalance, 10) * FACTOSHI_MULTIPLIER;
 
-	result =
-		factoidBalance.toLocaleString(undefined, {
-			maximumFractionDigits: 8,
-		}) +
-		' ' +
-		props.networkProps.factoidAbbreviation;
+	result = (
+		<span>
+			{factoidBalance.toLocaleString(undefined, {
+				maximumFractionDigits: 8,
+			})}
+			&nbsp;&nbsp;{props.networkProps.factoidAbbreviation}
+		</span>
+	);
 
 	return result;
 };

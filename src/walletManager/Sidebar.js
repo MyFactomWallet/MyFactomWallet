@@ -15,6 +15,9 @@ import FormatBalance from './shared/BalanceFormatter.js';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
 import _isEmpty from 'lodash/isEmpty';
+import ledgerLogo from '../component/logo/ledgerLogo.svg';
+import { GiAcorn } from 'react-icons/gi';
+import { IoIosKey } from 'react-icons/io';
 
 class Sidebar extends Component {
 	render() {
@@ -33,6 +36,9 @@ class Sidebar extends Component {
 		const ecAddresses = getEntryCreditAddresses();
 		const factoidAddresses = getFactoidAddresses();
 
+		const grid = { paddingRight: '0px' };
+		const iconStyle = { paddingTop: '2px' };
+
 		const listfactoidAddresses = factoidAddresses.map(function(wallet, index) {
 			const expanded =
 				activeAddressIndex_o.index === index &&
@@ -49,9 +55,9 @@ class Sidebar extends Component {
 					}}
 					className={expanded ? classes.expanded : ''}
 				>
-					<ExpansionPanelSummary>
-						<Grid container justify="space-between">
-							<Grid item>
+					<ExpansionPanelSummary className={classes.rootPadding}>
+						<Grid container justify="space-between" style={grid}>
+							<Grid item xs={6}>
 								<Typography className={classes.break} style={nicknameStyle}>
 									{wallet.nickname}
 								</Typography>
@@ -61,6 +67,25 @@ class Sidebar extends Component {
 									<Typography className={classes.break}>
 										<FormatBalance balance={wallet.balance} type="fct" />
 									</Typography>
+								</Grid>
+							)}
+							{wallet.importType === 'seed' && (
+								<Grid item xs={1} style={iconStyle}>
+									<GiAcorn className={classes.reactIcon} />
+								</Grid>
+							)}
+							{wallet.importType === 'ledger' && (
+								<Grid item xs={1} style={iconStyle}>
+									<img
+										className={classes.ledgerLogo}
+										src={ledgerLogo}
+										alt="ledger icon"
+									/>
+								</Grid>
+							)}
+							{wallet.importType === 'standard' && (
+								<Grid item xs={1} style={iconStyle}>
+									<IoIosKey className={classes.reactIcon} />
 								</Grid>
 							)}
 						</Grid>
@@ -86,9 +111,9 @@ class Sidebar extends Component {
 					}}
 					className={expanded ? classes.expanded : ''}
 				>
-					<ExpansionPanelSummary>
-						<Grid container item xs={12} justify="space-between">
-							<Grid item>
+					<ExpansionPanelSummary className={classes.rootPadding}>
+						<Grid container justify="space-between" style={grid}>
+							<Grid item xs={9}>
 								<Typography className={classes.break} style={nicknameStyle}>
 									{wallet.nickname}
 								</Typography>
@@ -98,6 +123,25 @@ class Sidebar extends Component {
 									<Typography className={classes.break}>
 										<FormatBalance balance={wallet.balance} type="ec" />
 									</Typography>
+								</Grid>
+							)}
+							{wallet.importType === 'seed' && (
+								<Grid item xs={1} style={iconStyle}>
+									<GiAcorn className={classes.reactIcon} />
+								</Grid>
+							)}
+							{wallet.importType === 'ledger' && (
+								<Grid item xs={1} style={iconStyle}>
+									<img
+										className={classes.ledgerLogo}
+										src={ledgerLogo}
+										alt="ledger icon"
+									/>
+								</Grid>
+							)}
+							{wallet.importType === 'standard' && (
+								<Grid item xs={1} style={iconStyle}>
+									<IoIosKey className={classes.reactIcon} />
 								</Grid>
 							)}
 						</Grid>
@@ -165,12 +209,18 @@ const styles = (theme) => ({
 	noPadding: {
 		padding: '0px',
 	},
-
 	break: {
 		wordWrap: 'break-word',
 	},
 	expanded: {
 		backgroundColor: 'aliceblue',
+	},
+	ledgerLogo: {
+		height: 14,
+	},
+	reactIcon: {
+		width: 16,
+		height: 16,
 	},
 	listAddrRoot: {
 		width: '100%',
@@ -178,7 +228,9 @@ const styles = (theme) => ({
 		overflow: 'auto',
 		maxHeight: 270,
 	},
-
+	rootPadding: {
+		padding: '0 0px 0 24px',
+	},
 	addressHeading: {
 		fontWeight: 500,
 	},
