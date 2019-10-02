@@ -37,7 +37,7 @@ class Sidebar extends Component {
 		const factoidAddresses = getFactoidAddresses();
 
 		const grid = { paddingRight: '0px' };
-		const iconStyle = { paddingTop: '2px' };
+		const addressIcon = { paddingTop: '2px' };
 
 		const listfactoidAddresses = factoidAddresses.map(function(wallet, index) {
 			const expanded =
@@ -55,7 +55,7 @@ class Sidebar extends Component {
 					}}
 					className={expanded ? classes.expanded : ''}
 				>
-					<ExpansionPanelSummary className={classes.rootPadding}>
+					<ExpansionPanelSummary className={classes.addressName}>
 						<Grid container justify="space-between" style={grid}>
 							<Grid item xs={6}>
 								<Typography className={classes.break} style={nicknameStyle}>
@@ -70,12 +70,12 @@ class Sidebar extends Component {
 								</Grid>
 							)}
 							{wallet.importType === 'seed' && (
-								<Grid item xs={1} style={iconStyle}>
-									<GiAcorn className={classes.reactIcon} />
+								<Grid item xs={1} style={addressIcon}>
+									<GiAcorn className={classes.sidebarIcon} />
 								</Grid>
 							)}
 							{wallet.importType === 'ledger' && (
-								<Grid item xs={1} style={iconStyle}>
+								<Grid item xs={1} style={addressIcon}>
 									<img
 										className={classes.ledgerLogo}
 										src={ledgerLogo}
@@ -84,8 +84,8 @@ class Sidebar extends Component {
 								</Grid>
 							)}
 							{wallet.importType === 'standard' && (
-								<Grid item xs={1} style={iconStyle}>
-									<IoIosKey className={classes.reactIcon} />
+								<Grid item xs={1} style={addressIcon}>
+									<IoIosKey className={classes.sidebarIcon} />
 								</Grid>
 							)}
 						</Grid>
@@ -111,7 +111,7 @@ class Sidebar extends Component {
 					}}
 					className={expanded ? classes.expanded : ''}
 				>
-					<ExpansionPanelSummary className={classes.rootPadding}>
+					<ExpansionPanelSummary className={classes.addressName}>
 						<Grid container justify="space-between" style={grid}>
 							<Grid item xs={6}>
 								<Typography className={classes.break} style={nicknameStyle}>
@@ -126,22 +126,13 @@ class Sidebar extends Component {
 								</Grid>
 							)}
 							{wallet.importType === 'seed' && (
-								<Grid item xs={1} style={iconStyle}>
-									<GiAcorn className={classes.reactIcon} />
-								</Grid>
-							)}
-							{wallet.importType === 'ledger' && (
-								<Grid item xs={1} style={iconStyle}>
-									<img
-										className={classes.ledgerLogo}
-										src={ledgerLogo}
-										alt="ledger icon"
-									/>
+								<Grid item xs={1} style={addressIcon}>
+									<GiAcorn className={classes.sidebarIcon} />
 								</Grid>
 							)}
 							{wallet.importType === 'standard' && (
-								<Grid item xs={1} style={iconStyle}>
-									<IoIosKey className={classes.reactIcon} />
+								<Grid item xs={1} style={addressIcon}>
+									<IoIosKey className={classes.sidebarIcon} />
 								</Grid>
 							)}
 						</Grid>
@@ -216,10 +207,9 @@ const styles = (theme) => ({
 		backgroundColor: 'aliceblue',
 	},
 	ledgerLogo: {
-		height: 14,
+		height: 15,
 	},
-	reactIcon: {
-		width: 16,
+	sidebarIcon: {
 		height: 16,
 	},
 	listAddrRoot: {
@@ -228,8 +218,8 @@ const styles = (theme) => ({
 		overflow: 'auto',
 		maxHeight: 270,
 	},
-	rootPadding: {
-		padding: '0 0px 0 24px',
+	addressName: {
+		padding: '0 0 0 24px',
 	},
 	addressHeading: {
 		fontWeight: 500,
