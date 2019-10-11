@@ -54,7 +54,7 @@ class Sidebar extends Component {
 					}}
 					className={expanded ? classes.expanded : ''}
 				>
-					<ExpansionPanelSummary className={classes.addressName}>
+					<ExpansionPanelSummary className={classes.addressSummary}>
 						<Grid container justify="space-between" style={addressContainer}>
 							<Grid item xs={6}>
 								<Typography className={classes.break} style={nicknameStyle}>
@@ -106,7 +106,7 @@ class Sidebar extends Component {
 					}}
 					className={expanded ? classes.expanded : ''}
 				>
-					<ExpansionPanelSummary className={classes.addressName}>
+					<ExpansionPanelSummary className={classes.addressSummary}>
 						<Grid container justify="space-between" style={addressContainer}>
 							<Grid item xs={6}>
 								<Typography className={classes.break} style={nicknameStyle}>
@@ -214,7 +214,7 @@ const styles = (theme) => ({
 		overflow: 'auto',
 		maxHeight: 270,
 	},
-	addressName: {
+	addressSummary: {
 		padding: '0 0 0 24px',
 	},
 	addressHeading: {
