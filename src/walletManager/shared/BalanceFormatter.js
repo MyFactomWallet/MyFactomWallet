@@ -42,8 +42,12 @@ const FormatECBalance = (props) => {
 	let result = '';
 	const entryCreditBalance = props.balance;
 
-	result =
-		parseInt(entryCreditBalance, 10) + ' ' + props.networkProps.ecAbbreviation;
+	result = (
+		<span>
+			{parseInt(entryCreditBalance, 10)}
+			&nbsp;&nbsp;{props.networkProps.ecAbbreviation}
+		</span>
+	);
 
 	return result;
 };
