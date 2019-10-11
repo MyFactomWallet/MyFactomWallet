@@ -26,12 +26,14 @@ const FormatFCTBalance = (props) => {
 
 	const factoidBalance = parseInt(factoshiBalance, 10) * FACTOSHI_MULTIPLIER;
 
-	result =
-		factoidBalance.toLocaleString(undefined, {
-			maximumFractionDigits: 8,
-		}) +
-		' ' +
-		props.networkProps.factoidAbbreviation;
+	result = (
+		<span>
+			{factoidBalance.toLocaleString(undefined, {
+				maximumFractionDigits: 8,
+			})}
+			&nbsp;&nbsp;{props.networkProps.factoidAbbreviation}
+		</span>
+	);
 
 	return result;
 };
@@ -40,8 +42,12 @@ const FormatECBalance = (props) => {
 	let result = '';
 	const entryCreditBalance = props.balance;
 
-	result =
-		parseInt(entryCreditBalance, 10) + ' ' + props.networkProps.ecAbbreviation;
+	result = (
+		<span>
+			{parseInt(entryCreditBalance, 10)}
+			&nbsp;&nbsp;{props.networkProps.ecAbbreviation}
+		</span>
+	);
 
 	return result;
 };

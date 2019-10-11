@@ -15,6 +15,9 @@ import FormatBalance from './shared/BalanceFormatter.js';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
 import _isEmpty from 'lodash/isEmpty';
+import ledgerLogo from '../component/logo/ledgerLogo.svg';
+import { GiAcorn } from 'react-icons/gi';
+import { IoIosKey } from 'react-icons/io';
 
 class Sidebar extends Component {
 	render() {
@@ -33,6 +36,8 @@ class Sidebar extends Component {
 		const ecAddresses = getEntryCreditAddresses();
 		const factoidAddresses = getFactoidAddresses();
 
+		const addressContainer = { paddingRight: '0px' };
+
 		const listfactoidAddresses = factoidAddresses.map(function(wallet, index) {
 			const expanded =
 				activeAddressIndex_o.index === index &&
@@ -49,20 +54,21 @@ class Sidebar extends Component {
 					}}
 					className={expanded ? classes.expanded : ''}
 				>
-					<ExpansionPanelSummary>
-						<Grid container justify="space-between">
-							<Grid item>
+					<ExpansionPanelSummary className={classes.addressSummary}>
+						<Grid container justify="space-between" style={addressContainer}>
+							<Grid item xs={6}>
 								<Typography className={classes.break} style={nicknameStyle}>
 									{wallet.nickname}
 								</Typography>
 							</Grid>
 							{!_isNil(wallet.balance) && (
-								<Grid item>
+								<Grid item xs={5}>
 									<Typography className={classes.break}>
 										<FormatBalance balance={wallet.balance} type="fct" />
 									</Typography>
 								</Grid>
 							)}
+							<StyledAddressIcon importType={wallet.importType} />
 						</Grid>
 					</ExpansionPanelSummary>
 				</ExpansionPanel>
@@ -86,20 +92,21 @@ class Sidebar extends Component {
 					}}
 					className={expanded ? classes.expanded : ''}
 				>
-					<ExpansionPanelSummary>
-						<Grid container item xs={12} justify="space-between">
-							<Grid item>
+					<ExpansionPanelSummary className={classes.addressSummary}>
+						<Grid container justify="space-between" style={addressContainer}>
+							<Grid item xs={6}>
 								<Typography className={classes.break} style={nicknameStyle}>
 									{wallet.nickname}
 								</Typography>
 							</Grid>
 							{!_isNil(wallet.balance) && (
-								<Grid item>
+								<Grid item xs={5}>
 									<Typography className={classes.break}>
 										<FormatBalance balance={wallet.balance} type="ec" />
 									</Typography>
 								</Grid>
 							)}
+							<StyledAddressIcon importType={wallet.importType} />
 						</Grid>
 					</ExpansionPanelSummary>
 				</ExpansionPanel>
@@ -165,12 +172,14 @@ const styles = (theme) => ({
 	noPadding: {
 		padding: '0px',
 	},
-
 	break: {
 		wordWrap: 'break-word',
 	},
 	expanded: {
 		backgroundColor: 'aliceblue',
+	},
+	iconContainer: {
+		paddingTop: '2px',
 	},
 	listAddrRoot: {
 		width: '100%',
@@ -178,7 +187,9 @@ const styles = (theme) => ({
 		overflow: 'auto',
 		maxHeight: 270,
 	},
-
+	addressSummary: {
+		padding: '0 0 0 24px',
+	},
 	addressHeading: {
 		fontWeight: 500,
 	},
@@ -198,6 +209,35 @@ const styles = (theme) => ({
 		borderRadius: '4px',
 	},
 });
+
+const AddressIcon = (props) => {
+	const { classes, importType } = props;
+
+	return (
+		<Grid item xs={1} className={classes.iconContainer}>
+			{importType === 'seed' && <GiAcorn className={classes.sidebarIcon} />}
+			{importType === 'ledger' && (
+				<img
+					className={classes.ledgerLogo}
+					src={ledgerLogo}
+					alt="ledger icon"
+				/>
+			)}
+			{importType === 'standard' && (
+				<IoIosKey className={classes.sidebarIcon} />
+			)}
+		</Grid>
+	);
+};
+
+const StyledAddressIcon = withStyles({
+	ledgerLogo: {
+		height: 15,
+	},
+	sidebarIcon: {
+		height: 16,
+	},
+})(AddressIcon);
 
 const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
 
