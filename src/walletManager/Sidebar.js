@@ -68,21 +68,7 @@ class Sidebar extends Component {
 									</Typography>
 								</Grid>
 							)}
-							<Grid item xs={1} className={classes.iconContainer}>
-								{wallet.importType === 'seed' && (
-									<GiAcorn className={classes.sidebarIcon} />
-								)}
-								{wallet.importType === 'ledger' && (
-									<img
-										className={classes.ledgerLogo}
-										src={ledgerLogo}
-										alt="ledger icon"
-									/>
-								)}
-								{wallet.importType === 'standard' && (
-									<IoIosKey className={classes.sidebarIcon} />
-								)}
-							</Grid>
+							<StyledAddressIcon importType={wallet.importType} />
 						</Grid>
 					</ExpansionPanelSummary>
 				</ExpansionPanel>
@@ -120,14 +106,7 @@ class Sidebar extends Component {
 									</Typography>
 								</Grid>
 							)}
-							<Grid item xs={1} className={classes.iconContainer}>
-								{wallet.importType === 'seed' && (
-									<GiAcorn className={classes.sidebarIcon} />
-								)}
-								{wallet.importType === 'standard' && (
-									<IoIosKey className={classes.sidebarIcon} />
-								)}
-							</Grid>
+							<StyledAddressIcon importType={wallet.importType} />
 						</Grid>
 					</ExpansionPanelSummary>
 				</ExpansionPanel>
@@ -202,12 +181,6 @@ const styles = (theme) => ({
 	iconContainer: {
 		paddingTop: '2px',
 	},
-	ledgerLogo: {
-		height: 15,
-	},
-	sidebarIcon: {
-		height: 16,
-	},
 	listAddrRoot: {
 		width: '100%',
 		position: 'relative',
@@ -236,6 +209,35 @@ const styles = (theme) => ({
 		borderRadius: '4px',
 	},
 });
+
+const AddressIcon = (props) => {
+	const { classes, importType } = props;
+
+	return (
+		<Grid item xs={1} className={classes.iconContainer}>
+			{importType === 'seed' && <GiAcorn className={classes.sidebarIcon} />}
+			{importType === 'ledger' && (
+				<img
+					className={classes.ledgerLogo}
+					src={ledgerLogo}
+					alt="ledger icon"
+				/>
+			)}
+			{importType === 'standard' && (
+				<IoIosKey className={classes.sidebarIcon} />
+			)}
+		</Grid>
+	);
+};
+
+const StyledAddressIcon = withStyles({
+	ledgerLogo: {
+		height: 15,
+	},
+	sidebarIcon: {
+		height: 16,
+	},
+})(AddressIcon);
 
 const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
 
