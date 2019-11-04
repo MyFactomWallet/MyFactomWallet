@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FactomCliContext } from './FactomCliContext';
-import { FactomCli } from 'factom/dist/factom';
+import { FactomCli, FactomEventEmitter } from 'factom/dist/factom';
 import { withNetwork } from './NetworkContext';
 import defaultsDeep from 'lodash/fp/defaultsDeep';
 import _flowRight from 'lodash/flowRight';
@@ -39,27 +39,24 @@ class FactomCliController extends React.Component {
 	async componentDidMount() {
 		await this.connectToServer();
 
-		this.blockHeightTimerId = setInterval(this.updateBlockHeight, 60000);
-
 		await this.smartSetState({ isStateHydrated: true });
 	}
 
-	componentWillUnmount() {
-		clearInterval(this.blockHeightTimerId);
-	}
-
 	updateBlockHeight = async () => {
-		const result = await this.state.factomCli.getDirectoryBlockHead();
+		const factomEmitter = new FactomEventEmitter(this.state.factomCli, {
+			interval: 10000,
+		});
 
-		const { height, timestamp } = result;
-
-		if (height !== this.state.blockHeight) {
-			// process new block
-			this.setState({
-				blockHeight: height,
-				blockTimestamp: timestamp,
-			});
-		}
+		factomEmitter.on('newDirectoryBlock', (directoryBlock) => {
+			const { height, timestamp } = directoryBlock;
+			if (height !== this.state.blockHeight) {
+				// process new block
+				this.setState({
+					blockHeight: height,
+					blockTimestamp: timestamp,
+				});
+			}
+		});
 	};
 
 	getEstimatedBlockTimestamp = (blockHeight) => {
