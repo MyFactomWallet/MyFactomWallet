@@ -7,7 +7,7 @@ import defaultsDeep from 'lodash/fp/defaultsDeep';
 import _flowRight from 'lodash/flowRight';
 import _flow from 'lodash/flow';
 import _noop from 'lodash/noop';
-import * as moment from 'moment';
+import moment from 'moment';
 
 class FactomCliController extends React.Component {
 	constructor(props) {
@@ -43,11 +43,7 @@ class FactomCliController extends React.Component {
 	}
 
 	updateBlockHeight = async () => {
-		const factomEmitter = new FactomEventEmitter(this.state.factomCli, {
-			interval: 10000,
-		});
-
-		factomEmitter.on('newDirectoryBlock', (directoryBlock) => {
+		this.state.factomEmitter.on('newDirectoryBlock', (directoryBlock) => {
 			const { height, timestamp } = directoryBlock;
 			if (height !== this.state.blockHeight) {
 				// process new block
@@ -90,6 +86,11 @@ class FactomCliController extends React.Component {
 	newFactomCli = (connectionParams) =>
 		new FactomCli(defaultsDeep(this.defaultConnectionParams, connectionParams));
 
+	newFactomEmitter = (factomCli) =>
+		new FactomEventEmitter(factomCli, {
+			interval: 10000,
+		});
+
 	connectToServer = async () => {
 		const connectionParams = {
 			host: this.props.networkController.networkProps.apiHost,
@@ -98,6 +99,10 @@ class FactomCliController extends React.Component {
 
 		await this.smartSetState({
 			factomCli: this.newFactomCli(connectionParams),
+		});
+
+		await this.smartSetState({
+			factomEmitter: this.newFactomEmitter(this.state.factomCli),
 		});
 
 		await this.updateBlockHeight();
