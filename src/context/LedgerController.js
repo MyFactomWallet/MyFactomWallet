@@ -21,6 +21,7 @@ class LedgerController extends React.Component {
 			getLedgerAddresses: this.getLedgerAddresses,
 			getLedgerIdentityAddress: this.getLedgerIdentityAddress,
 			signTransaction: this.signTransaction,
+			signConvertToPFCT: this.signConvertToPFCT,
 			signMessageRaw: this.signMessageRaw,
 			checkAddress: this.checkAddress,
 			storeChainId: this.storeChainId,
@@ -79,6 +80,37 @@ class LedgerController extends React.Component {
 			)
 			.output(toAddr, amount)
 			.build();
+
+		const result = await ledger.signTransaction(
+			path,
+			unsignedTX.marshalBinarySig.toString('hex')
+		);
+
+		if (result) {
+			signedTX = Transaction.builder(unsignedTX)
+				.rcdSignature(
+					Buffer.from(result['r'], 'hex'),
+					Buffer.from(result['s'], 'hex')
+				)
+				.build();
+		}
+		transport.close();
+		return signedTX;
+	};
+
+	signConvertToPFCT = async ({ fromAddr, amount, index }) => {
+		let signedTX = {};
+		let transport = await TransportU2F.create();
+
+		const bip32Account = this.props.networkController.networkProps.bip32Account;
+		const path = "44'/131'/" + bip32Account + "'/0/" + index;
+
+		const ledger = new Fct(transport);
+
+		const unsignedTX = this.props.walletController.signConvertToPFCT({
+			fromAddr,
+			amount,
+		});
 
 		const result = await ledger.signTransaction(
 			path,
