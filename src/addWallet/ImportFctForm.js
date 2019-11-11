@@ -11,11 +11,11 @@ import get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
+import { ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
 
 /**
  * Constants
  */
-const FCT_ADDRESS_LENGTH = 52;
 const NICKNAME_MAX_LENGTH = 25;
 const fctAddrPath = 'factoidAddress';
 const nicknamePath = 'nickname';
@@ -73,7 +73,7 @@ class ImportFctForm extends React.Component {
 							label={
 								'Public ' + networkProps.factoidAbbreviationFull + ' Address'
 							}
-							maxLength={FCT_ADDRESS_LENGTH}
+							maxLength={ADDRESS_LENGTH}
 						/>
 						<ErrorMessage
 							name={fctAddrPath}

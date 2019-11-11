@@ -11,11 +11,10 @@ import _get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
-
+import { ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
 /**
  * Constants
  */
-const EC_ADDRESS_LENGTH = 52;
 const NICKNAME_MAX_LENGTH = 25;
 const ecAddrNamePath = 'entryCreditAddress';
 const nicknamePath = 'nickname';
@@ -77,7 +76,7 @@ class ImportEcForm extends React.Component {
 							name={ecAddrNamePath}
 							label={'Public ' + networkProps.ecAbbreviationFull + ' Address'}
 							helperText="test"
-							maxLength={EC_ADDRESS_LENGTH}
+							maxLength={ADDRESS_LENGTH}
 						/>
 						<ErrorMessage
 							name={ecAddrNamePath}

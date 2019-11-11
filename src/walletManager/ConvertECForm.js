@@ -23,9 +23,11 @@ import { withSeed } from '../context/SeedContext';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
 import { isValidPublicEcAddress } from 'factom/dist/factom';
+import { FACTOSHI_MULTIPLIER } from '../constants/WALLET_CONSTANTS';
 import ConvertTransactionPreview from './ConvertTransactionPreview';
 import Paper from '@material-ui/core/Paper';
 import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
+import { AMOUNT_REGEX, ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
 
 /**
  * Constants
@@ -36,9 +38,6 @@ const myFctWalletAnchorElPath = 'myFctWalletAnchorEl';
 const privateKeyPath = 'privateKey';
 const walletImportTypePath = 'walletImportType';
 const seedPath = 'seed';
-
-const FACTOSHI_MULTIPLIER = 0.00000001;
-const EC_ADDRESS_LENGTH = 52;
 
 class ConvertECForm extends Component {
 	state = { sendFactoshiFee: null, ecRate: null };
@@ -261,7 +260,7 @@ class ConvertECForm extends Component {
 									disabled={isSubmitting}
 									inputProps={{
 										spellCheck: false,
-										maxLength: EC_ADDRESS_LENGTH,
+										maxLength: ADDRESS_LENGTH,
 										autoComplete: 'nope',
 										// eslint-disable-next-line
 										autoComplete: 'off',
@@ -319,8 +318,10 @@ class ConvertECForm extends Component {
 									}
 									{...field}
 									onChange={(e) => {
-										let regex = /^[\d.]+$/;
-										if (e.target.value === '' || regex.test(e.target.value)) {
+										if (
+											e.target.value === '' ||
+											AMOUNT_REGEX.test(e.target.value)
+										) {
 											handleChange(e);
 										}
 									}}
@@ -365,7 +366,7 @@ class ConvertECForm extends Component {
 											disabled={isSubmitting}
 											inputProps={{
 												spellCheck: false,
-												maxLength: EC_ADDRESS_LENGTH,
+												maxLength: ADDRESS_LENGTH,
 												autoComplete: 'nope',
 												// eslint-disable-next-line
 												autoComplete: 'off',
