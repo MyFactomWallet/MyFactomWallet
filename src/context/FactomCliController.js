@@ -42,19 +42,6 @@ class FactomCliController extends React.Component {
 		await this.smartSetState({ isStateHydrated: true });
 	}
 
-	updateBlockHeight = async () => {
-		this.state.factomEmitter.on('newDirectoryBlock', (directoryBlock) => {
-			const { height, timestamp } = directoryBlock;
-			if (height !== this.state.blockHeight) {
-				// process new block
-				this.setState({
-					blockHeight: height,
-					blockTimestamp: timestamp,
-				});
-			}
-		});
-	};
-
 	getEstimatedBlockTimestamp = (blockHeight) => {
 		const currentHeight = this.state.blockHeight;
 
@@ -96,16 +83,24 @@ class FactomCliController extends React.Component {
 			host: this.props.networkController.networkProps.apiHost,
 			port: this.props.networkController.networkProps.apiPort,
 		};
+		const factomCli = this.newFactomCli(connectionParams);
+		const factomEmitter = this.newFactomEmitter(factomCli);
 
 		await this.smartSetState({
-			factomCli: this.newFactomCli(connectionParams),
+			factomCli,
+			factomEmitter,
 		});
 
-		await this.smartSetState({
-			factomEmitter: this.newFactomEmitter(this.state.factomCli),
+		this.state.factomEmitter.on('newDirectoryBlock', (directoryBlock) => {
+			const { height, timestamp } = directoryBlock;
+			if (height !== this.state.blockHeight) {
+				// process new block
+				this.setState({
+					blockHeight: height,
+					blockTimestamp: timestamp,
+				});
+			}
 		});
-
-		await this.updateBlockHeight();
 	};
 
 	smartSetState = (newState, afterSetState = _noop) =>
