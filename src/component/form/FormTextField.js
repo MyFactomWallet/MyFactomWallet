@@ -17,6 +17,7 @@ const FormTextField = ({
 	multiline,
 	name,
 	onChange,
+	onBlur,
 	onKeyPress,
 	placeholder,
 	shrink = false,
@@ -34,6 +35,7 @@ const FormTextField = ({
 					<TextField
 						{...field}
 						{...(onChange ? { onChange } : {})}
+						{...(onBlur ? { onBlur } : {})}
 						{...{
 							error,
 							disabled,
