@@ -233,11 +233,11 @@ const AddressIcon = (props) => {
 const StyledAddressIcon = withStyles({
 	ledgerLogo: {
 		height: 15,
-		color: '#949494',
+		opacity: '62%',
 	},
 	sidebarIcon: {
 		height: 16,
-		color: '#949494',
+		opacity: '62%',
 	},
 })(AddressIcon);
 
