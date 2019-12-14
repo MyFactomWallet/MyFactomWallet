@@ -69,7 +69,7 @@ const FormTextField = ({
 };
 
 const styles = (theme) => ({
-	errorText: { color: 'red', fontSize: '13px' },
+	errorText: { color: 'red', fontSize: '13px', textAlign: 'left' },
 });
 
 export default withStyles(styles)(FormTextField);

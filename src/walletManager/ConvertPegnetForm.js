@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
 import _isNil from 'lodash/isNil';
 import _get from 'lodash/get';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import { withFactomCli } from '../context/FactomCliContext';
 import Typography from '@material-ui/core/Typography';
@@ -21,7 +20,6 @@ import { withWalletContext } from '../context/WalletContext';
 import { withSeed } from '../context/SeedContext';
 import { withNetwork } from '../context/NetworkContext';
 import { withLedger } from '../context/LedgerContext';
-import SendTransactionPreview from './SendTransactionPreview';
 import FormTextField from '../component/form/FormTextField';
 
 import {
@@ -32,6 +30,7 @@ import {
 	DISABLE_AUTOCOMPLETE,
 } from '../constants/WALLET_CONSTANTS';
 import { PFCT_LBL } from '../constants/PEGNET_CONSTANTS';
+import axios from 'axios';
 
 const AMOUNT_PATH = 'amount';
 const KEY_PATH = 'key';
@@ -39,12 +38,72 @@ const KEY_TYPE_PATH = 'keyType';
 const SEED_PATH = 'seed';
 
 class convertPegnetForm extends Component {
-	state = { sendFactoidFee: null };
+	state = { sendFactoidFee: null, pFCTBalance: null };
 
 	async componentDidMount() {
 		const sendFactoidFee = await this.props.walletController.getFactoidFee();
 		this.setState({ sendFactoidFee });
+
+		/* axios
+			.post(this.props.networkController.networkProps.pegnetApiUrl, {
+				jsonrpc: '2.0',
+				id: 0,
+				method: 'get-transaction-status',
+				params: {
+					entryHash:
+						'adedfeeb546c4f1f3f77919fff78f2e06af5e91cafee6f78b4aa5fd5756b3827',
+				},
+			})
+			.then((res) => {
+				console.log('Response');
+				console.log(res);
+				console.log(res.data);
+			})
+			.catch((error) => {
+				console.log('Error');
+
+				if (error.response) {
+					this.errors(error.response.message);
+				} else if (error.request) {
+					console.log('error.request');
+				} else {
+					console.log('Error', error);
+				}
+				console.log('rejected');
+			});
+ */
+		this.updatepFCTBalance();
 	}
+
+	updatepFCTBalance = async () => {
+		const activeAddress_o = this.props.walletController.getActiveAddress();
+
+		await axios
+			.post(this.props.networkController.networkProps.pegnetApiUrl, {
+				jsonrpc: '2.0',
+				id: 0,
+				method: 'get-pegnet-balances',
+				params: {
+					address: activeAddress_o.address,
+				},
+			})
+			.then((res) => {
+				console.log(res.data);
+				this.setState({ pFCTBalance: res.data.result.pFCT });
+			})
+			.catch((error) => {
+				console.log('Error');
+
+				if (error.response) {
+					this.errors(error.response.message);
+				} else if (error.request) {
+					console.log('error.request');
+				} else {
+					console.log('Error', error);
+				}
+				console.log('rejected');
+			});
+	};
 
 	getMaxFCT(balance, fee) {
 		const maxFactoids = balance * FACTOSHI_MULTIPLIER - fee;
@@ -100,16 +159,17 @@ class convertPegnetForm extends Component {
 				}}
 				onSubmit={async (values, actions) => {
 					const { amount, key, seed, keyType } = values;
-					const pfctAmount = Math.round(FACTOID_MULTIPLIER * amount);
+					const factoshipFCTAmount = Math.round(FACTOID_MULTIPLIER * amount);
 
 					let transaction = {};
 
 					try {
 						if (keyType === 'standard') {
 							console.log('Standard sign');
+
 							transaction = this.props.walletController.signConvertToPFCT({
 								key,
-								pfctAmount,
+								amount: factoshipFCTAmount,
 							});
 						} else if (keyType === 'seed') {
 							console.log('Seed sign');
@@ -117,7 +177,7 @@ class convertPegnetForm extends Component {
 							transaction = this.props.seedController.signConvertToPFCT({
 								mnemonic: seed.trim(),
 								index: activeAddress_o.index,
-								pfctAmount,
+								amount: factoshipFCTAmount,
 							});
 						} else if (keyType === 'ledger') {
 							console.log('Ledger sign');
@@ -145,12 +205,14 @@ class convertPegnetForm extends Component {
 
 							transaction = await ledgerController.signConvertToPFCT({
 								fromAddr: activeAddress_o.address,
-								pfctAmount,
+								amount: factoshipFCTAmount,
 								index: activeAddress_o.index,
 							});
 						}
 
-						const txId = await factomCli.sendTransaction(transaction); //await factomCli.sendTransaction(transaction, {force: true});
+						const txId = await factomCli.sendTransaction(transaction, {
+							force: true,
+						});
 						await addAddressTransaction(activeAddressIndex_o, txId);
 
 						actions.setFieldValue('transactionID', txId);
@@ -205,7 +267,19 @@ class convertPegnetForm extends Component {
 				}) => (
 					<Form {...DISABLE_AUTOCOMPLETE}>
 						<AddressInfoHeader />
-
+						<br />
+						<Paper className={classes.pegnetPaper}>
+							<Typography align="left">Pegnet Balances</Typography>
+							<br />
+							<Typography align="left">
+								{!_isNil(this.state.pFCTBalance)
+									? this.state.pFCTBalance * FACTOSHI_MULTIPLIER +
+									  ' ' +
+									  PFCT_LBL
+									: 'Loading...'}
+							</Typography>
+						</Paper>
+						<br />
 						<FormTextField
 							name={AMOUNT_PATH}
 							isNotFast
@@ -275,7 +349,7 @@ class convertPegnetForm extends Component {
 							/>
 						)}
 
-						{values.sendFactoidAmount ? (
+						{/* {values.sendFactoidAmount ? (
 							<SendTransactionPreview
 								networkProps={networkProps}
 								factoidAmount={values.sendFactoidAmount}
@@ -283,7 +357,7 @@ class convertPegnetForm extends Component {
 							/>
 						) : (
 							''
-						)}
+						)} */}
 
 						<br />
 						{!_isNil(values.transactionError) && (
@@ -384,7 +458,6 @@ const styles = {
 	sendButton: {
 		width: '50%',
 	},
-	//errorText: { color: 'red', fontSize: '12px', textAlign: 'left' },
 	transactionErrorText: { color: 'red', fontSize: '16px' },
 	pointer: {
 		cursor: 'pointer',
@@ -392,13 +465,17 @@ const styles = {
 	transaction: {
 		borderColor: '#6fbf73',
 		borderStyle: 'solid',
-
 		paddingTop: 3,
 		paddingBottom: 8,
 	},
 	successIcon: {
 		position: 'relative',
 		top: '5px',
+	},
+	pegnetPaper: {
+		padding: '10px',
+		boxShadow:
+			'inset 0px 0px 5px 0px rgba(0,0,0,0.2), inset 0px 0px 2px 0px rgba(0,0,0,0.14), inset 0px 0px 1px -2px rgba(0,0,0,0.12)',
 	},
 };
 

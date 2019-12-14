@@ -26,7 +26,7 @@ class SeedController extends React.Component {
 		this.state = {
 			getSeedAddresses: this.getSeedAddresses,
 			signWithSeed: this.signWithSeed,
-			signConvertPFCT: this.signConvertPFCT,
+			signConvertToPFCT: this.signConvertToPFCT,
 			verifySeed: this.verifySeed,
 			getRandomMnemonic: this.getRandomMnemonic,
 			getPrivateKey: this.getPrivateKey,
@@ -97,14 +97,14 @@ class SeedController extends React.Component {
 
 		const wallet = new factombip44.FactomBIP44(mnemonic);
 
-		const privateKey = seedToPrivateFctAddress(
+		const key = seedToPrivateFctAddress(
 			wallet.generateFactoidPrivateKey(bip32Account, 0, index)
 		);
 
-		signedTX = this.props.walletController.signConvertToPFCT(
-			privateKey,
-			amount
-		);
+		signedTX = this.props.walletController.signConvertToPFCT({
+			key,
+			amount,
+		});
 
 		return signedTX;
 	};

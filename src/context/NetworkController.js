@@ -28,6 +28,7 @@ class NetworkController extends React.Component {
 			voteRegistrationChainID:
 				'a968e880ee3a7002f25ade15ae36a77c15f4dbc9d8c11fdd5fe86ba6af73a475',
 			voteApiUrl: 'https://mainnetvote.factoid.org/graphql',
+			pegnetApiUrl: 'https://pegapi.myfactomwallet.com/v2',
 		},
 		testnet: {
 			network: 'testnet',
@@ -42,6 +43,7 @@ class NetworkController extends React.Component {
 			voteRegistrationChainID:
 				'a968e880ee3a7002f25ade15ae36a77c15f4dbc9d8c11fdd5fe86ba6af73a475',
 			voteApiUrl: 'https://testnetvote.factoid.org/graphql',
+			pegnetApiUrl: '',
 		},
 	};
 

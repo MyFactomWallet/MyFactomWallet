@@ -87,7 +87,7 @@ class WalletTabContent extends React.Component {
 
 						{tabValue === 3 && (
 							<TabContainer classes={classes}>
-								<ConvertPegnetForm />
+								<ConvertPegnetForm key={activeAddress.address} />
 							</TabContainer>
 						)}
 						{tabValue === 4 && (

@@ -7,6 +7,7 @@ import Fct from '@factoid.org/hw-app-fct';
 import { withNetwork } from '../context/NetworkContext';
 import { withWalletContext } from '../context/WalletContext';
 import { Transaction } from 'factom/dist/factom';
+import { BURN_ADDR } from '../constants/PEGNET_CONSTANTS';
 /**
  * Constants
  */
@@ -107,10 +108,10 @@ class LedgerController extends React.Component {
 
 		const ledger = new Fct(transport);
 
-		const unsignedTX = this.props.walletController.signConvertToPFCT({
-			fromAddr,
-			amount,
-		});
+		const unsignedTX = Transaction.builder()
+			.input(fromAddr, amount) // amount in factoshis
+			.output(BURN_ADDR, 0)
+			.build();
 
 		const result = await ledger.signTransaction(
 			path,

@@ -384,7 +384,7 @@ class WalletController extends React.Component {
 	signConvertToPFCT = ({ key, amount }) => {
 		return Transaction.builder()
 			.timestamp(Date.now())
-			.input(key, amount)
+			.input(key, amount) // amount in factoshis
 			.output(BURN_ADDR, 0)
 			.build();
 	};
