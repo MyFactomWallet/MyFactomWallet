@@ -12,11 +12,11 @@ import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
 import { ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
 import FormTextField from '../component/form/FormTextField';
+import { NICKNAME_MAX_LENGTH } from '../constants/WALLET_CONSTANTS';
 
 /**
  * Constants
  */
-const NICKNAME_MAX_LENGTH = 25;
 const fctAddrPath = 'factoidAddress';
 const nicknamePath = 'nickname';
 

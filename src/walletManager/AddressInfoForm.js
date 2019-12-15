@@ -1,13 +1,12 @@
 import React from 'react';
 import _flowRight from 'lodash/flowRight';
 import _get from 'lodash/get';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import * as Yup from 'yup';
-import TextField from '@material-ui/core/TextField';
 import { withWalletContext } from '../context/WalletContext';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -19,12 +18,12 @@ import DeleteForever from '@material-ui/icons/DeleteForever';
 import Tooltip from '@material-ui/core/Tooltip';
 import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
 import FormTextField from '../component/form/FormTextField';
+import { NICKNAME_MAX_LENGTH } from '../constants/WALLET_CONSTANTS';
 
 /**
  * Constants
  */
 const CLEAR_SAVED_MS = 500;
-const NICKNAME_MAX_LENGTH = 25;
 const nicknamePath = 'nickname';
 const oldNicknamePath = 'oldNickname';
 const saveLocallyPath = 'saveLocally';

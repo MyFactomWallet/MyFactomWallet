@@ -7,6 +7,8 @@ export const FACTOSHI_MULTIPLIER = 0.00000001;
 
 export const ADDRESS_LENGTH = 52;
 
+export const NICKNAME_MAX_LENGTH = 25;
+
 export const AMOUNT_REGEX = /^[\d.]+$/;
 
 export const DISABLE_AUTOCOMPLETE = {
