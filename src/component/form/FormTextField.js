@@ -6,6 +6,7 @@ import { Field, FastField, ErrorMessage } from 'formik';
 const FormTextField = ({
 	accept,
 	autoComplete = false,
+	autoFocus,
 	classes,
 	disabled = false,
 	displayError = true,
@@ -19,6 +20,7 @@ const FormTextField = ({
 	onChange,
 	onBlur,
 	onKeyPress,
+	margin,
 	placeholder,
 	shrink = false,
 	spellCheck = false,
@@ -37,6 +39,7 @@ const FormTextField = ({
 						{...(onChange ? { onChange } : {})}
 						{...(onBlur ? { onBlur } : {})}
 						{...{
+							autoFocus,
 							error,
 							disabled,
 							fullWidth,
@@ -45,6 +48,7 @@ const FormTextField = ({
 							type,
 							multiline,
 							onKeyPress,
+							margin,
 						}}
 						inputProps={{
 							autoComplete: autoComplete ? 'on' : 'off',

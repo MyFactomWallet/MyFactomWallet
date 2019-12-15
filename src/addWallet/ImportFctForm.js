@@ -1,17 +1,17 @@
 import React from 'react';
 import _flowRight from 'lodash/flowRight';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form } from 'formik';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import { isValidPublicFctAddress } from 'factom/dist/factom';
 import get from 'lodash/get';
 import findIndex from 'lodash/findIndex';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
 import { ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
+import FormTextField from '../component/form/FormTextField';
 
 /**
  * Constants
@@ -23,7 +23,6 @@ const nicknamePath = 'nickname';
 class ImportFctForm extends React.Component {
 	render() {
 		const {
-			classes,
 			walletController: { getFactoidAddresses, newStandardAddress, addAddress },
 			networkController: { networkProps },
 		} = this.props;
@@ -74,11 +73,10 @@ class ImportFctForm extends React.Component {
 								'Public ' + networkProps.factoidAbbreviationFull + ' Address'
 							}
 							maxLength={ADDRESS_LENGTH}
+							margin="dense"
+							fullWidth
 						/>
-						<ErrorMessage
-							name={fctAddrPath}
-							render={(msg) => <span className={classes.errorText}>{msg}</span>}
-						/>
+
 						<FormTextField
 							error={
 								errors[nicknamePath] && touched[nicknamePath] ? true : false
@@ -86,10 +84,8 @@ class ImportFctForm extends React.Component {
 							name={nicknamePath}
 							label="Nickname"
 							maxLength={NICKNAME_MAX_LENGTH}
-						/>
-						<ErrorMessage
-							name={nicknamePath}
-							render={(msg) => <span className={classes.errorText}>{msg}</span>}
+							margin="dense"
+							fullWidth
 						/>
 
 						<br />
@@ -112,36 +108,11 @@ class ImportFctForm extends React.Component {
 	}
 }
 
-const FormTextField = (props) => {
-	return (
-		<Field name={props.name}>
-			{({ field }) => (
-				<TextField
-					inputProps={{
-						spellCheck: false,
-						maxLength: props.maxLength,
-						autoComplete: 'nope',
-						// eslint-disable-next-line
-						autoComplete: 'off',
-					}}
-					{...field}
-					label={props.label + ' ' + (props.error ? '*' : '')}
-					margin="dense"
-					fullWidth
-					error={props.error}
-				/>
-			)}
-		</Field>
-	);
-};
-
 ImportFctForm.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
-const styles = (theme) => ({
-	errorText: { color: 'red', fontSize: '12px' },
-});
+const styles = (theme) => ({});
 
 const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
 
