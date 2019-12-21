@@ -25,6 +25,12 @@ import { withNetwork } from '../context/NetworkContext';
 import { withLedger } from '../context/LedgerContext';
 import { isValidPublicFctAddress } from 'factom/dist/factom';
 import SendTransactionPreview from './SendTransactionPreview';
+import {
+	FACTOSHI_MULTIPLIER,
+	FACTOID_MULTIPLIER,
+	ADDRESS_LENGTH,
+} from '../constants/WALLET_CONSTANTS';
+import { AMOUNT_REGEX } from '../constants/WALLET_CONSTANTS';
 
 /**
  * Constants
@@ -35,10 +41,6 @@ const myFctWalletAnchorElPath = 'myFctWalletAnchorEl';
 const privateKeyPath = 'privateKey';
 const seedPath = 'seed';
 const walletImportTypePath = 'walletImportType';
-
-const FACTOSHI_MULTIPLIER = 0.00000001;
-const FACTOID_MULTIPLIER = 100000000;
-const FCT_ADDRESS_LENGTH = 52;
 
 class SendFactoidForm extends Component {
 	state = { sendFactoidFee: null };
@@ -259,7 +261,7 @@ class SendFactoidForm extends Component {
 									disabled={isSubmitting}
 									inputProps={{
 										spellCheck: false,
-										maxLength: FCT_ADDRESS_LENGTH,
+										maxLength: ADDRESS_LENGTH,
 										autoComplete: 'nope',
 										// eslint-disable-next-line
 										autoComplete: 'off',
@@ -315,8 +317,10 @@ class SendFactoidForm extends Component {
 									}
 									{...field}
 									onChange={(e) => {
-										let regex = /^[\d.]+$/;
-										if (e.target.value === '' || regex.test(e.target.value)) {
+										if (
+											e.target.value === '' ||
+											AMOUNT_REGEX.test(e.target.value)
+										) {
 											handleChange(e);
 										}
 									}}
@@ -371,7 +375,7 @@ class SendFactoidForm extends Component {
 											disabled={isSubmitting}
 											inputProps={{
 												spellCheck: false,
-												maxLength: FCT_ADDRESS_LENGTH,
+												maxLength: ADDRESS_LENGTH,
 												autoComplete: 'nope',
 												// eslint-disable-next-line
 												autoComplete: 'off',

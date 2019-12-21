@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
 import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import { withWalletContext } from '../context/WalletContext';
 import { withSeed } from '../context/SeedContext';
@@ -15,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import Visibility from '@material-ui/icons/Visibility';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import FormTextField from '../component/form/FormTextField';
 
 /**
  * Constants
@@ -73,15 +73,14 @@ class ViewPrivateKeyForm extends Component {
 						{_isEmpty(_get(values, privateKeyPath)) && (
 							<FormTextField
 								name={seedPath}
-								fullWidth={true}
+								fullWidth
 								label="Seed Phrase"
-								type="text"
 								placeholder={
 									'Enter Seed Phrase for ' + activeAddress_o.nickname
 								}
 								error={_get(errors, seedPath) && _get(touched, seedPath)}
-								errorClass={classes.errorText}
 								disabled={isSubmitting}
+								multiline
 							/>
 						)}
 						<br />
@@ -138,40 +137,6 @@ class ViewPrivateKeyForm extends Component {
 	}
 }
 
-const FormTextField = (props) => {
-	return (
-		<React.Fragment>
-			<Field name={props.name}>
-				{({ field }) => (
-					<TextField
-						style={{ width: props.width }}
-						required={props.required}
-						disabled={props.disabled}
-						placeholder={props.placeholder}
-						{...field}
-						type={props.type}
-						inputProps={{
-							spellCheck: props.enableSpellCheck,
-							maxLength: props.maxLength,
-							autoComplete: 'nope',
-							// eslint-disable-next-line
-							autoComplete: 'off',
-						}}
-						error={props.error}
-						label={props.label}
-						fullWidth={props.fullWidth}
-						multiline={props.multiline}
-					/>
-				)}
-			</Field>
-			<ErrorMessage
-				name={props.name}
-				render={(msg) => <div className={props.errorClass}>{msg}</div>}
-			/>
-		</React.Fragment>
-	);
-};
-
 ViewPrivateKeyForm.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
@@ -180,7 +145,6 @@ const styles = {
 	sendButton: {
 		width: '50%',
 	},
-	errorText: { color: 'red', fontSize: '12px', textAlign: 'left' },
 };
 
 const enhancer = _flowRight(withSeed, withWalletContext, withStyles(styles));

@@ -18,12 +18,12 @@ import FormatBalance from '../walletManager/shared/BalanceFormatter.js';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { NICKNAME_MAX_LENGTH } from '../constants/WALLET_CONSTANTS';
 
 /**
  * Constants
  */
 const addressesPath = 'addresses';
-const NICKNAME_MAX_LENGTH = 25;
 
 class GenerateAddressTable extends React.Component {
 	state = { loading: false };
