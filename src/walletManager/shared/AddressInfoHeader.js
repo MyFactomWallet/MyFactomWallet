@@ -19,6 +19,7 @@ const AddressInfoHeader = (props) => {
 		classes,
 		walletController: { getActiveAddress, activeAddressIndex_o },
 		ledgerController: { checkAddress },
+		pFCTBalance,
 	} = props;
 
 	const activeAddress_o = getActiveAddress();
@@ -74,6 +75,13 @@ const AddressInfoHeader = (props) => {
 								/>
 							</Typography>
 						)}
+						{!_isNil(pFCTBalance) && (
+							<Typography>
+								<i>pFCT:</i>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<FormatBalance balance={pFCTBalance} type="pFCT" />
+							</Typography>
+						)}
 					</Grid>
 					<Grid item>
 						{activeAddress_o.importType === 'ledger' && (
@@ -81,17 +89,19 @@ const AddressInfoHeader = (props) => {
 								title="Verify Ledger Nano X/S Address"
 								className={classes.pointer}
 							>
-								<SVGLogo
-									className={classes.logo}
-									src={LedgerLogo}
-									alt="Ledger Logo"
-									onClick={async () => {
-										await checkAddress(
-											activeAddress_o,
-											activeAddressIndex_o.type
-										);
-									}}
-								/>
+								<div className={classes.logoBackround}>
+									<SVGLogo
+										className={classes.logo}
+										src={LedgerLogo}
+										alt="Ledger Logo"
+										onClick={async () => {
+											await checkAddress(
+												activeAddress_o,
+												activeAddressIndex_o.type
+											);
+										}}
+									/>
+								</div>
 							</Tooltip>
 						)}
 					</Grid>
@@ -102,11 +112,23 @@ const AddressInfoHeader = (props) => {
 };
 const styles = (theme) => ({
 	root: { textAlign: 'left' },
-	paper: { backgroundColor: 'aliceblue', padding: '16px', marginBottom: '3px' },
+	paper: {
+		backgroundColor: 'aliceblue',
+		padding: '16px',
+		marginBottom: '3px',
+		boxShadow:
+			'inset 0px 0px 5px 0px rgba(0,0,0,0.2), inset 0px 0px 2px 0px rgba(0,0,0,0.14), inset 0px 0px 1px -2px rgba(0,0,0,0.12)',
+	},
 	pointer: {
 		cursor: 'pointer',
 	},
-	logo: { height: 20 },
+	logo: { height: 15 },
+	logoBackround: {
+		background: '#3f51b545',
+		padding: '10px',
+		borderRadius: '50%',
+		paddingBottom: '5px',
+	},
 });
 
 const enhancer = _flowRight(withWalletContext, withLedger, withStyles(styles));
