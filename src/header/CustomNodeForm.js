@@ -1,11 +1,11 @@
 import React from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import SectionHeader from '../vote/shared/SectionHeader.js';
+import FormTextField from '../component/form/FormTextField';
 
 const hostPath = 'host';
 const portPath = 'port';
@@ -17,12 +17,10 @@ class CustomNodeForm extends React.Component {
 		}
 	}
 	render() {
-		const { classes } = this.props;
 		return (
 			<Formik
 				initialValues={{ host: '', port: '' }}
 				onSubmit={(values, actions) => {
-					console.log('Submitted');
 					this.props.handleCustomNode(values[hostPath], values[portPath]);
 				}}
 				validationSchema={Yup.object().shape({
@@ -36,20 +34,20 @@ class CustomNodeForm extends React.Component {
 							error={errors[hostPath] && touched[hostPath] ? true : false}
 							name={hostPath}
 							label="Host"
+							margin="dense"
+							fullWidth
+							multiline
 						/>
-						<ErrorMessage
-							name={hostPath}
-							render={(msg) => <span className={classes.errorText}>{msg}</span>}
-						/>
+
 						<FormTextField
 							error={errors[portPath] && touched[portPath] ? true : false}
 							name={portPath}
 							label="Port"
+							margin="dense"
+							fullWidth
+							multiline
 						/>
-						<ErrorMessage
-							name={portPath}
-							render={(msg) => <span className={classes.errorText}>{msg}</span>}
-						/>
+
 						<br />
 						<br />
 						<Button
@@ -67,33 +65,9 @@ class CustomNodeForm extends React.Component {
 	}
 }
 
-const FormTextField = (props) => {
-	return (
-		<Field name={props.name}>
-			{({ field }) => (
-				<TextField
-					inputProps={{
-						spellCheck: false,
-						maxLength: props.maxLength,
-						autoComplete: 'nope',
-						// eslint-disable-next-line
-						autoComplete: 'off',
-					}}
-					{...field}
-					label={props.label + ' ' + (props.error ? '*' : '')}
-					margin="dense"
-					fullWidth
-					multiline
-					error={props.error}
-				/>
-			)}
-		</Field>
-	);
-};
-
 CustomNodeForm.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
-const styles = (theme) => ({ errorText: { color: 'red', fontSize: '12px' } });
+const styles = (theme) => ({});
 export default withStyles(styles)(CustomNodeForm);

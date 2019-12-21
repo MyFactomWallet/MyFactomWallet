@@ -1,10 +1,7 @@
 import React from 'react';
 import { withNetwork } from '../../context/NetworkContext';
 import _flowRight from 'lodash/flowRight';
-/**
- * Constants
- */
-const FACTOSHI_MULTIPLIER = 0.00000001;
+import { FACTOSHI_MULTIPLIER } from '../../constants/WALLET_CONSTANTS';
 
 const FormatBalance = (props) => {
 	const {

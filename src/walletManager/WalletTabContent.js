@@ -8,8 +8,10 @@ import Typography from '@material-ui/core/Typography';
 import SendFactoidForm from './SendFactoidForm';
 import ConvertECForm from './ConvertECForm';
 import ViewPrivateKeyForm from './ViewPrivateKeyForm';
+import ConvertPegnetForm from './ConvertPegnetForm';
 import AddressInfoTab from './AddressInfoTab';
 import { withNetwork } from '../context/NetworkContext';
+import { PFCT_LBL } from '../constants/PEGNET_CONSTANTS';
 
 class WalletTabContent extends React.Component {
 	state = {
@@ -33,10 +35,10 @@ class WalletTabContent extends React.Component {
 		// handle invalid FCT tab value
 		if (
 			type === 'fct' &&
-			tabValue >= 3 &&
+			tabValue >= 4 &&
 			activeAddress.importType !== 'seed'
 		) {
-			//only seeds have tab 3
+			//only seeds have tab 4
 			tabValue = 0;
 		}
 
@@ -61,14 +63,8 @@ class WalletTabContent extends React.Component {
 						>
 							<Tab label="Address Info" />
 							<Tab label={'Send ' + networkProps.factoidAbbreviationFull} />
-							<Tab
-								label={
-									'Convert ' +
-									networkProps.factoidAbbreviation +
-									' to ' +
-									networkProps.ecAbbreviation
-								}
-							/>
+							<Tab label={'Convert to ' + networkProps.ecAbbreviation} />
+							<Tab label={'Convert to ' + PFCT_LBL} />
 							{activeAddress.importType === 'seed' && (
 								<Tab label="View Private Key" />
 							)}
@@ -88,7 +84,13 @@ class WalletTabContent extends React.Component {
 								<ConvertECForm />
 							</TabContainer>
 						)}
+
 						{tabValue === 3 && (
+							<TabContainer classes={classes}>
+								<ConvertPegnetForm key={activeAddress.address} />
+							</TabContainer>
+						)}
+						{tabValue === 4 && (
 							<TabContainer classes={classes}>
 								<ViewPrivateKeyForm />
 							</TabContainer>
