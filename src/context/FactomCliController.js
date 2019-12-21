@@ -78,11 +78,30 @@ class FactomCliController extends React.Component {
 			interval: 10000,
 		});
 
+	updateBlock = (directoryBlock) => {
+		const { height, timestamp } = directoryBlock;
+		if (height !== this.state.blockHeight) {
+			// process new block
+			this.setState({
+				blockHeight: height,
+				blockTimestamp: timestamp,
+			});
+		}
+	};
+
 	connectToServer = async () => {
+		if (this.state.factomEmitter) {
+			this.state.factomEmitter.removeListener(
+				'newDirectoryBlock',
+				this.updateBlock
+			);
+		}
+
 		const connectionParams = {
 			host: this.props.networkController.networkProps.apiHost,
 			port: this.props.networkController.networkProps.apiPort,
 		};
+
 		const factomCli = this.newFactomCli(connectionParams);
 		const factomEmitter = this.newFactomEmitter(factomCli);
 
@@ -91,16 +110,7 @@ class FactomCliController extends React.Component {
 			factomEmitter,
 		});
 
-		this.state.factomEmitter.on('newDirectoryBlock', (directoryBlock) => {
-			const { height, timestamp } = directoryBlock;
-			if (height !== this.state.blockHeight) {
-				// process new block
-				this.setState({
-					blockHeight: height,
-					blockTimestamp: timestamp,
-				});
-			}
-		});
+		this.state.factomEmitter.on('newDirectoryBlock', this.updateBlock);
 	};
 
 	smartSetState = (newState, afterSetState = _noop) =>
