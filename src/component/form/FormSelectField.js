@@ -40,7 +40,6 @@ const FormSelectField = ({
 								</MenuItem>
 							))}
 						</Select>
-						{/* <FormHelperText /> */}
 					</FormControl>
 				)}
 			</FieldType>
