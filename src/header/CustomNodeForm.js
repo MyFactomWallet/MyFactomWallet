@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
-import SectionHeader from '../vote/shared/SectionHeader.js';
+import SectionHeader from '../component/form/SectionHeader';
 import FormTextField from '../component/form/FormTextField';
 
 const hostPath = 'host';
