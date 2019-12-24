@@ -5,7 +5,7 @@ import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import SectionHeader from '../vote/shared/SectionHeader.js';
+import SectionHeader from '../component/form/SectionHeader';
 
 class AddWalletModal extends React.Component {
 	state = {
