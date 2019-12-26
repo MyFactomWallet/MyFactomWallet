@@ -30,7 +30,6 @@ class AppRouter extends Component {
 						)
 					}
 				/>
-				<Route path="/test" render={() => <div>hi</div>} />
 			</Switch>
 		);
 	}
