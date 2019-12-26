@@ -1,4 +1,4 @@
-import { HashRouter as Router, Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import _flowRight from 'lodash/flowRight';
 import React, { Component } from 'react';
 import { withWalletContext } from './context/WalletContext';
@@ -16,23 +16,22 @@ class AppRouter extends Component {
 		} = this.props;
 
 		return (
-			<Router>
-				<React.Fragment>
-					<Route
-						exact
-						path="/"
-						render={() =>
-							readyToManageWallet && !isWalletEmpty() ? (
-								<WalletManager />
-							) : (
-								<AddInitialWallet
-									setReadyToManageWallet={setReadyToManageWallet}
-								/>
-							)
-						}
-					/>
-				</React.Fragment>
-			</Router>
+			<Switch>
+				<Route
+					exact
+					path="/"
+					render={() =>
+						readyToManageWallet && !isWalletEmpty() ? (
+							<WalletManager />
+						) : (
+							<AddInitialWallet
+								setReadyToManageWallet={setReadyToManageWallet}
+							/>
+						)
+					}
+				/>
+				<Route path="/test" render={() => <div>hi</div>} />
+			</Switch>
 		);
 	}
 }

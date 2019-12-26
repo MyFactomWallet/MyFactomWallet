@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
 import Header from './header/Header';
-import { HashRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import withRootTheme from './withRootTheme';

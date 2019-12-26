@@ -98,8 +98,8 @@ class ButtonAppBar extends React.Component {
 					</IconButton>
 
 					<Typography variant="h6" className={classes.flex}>
-						<Link className={classes.menuText} to="/">
-							MyFactomWallet
+						<Link className={classes.menuText} to="/test">
+							MyFactomWalletTest
 							{testnetActive && (
 								<span className={classes.testnetHeader}>
 									&nbsp;&nbsp;TESTNET
@@ -107,13 +107,12 @@ class ButtonAppBar extends React.Component {
 							)}
 						</Link>
 					</Typography>
-					<Button
-						href="#/"
-						onClick={this.handleWallet}
-						className={classes.menuText}
-					>
-						Wallet
-					</Button>
+					<Link to="/">
+						<Button onClick={this.handleWallet} className={classes.menuText}>
+							Wallet
+						</Button>
+					</Link>
+
 					<HelpModal />
 					<div className={classes.network}>
 						<Button
