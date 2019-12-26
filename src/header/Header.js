@@ -24,7 +24,6 @@ import HelpModal from './HelpModal';
 
 class ButtonAppBar extends React.Component {
 	state = {
-		voteAnchorEl: null,
 		networkAnchorEl: null,
 		openCustomNodeForm: false,
 	};
@@ -35,14 +34,6 @@ class ButtonAppBar extends React.Component {
 
 	handleCloseCustomNodeForm = () => {
 		this.setState({ openCustomNodeForm: false });
-	};
-
-	handleVoteClick = (event) => {
-		this.setState({ voteAnchorEl: event.currentTarget });
-	};
-
-	handleVoteClose = () => {
-		this.setState({ voteAnchorEl: null });
 	};
 
 	handleNetworkClick = (event) => {
@@ -89,7 +80,7 @@ class ButtonAppBar extends React.Component {
 			networkController: { networkProps },
 			factomCliController: { blockHeight },
 		} = this.props;
-		const { voteAnchorEl, networkAnchorEl } = this.state;
+		const { networkAnchorEl } = this.state;
 
 		const testnetActive = networkProps.network === 'testnet';
 
@@ -123,52 +114,10 @@ class ButtonAppBar extends React.Component {
 					>
 						Wallet
 					</Button>
-					<React.Fragment>
-						<Button
-							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
-							aria-haspopup="true"
-							onClick={this.handleVoteClick}
-							className={classes.menuText}
-						>
-							Vote
-							<ExpandMore />
-						</Button>
-						<Menu
-							id="simple-vote-menu"
-							anchorEl={voteAnchorEl}
-							open={Boolean(voteAnchorEl)}
-							onClose={this.handleVoteClose}
-						>
-							<MenuItem
-								onClick={this.handleVoteClose}
-								component={Link}
-								to={'/vote'}
-							>
-								View Polls
-							</MenuItem>
-							<MenuItem
-								component={Link}
-								to={'/createVote'}
-								onClick={this.handleVoteClose}
-								replace={true}
-							>
-								Create Poll
-							</MenuItem>
-							<MenuItem
-								component={Link}
-								to={'/ledgerId'}
-								onClick={this.handleVoteClose}
-								replace={true}
-							>
-								Ledger Identity
-							</MenuItem>
-						</Menu>
-					</React.Fragment>
-
 					<HelpModal />
 					<div className={classes.network}>
 						<Button
-							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
+							aria-owns={networkAnchorEl ? 'simple-anchor-menu' : null}
 							aria-haspopup="true"
 							onClick={this.handleNetworkClick}
 							className={classes.menuText}
@@ -182,7 +131,7 @@ class ButtonAppBar extends React.Component {
 							<ExpandMore />
 						</Button>
 						<Menu
-							id="simple-vote-menu"
+							id="simple-anchor-menu"
 							anchorEl={networkAnchorEl}
 							open={Boolean(networkAnchorEl)}
 							onClose={this.handleNetworkClose}

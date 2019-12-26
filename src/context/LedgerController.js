@@ -20,12 +20,9 @@ class LedgerController extends React.Component {
 		this.state = {
 			isLedgerConnected: this.isLedgerConnected,
 			getLedgerAddresses: this.getLedgerAddresses,
-			getLedgerIdentityAddress: this.getLedgerIdentityAddress,
 			signTransaction: this.signTransaction,
 			signConvertToPFCT: this.signConvertToPFCT,
-			signMessageRaw: this.signMessageRaw,
 			checkAddress: this.checkAddress,
-			storeChainId: this.storeChainId,
 		};
 	}
 
@@ -48,21 +45,6 @@ class LedgerController extends React.Component {
 		transport.close();
 
 		return result;
-	};
-
-	getLedgerIdentityAddress = async (index) => {
-		const bip32Account = this.props.networkController.networkProps.bip32Account;
-		const coinType = BIP_32_COIN_TYPES['identity'];
-
-		const transport = await TransportU2F.create();
-		const ledger = new Fct(transport);
-
-		const path = "44'/" + coinType + "'/" + bip32Account + "'/0/" + index;
-		const address_o = await ledger.getAddress(path);
-
-		transport.close();
-
-		return address_o;
 	};
 
 	signTransaction = async ({ fromAddr, toAddr, amount, index }) => {
@@ -130,33 +112,6 @@ class LedgerController extends React.Component {
 		return signedTX;
 	};
 
-	signMessageRaw = async (message) => {
-		const bip32Account = this.props.networkController.networkProps.bip32Account;
-		const index = 0;
-		const path =
-			"44'/" +
-			BIP_32_COIN_TYPES['identity'] +
-			"'/" +
-			bip32Account +
-			"'/0/" +
-			index;
-
-		let transport = await TransportU2F.create();
-
-		try {
-			const ledger = new Fct(transport);
-
-			const result = await ledger.signMessageRaw(path, message);
-
-			return result.s;
-		} catch (err) {
-			console.error('Failed to sign raw transaction from Ledger :', err);
-			throw err;
-		} finally {
-			transport.close();
-		}
-	};
-
 	checkAddress = async (activeFctWallet, type) => {
 		const bip32Account = this.props.networkController.networkProps.bip32Account;
 		const coinType = BIP_32_COIN_TYPES[type];
@@ -191,21 +146,6 @@ class LedgerController extends React.Component {
 			console.log('Transport Err:' + err);
 		}
 		return result;
-	};
-
-	storeChainId = async (chainId) => {
-		let transport = await TransportU2F.create();
-
-		try {
-			const fct = new Fct(transport);
-
-			await fct.storeChainId(chainId);
-		} catch (err) {
-			console.error('Failed to store chain ID to Ledger:', err);
-			throw err;
-		} finally {
-			transport.close();
-		}
 	};
 
 	render() {
