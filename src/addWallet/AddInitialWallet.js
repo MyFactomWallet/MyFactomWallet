@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
-import { withRouter } from 'react-router-dom';
 import AddWalletStepper from './AddWalletStepper';
 
 class AddInitialWallet extends Component {
@@ -39,10 +38,5 @@ AddInitialWallet.propTypes = {
 
 const styles = (theme) => ({});
 
-const enhancer = _flowRight(
-	withRouter,
-	withNetwork,
-	withWalletContext,
-	withStyles(styles)
-);
+const enhancer = _flowRight(withNetwork, withWalletContext, withStyles(styles));
 export default enhancer(AddInitialWallet);

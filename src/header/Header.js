@@ -107,13 +107,12 @@ class ButtonAppBar extends React.Component {
 							)}
 						</Link>
 					</Typography>
-					<Button
-						href="#/"
-						onClick={this.handleWallet}
-						className={classes.menuText}
-					>
-						Wallet
-					</Button>
+					<Link to="/">
+						<Button onClick={this.handleWallet} className={classes.menuText}>
+							Wallet
+						</Button>
+					</Link>
+
 					<HelpModal />
 					<div className={classes.network}>
 						<Button
