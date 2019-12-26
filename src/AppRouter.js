@@ -18,7 +18,6 @@ class AppRouter extends Component {
 		return (
 			<Switch>
 				<Route
-					exact
 					path="/"
 					render={() =>
 						readyToManageWallet && !isWalletEmpty() ? (
