@@ -56,14 +56,11 @@ class FactomCliController extends React.Component {
 		});
 
 	updateBlock = (directoryBlock) => {
-		const { height, timestamp } = directoryBlock;
-		if (height !== this.state.blockHeight) {
-			// process new block
-			this.setState({
-				blockHeight: height,
-				blockTimestamp: timestamp,
-			});
-		}
+		const { height } = directoryBlock;
+		// process new block
+		this.setState({
+			blockHeight: height,
+		});
 	};
 
 	connectToServer = async () => {
