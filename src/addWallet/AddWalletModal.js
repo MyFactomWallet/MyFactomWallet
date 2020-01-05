@@ -1,51 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import AddWalletStepper from './AddWalletStepper';
 
-class AddWalletModal extends React.Component {
-	state = {
-		open: false,
-	};
+function AddWalletModal(props) {
+	const classes = props.classes;
+	const [isOpen, setOpen] = useState(false);
 
-	handleOpen = () => {
-		this.setState({ open: true });
-	};
-
-	handleClose = () => {
-		this.setState({ open: false });
-	};
-
-	render() {
-		const { classes } = this.props;
-
-		return (
-			<div className={classes.center}>
-				<Button
-					onClick={this.handleOpen}
-					className={classes.button}
-					variant="outlined"
-					color="primary"
-				>
-					Add Address
-				</Button>
-				<Modal
-					aria-labelledby="modal-title"
-					open={this.state.open}
-					onClose={this.handleClose}
-				>
-					<div className={classes.modalContent}>
-						<AddWalletStepper
-							handleClose={this.handleClose}
-							handleCloseText="Exit"
-						/>
-					</div>
-				</Modal>
-			</div>
-		);
-	}
+	return (
+		<div className={classes.center}>
+			<Button
+				onClick={() => setOpen(true)}
+				className={classes.button}
+				variant="outlined"
+				color="primary"
+			>
+				Add Address
+			</Button>
+			<Modal
+				aria-labelledby="modal-title"
+				open={isOpen}
+				onClose={() => setOpen(false)}
+			>
+				<div className={classes.modalContent}>
+					<AddWalletStepper
+						handleClose={() => setOpen(false)}
+						handleCloseText="Exit"
+					/>
+				</div>
+			</Modal>
+		</div>
+	);
 }
 AddWalletModal.propTypes = {
 	classes: PropTypes.object.isRequired,
