@@ -9,22 +9,18 @@ import SectionHeader from '../component/form/SectionHeader';
 
 function HelpModal(props) {
 	const classes = props.classes;
-	const [open, setOpen] = useState(false);
-
-	function handleOpen() {
-		setOpen(true);
-	}
-
-	function handleClose() {
-		setOpen(false);
-	}
+	const [isOpen, setOpen] = useState(false);
 
 	return (
 		<>
-			<Button className={classes.menuText} onClick={handleOpen}>
+			<Button className={classes.menuText} onClick={() => setOpen(true)}>
 				Help
 			</Button>
-			<Modal aria-labelledby="modal-title" open={open} onClose={handleClose}>
+			<Modal
+				aria-labelledby="modal-title"
+				open={isOpen}
+				onClose={() => setOpen(false)}
+			>
 				<Paper className={classes.modalContent}>
 					<SectionHeader text="Help" id="modal-title" />
 					<Typography>
