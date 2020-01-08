@@ -9,7 +9,7 @@ import _flow from 'lodash/flow';
 import _noop from 'lodash/noop';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Header from '../header/Header';
+import Header from '../frame/Header';
 
 class FactomCliController extends React.Component {
 	constructor(props) {

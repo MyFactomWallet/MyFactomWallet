@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
-import Header from './header/Header';
+import Header from './frame/Header';
 import { BrowserRouter as Router } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -13,6 +13,7 @@ import LedgerController from './context/LedgerController';
 import Disclaimer from './Disclaimer';
 import TestnetWarningBar from './TestnetWarningBar';
 import AppRouter from './AppRouter';
+import Footer from './frame/Footer';
 
 class App extends Component {
 	render() {
@@ -35,6 +36,7 @@ class App extends Component {
 											</div>
 										</LedgerController>
 									</SeedController>
+									<Footer />
 								</WalletController>
 							</React.Fragment>
 						</FactomCliController>
