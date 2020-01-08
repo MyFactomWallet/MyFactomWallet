@@ -7,6 +7,9 @@ import defaultsDeep from 'lodash/fp/defaultsDeep';
 import _flowRight from 'lodash/flowRight';
 import _flow from 'lodash/flow';
 import _noop from 'lodash/noop';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Header from '../header/Header';
 
 class FactomCliController extends React.Component {
 	constructor(props) {
@@ -15,7 +18,8 @@ class FactomCliController extends React.Component {
 		this.state = {
 			connectToServer: this.connectToServer,
 			blockHeight: null,
-			isStateHydrated: false,
+			isConnected: false,
+			error: false,
 		};
 	}
 
@@ -34,8 +38,6 @@ class FactomCliController extends React.Component {
 
 	async componentDidMount() {
 		await this.connectToServer();
-
-		await this.smartSetState({ isStateHydrated: true });
 	}
 
 	getDefaultConnectionParams = () => {
@@ -64,6 +66,13 @@ class FactomCliController extends React.Component {
 	};
 
 	connectToServer = async () => {
+		// reset state
+		await this.smartSetState({
+			isConnected: false,
+			blockHeight: null,
+		});
+
+		// disable event emitter
 		if (this.state.factomEmitter) {
 			this.state.factomEmitter.removeListener(
 				'newDirectoryBlock',
@@ -77,14 +86,37 @@ class FactomCliController extends React.Component {
 		};
 
 		const factomCli = this.newFactomCli(connectionParams);
-		const factomEmitter = this.newFactomEmitter(factomCli);
+		try {
+			// test connection
+			if (
+				await factomCli.factomdApi('properties', null, {
+					timeout: 2000,
+					retry: { retries: 0 },
+				})
+			) {
+				// successful connection
+				const factomEmitter = this.newFactomEmitter(factomCli);
 
-		await this.smartSetState({
-			factomCli,
-			factomEmitter,
-		});
+				await this.smartSetState({
+					factomCli,
+					factomEmitter,
+				});
 
-		this.state.factomEmitter.on('newDirectoryBlock', this.updateBlock);
+				await this.state.factomEmitter.on(
+					'newDirectoryBlock',
+					this.updateBlock
+				);
+
+				await this.smartSetState({
+					isConnected: true,
+				});
+			}
+		} catch (e) {
+			// unsuccessful connection
+			console.log('Error connecting to server.');
+			console.log(e);
+			await this.smartSetState({ error: true });
+		}
 	};
 
 	smartSetState = (newState, afterSetState = _noop) =>
@@ -93,14 +125,33 @@ class FactomCliController extends React.Component {
 		);
 
 	render() {
-		if (this.state.isStateHydrated) {
+		if (this.state.error) {
+			return (
+				<FactomCliContext.Provider value={this.state}>
+					<Grid container>
+						<Grid item xs={12}>
+							<Header disabled />
+						</Grid>
+						<Grid item xs={12} justify="center" container>
+							<Typography variant="h5">
+								PLACEHOLDER Unable to connect to Factom node PLACEHOLDER
+							</Typography>
+						</Grid>
+					</Grid>
+				</FactomCliContext.Provider>
+			);
+		} else if (!this.state.isConnected) {
+			return (
+				<FactomCliContext.Provider value={this.state}>
+					<Header disabled greenConnection />
+				</FactomCliContext.Provider>
+			);
+		} else {
 			return (
 				<FactomCliContext.Provider value={this.state}>
 					{this.props.children}
 				</FactomCliContext.Provider>
 			);
-		} else {
-			return null;
 		}
 	}
 }

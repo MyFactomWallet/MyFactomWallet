@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withNetwork } from '../context/NetworkContext';
@@ -20,13 +20,9 @@ const getStandardSteps = () => {
 };
 
 const getLedgerAddressSteps = (networkProps) => {
-	return [
-		'Import Method',
-		networkProps.factoidAbbreviationFull,
-		//	networkProps.ecAbbreviationFull,
-	];
+	return ['Import Method', networkProps.factoidAbbreviationFull];
 };
-//this.props.networkController.networkProps.factoidAbbreviation
+
 const getSeedAddressSteps = (networkProps) => {
 	return [
 		'Import Method',
@@ -44,152 +40,123 @@ const stepMap = {
 	ec: getStandardSteps,
 };
 
-class AddWalletStepper extends React.Component {
-	initialState = {
-		activeStep: 0,
-		importType: 'fct',
-		getSteps: getStandardSteps,
-	};
+function AddWalletStepper(props) {
+	const [activeStep, setActiveStep] = useState(0);
+	const [importType, setImportType] = useState('fct');
+	const [getSteps, setGetSteps] = useState(() => getStandardSteps);
 
-	state = this.initialState;
-
-	updateImportType = (importType) => {
-		this.setState({
-			importType: importType,
-			getSteps: stepMap[importType],
-		});
-	};
-
-	handleNext = () => {
-		this.setState((state) => ({
-			activeStep: state.activeStep + 1,
-		}));
-	};
-
-	handleBack = () => {
-		this.setState((state) => ({
-			activeStep: state.activeStep - 1,
-		}));
-	};
-
-	handleReset = () => {
-		this.setState(this.initialState);
-	};
-
-	render() {
-		const {
-			classes,
-			handleCloseText,
-			networkController: { networkProps },
-			walletController: { isWalletEmpty },
-		} = this.props;
-
-		const { activeStep } = this.state;
-
-		const steps = this.state.getSteps(networkProps);
-		const sectionHeaderText =
-			networkProps.network === 'testnet'
-				? 'Add Testnet Address'
-				: 'Add Address';
-
-		return (
-			<Paper className={classes.paper}>
-				<SectionHeader text={sectionHeaderText} id="modal-title" />
-				<Stepper activeStep={activeStep} className={classes.stepper}>
-					{steps.map((label, index) => {
-						const props = {};
-						const labelProps = {};
-
-						return (
-							<Step key={label} {...props}>
-								<StepLabel {...labelProps}>{label}</StepLabel>
-							</Step>
-						);
-					})}
-				</Stepper>
-				<React.Fragment>
-					{activeStep === steps.length ? (
-						<React.Fragment>
-							<br />
-							{networkProps.network === 'testnet' ? (
-								<TestnetFinalStep
-									classes={classes}
-									isWalletEmpty={isWalletEmpty()}
-								/>
-							) : (
-								<MainnetFinalStep
-									classes={classes}
-									isWalletEmpty={isWalletEmpty()}
-								/>
-							)}
-							<br />
-							<br />
-							<div>
-								{!isWalletEmpty() ? (
-									<React.Fragment>
-										<Button onClick={this.handleReset}>Add Another</Button>
-										<Button
-											onClick={this.props.handleClose}
-											variant="contained"
-											color="primary"
-										>
-											{handleCloseText}
-										</Button>
-									</React.Fragment>
-								) : (
-									<Button variant="outlined" onClick={this.handleReset}>
-										Reset
-									</Button>
-								)}
-							</div>
-						</React.Fragment>
-					) : (
-						<React.Fragment>
-							<br />
-							<AddWalletStepContent
-								activeStep={activeStep}
-								updateImportType={this.updateImportType}
-								handleNext={this.handleNext}
-								handleBack={this.handleBack}
-								importType={this.state.importType}
-							/>
-						</React.Fragment>
-					)}
-				</React.Fragment>
-			</Paper>
-		);
+	function handleReset() {
+		setActiveStep(0);
+		setImportType('fct');
+		setGetSteps(() => getStandardSteps);
 	}
+
+	function updateImportType(importType) {
+		setImportType(importType);
+		setGetSteps(() => stepMap[importType]);
+	}
+
+	function handleNext() {
+		setActiveStep(activeStep + 1);
+	}
+
+	function handleBack() {
+		setActiveStep(activeStep - 1);
+	}
+
+	const {
+		classes,
+		handleClose,
+		handleCloseText,
+		networkController: { networkProps },
+		walletController: { isWalletEmpty },
+	} = props;
+
+	const steps = getSteps(networkProps);
+
+	const sectionHeaderText =
+		networkProps.network === 'testnet' ? 'Add Testnet Address' : 'Add Address';
+
+	return (
+		<Paper className={classes.paper}>
+			<SectionHeader text={sectionHeaderText} id="modal-title" />
+			<Stepper activeStep={activeStep} className={classes.stepper}>
+				{steps.map((label) => {
+					const props = {};
+					const labelProps = {};
+
+					return (
+						<Step key={label} {...props}>
+							<StepLabel {...labelProps}>{label}</StepLabel>
+						</Step>
+					);
+				})}
+			</Stepper>
+
+			{activeStep === steps.length ? (
+				<>
+					<br />
+					<FinalStep
+						classes={classes}
+						isWalletEmpty={isWalletEmpty()}
+						network={networkProps.network}
+					/>
+					<br />
+					<br />
+					<div>
+						{!isWalletEmpty() ? (
+							<>
+								<Button onClick={handleReset}>Add Another</Button>
+								<Button
+									onClick={handleClose}
+									variant="contained"
+									color="primary"
+								>
+									{handleCloseText}
+								</Button>
+							</>
+						) : (
+							<Button variant="outlined" onClick={handleReset}>
+								Reset
+							</Button>
+						)}
+					</div>
+				</>
+			) : (
+				<>
+					<br />
+					<AddWalletStepContent
+						activeStep={activeStep}
+						updateImportType={updateImportType}
+						handleNext={handleNext}
+						handleBack={handleBack}
+						importType={importType}
+					/>
+				</>
+			)}
+		</Paper>
+	);
 }
 AddWalletStepper.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
-const MainnetFinalStep = ({ classes, isWalletEmpty }) => {
+const FinalStep = ({ classes, isWalletEmpty, network }) => {
 	if (isWalletEmpty) {
 		return (
 			<Typography variant="subtitle1" gutterBottom>
 				No Addresses have been added.
 			</Typography>
 		);
-	} else {
+	} else if (network === 'mainnet') {
 		return (
 			<Typography variant="subtitle1" gutterBottom>
 				You have finished adding an address.
 			</Typography>
 		);
-	}
-};
-
-const TestnetFinalStep = ({ classes, isWalletEmpty }) => {
-	if (isWalletEmpty) {
+	} else if (network === 'testnet') {
 		return (
-			<Typography variant="subtitle1" gutterBottom>
-				No Addresses have been added.
-			</Typography>
-		);
-	} else {
-		return (
-			<React.Fragment>
+			<>
 				<Typography variant="subtitle1" gutterBottom>
 					You have finished adding a Testnet address.
 				</Typography>
@@ -213,7 +180,7 @@ const TestnetFinalStep = ({ classes, isWalletEmpty }) => {
 						to receive Testoids.
 					</Typography>
 				</Paper>
-			</React.Fragment>
+			</>
 		);
 	}
 };
