@@ -152,9 +152,16 @@ class SeedController extends React.Component {
 
 	render() {
 		return (
-			<SeedContext.Provider value={this.state}>
-				{this.props.children}
-			</SeedContext.Provider>
+			<>
+				<SeedContext.Provider value={this.state}>
+					{this.props.children}
+				</SeedContext.Provider>
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+			</>
 		);
 	}
 }

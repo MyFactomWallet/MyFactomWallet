@@ -11,7 +11,6 @@ import ViewPrivateKeyForm from './ViewPrivateKeyForm';
 //import ConvertPegnetForm from './ConvertPegnetForm';
 import AddressInfoTab from './AddressInfoTab';
 import { withNetwork } from '../context/NetworkContext';
-import { PFCT_LBL } from '../constants/PEGNET_CONSTANTS';
 
 class WalletTabContent extends React.Component {
 	state = {
