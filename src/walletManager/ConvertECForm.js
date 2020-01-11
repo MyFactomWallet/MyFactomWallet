@@ -310,6 +310,7 @@ class ConvertECForm extends Component {
 						<Field name={entryCreditAmountPath}>
 							{({ field, form }) => (
 								<TextField
+									type="number"
 									error={
 										errors[entryCreditAmountPath] &&
 										touched[entryCreditAmountPath]
@@ -444,7 +445,7 @@ class ConvertECForm extends Component {
 							<React.Fragment>
 								{values.transactionID !== null ? (
 									<div>
-										<Paper className={classes.transaction}>
+										<Paper className={classes.transaction} elevation={2}>
 											<CheckCircle
 												nativeColor="#6fbf73"
 												className={classes.successIcon}

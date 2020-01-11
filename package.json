@@ -7,8 +7,8 @@
 	"dependencies": {
 		"@factoid.org/hw-app-fct": "0.6.1",
 		"@ledgerhq/hw-transport-u2f": "^4.68.2",
-		"@material-ui/core": "3.9.2",
-		"@material-ui/icons": "3.0.2",
+		"@material-ui/core": "^4.8.3",
+		"@material-ui/icons": "^4.5.1",
 		"axios": "^0.19.0",
 		"factom": "^1.2.3",
 		"factombip44": "0.2.2",
