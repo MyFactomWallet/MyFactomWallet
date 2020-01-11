@@ -32,7 +32,6 @@ const SendTransactionPreview = (props) => {
 	return (
 		<Paper className={classes.root} elevation={2}>
 			<div>Transaction Preview</div>
-			<br />
 			<span className={classes.transferFactoidAmountText}>
 				{transferFactoidAmountText}
 			</span>
@@ -63,8 +62,8 @@ const styles = {
 		width: '75%',
 		margin: '0 auto',
 		paddingTop: '26px',
+		paddingBottom: '16px',
 		marginTop: '39px',
-		height: '194px',
 		borderRadius: '10px',
 		backgroundColor: '#eef1f4',
 		textAlign: 'center',
@@ -85,8 +84,8 @@ const styles = {
 	},
 	detail: {
 		display: 'inline-block',
-		paddingLeft: '65px',
-		paddingRight: '65px',
+		paddingLeft: '30px',
+		paddingRight: '30px',
 	},
 	divider: {
 		width: '50%',

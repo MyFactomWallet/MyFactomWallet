@@ -11,7 +11,7 @@ const AddressInfoTab = (props) => {
 		<div className={props.classes.root}>
 			<AddressInfoHeader />
 			<br />
-			<Grid container spacing={8}>
+			<Grid container spacing={1}>
 				<Grid item xs={6}>
 					<AddressInfoForm />
 				</Grid>
