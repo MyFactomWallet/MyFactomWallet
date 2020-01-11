@@ -88,7 +88,7 @@ class GenerateAddressTable extends React.Component {
 						</span>
 					)}
 				/>
-				<Paper className={classes.root}>
+				<Paper className={classes.root} elevation={2}>
 					<Table>
 						<TableHead>
 							<TableRow>

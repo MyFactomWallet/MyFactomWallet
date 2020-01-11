@@ -26,7 +26,7 @@ const AddressInfoHeader = (props) => {
 
 	return (
 		<div className={classes.root}>
-			<Paper elevation={2} className={classes.paper}>
+			<Paper className={classes.paper}>
 				<Grid container justify="space-between">
 					<Grid item>
 						<Typography className={classes.bold} gutterBottom>

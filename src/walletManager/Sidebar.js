@@ -116,7 +116,7 @@ class Sidebar extends Component {
 		return (
 			<React.Fragment>
 				{!_isEmpty(factoidAddresses) && (
-					<Paper className={classes.noPadding}>
+					<Paper className={classes.noPadding} elevation={2}>
 						<List className={classes.addressList}>
 							<ListItem className={classes.walletListHeader}>
 								<Typography
@@ -138,7 +138,7 @@ class Sidebar extends Component {
 				{!_isEmpty(ecAddresses) && (
 					<React.Fragment>
 						{!_isEmpty(factoidAddresses) && <br />}
-						<Paper className={classes.noPadding}>
+						<Paper className={classes.noPadding} elevation={2}>
 							<List className={classes.addressList}>
 								<ListItem className={classes.walletListHeader}>
 									<Typography

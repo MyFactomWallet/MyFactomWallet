@@ -268,7 +268,7 @@ class convertPegnetForm extends Component {
 					<Form {...DISABLE_AUTOCOMPLETE}>
 						<AddressInfoHeader />
 						<br />
-						<Paper className={classes.pegnetPaper}>
+						<Paper className={classes.pegnetPaper} elevation={2}>
 							<Typography align="left">Pegnet Balances</Typography>
 							<br />
 							<Typography align="left">
@@ -281,6 +281,7 @@ class convertPegnetForm extends Component {
 						</Paper>
 						<br />
 						<FormTextField
+							type="number"
 							name={AMOUNT_PATH}
 							isNotFast
 							error={errors[AMOUNT_PATH] && touched[AMOUNT_PATH] ? true : false}
@@ -370,7 +371,7 @@ class convertPegnetForm extends Component {
 							<React.Fragment>
 								{values.transactionID !== null ? (
 									<div>
-										<Paper className={classes.transaction}>
+										<Paper className={classes.transaction} elevation={2}>
 											<CheckCircle
 												nativeColor="#6fbf73"
 												className={classes.successIcon}
