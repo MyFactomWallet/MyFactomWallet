@@ -24,13 +24,13 @@ class WalletManager extends Component {
 		return (
 			<React.Fragment>
 				{!_isNil(activeAddress) && (
-					<Grid container spacing={24} item xs={12}>
+					<Grid container spacing={3} item xs={12}>
 						<Grid item xs={4}>
 							<Sidebar />
 						</Grid>
 
 						<Grid item xs={8}>
-							<Paper>
+							<Paper elevation={2}>
 								<WalletTabContent
 									type={activeAddressIndex_o.type}
 									activeAddress={activeAddress}
