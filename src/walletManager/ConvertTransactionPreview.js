@@ -38,7 +38,6 @@ const ConvertTransactionPreview = (props) => {
 	return (
 		<Paper className={classes.root} elevation={2}>
 			<div>Transaction Preview</div>
-			<br />
 			<span className={classes.convertECAmountText}>{convertECAmountText}</span>
 			<span className={classes.ecUnitText}>
 				{' ' + networkProps.ecAbbreviation}
@@ -67,8 +66,8 @@ const styles = {
 		width: '75%',
 		margin: '0 auto',
 		paddingTop: '26px',
+		paddingBottom: '16px',
 		marginTop: '39px',
-		height: '194px',
 		borderRadius: '10px',
 		backgroundColor: '#eef1f4',
 		textAlign: 'center',

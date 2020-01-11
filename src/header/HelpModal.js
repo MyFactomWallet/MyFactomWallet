@@ -21,7 +21,7 @@ function HelpModal(props) {
 				open={isOpen}
 				onClose={() => setOpen(false)}
 			>
-				<Paper className={classes.modalContent}>
+				<Paper className={classes.modalContent} elevation={2}>
 					<SectionHeader text="Help" id="modal-title" />
 					<Typography>
 						Please go to the #myfactomwallet channel on The Factoid Authority's{' '}

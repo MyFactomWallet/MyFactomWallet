@@ -26,49 +26,14 @@ const AddressInfoHeader = (props) => {
 
 	return (
 		<div className={classes.root}>
-			<Paper elevation={2} className={classes.paper}>
+			<Paper className={classes.paper}>
 				<Grid container justify="space-between">
 					<Grid item>
-						<Typography>
-							<i>Nickname:</i>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<Typography className={classes.bold} gutterBottom>
 							{activeAddress_o.nickname}
 						</Typography>
-						<Typography>
-							<i>Address:</i>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							{activeAddress_o.address}
-							&nbsp;
-							<CopyToClipboard text={activeAddress_o.address}>
-								<Tooltip title="Copy" className={classes.pointer}>
-									<SvgIcon fontSize="inherit" color="primary">
-										<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
-									</SvgIcon>
-								</Tooltip>
-							</CopyToClipboard>
-						</Typography>
-						{activeAddress_o.importType === 'ledger' && (
-							<Typography>
-								<i>Import Type:</i>
-								&nbsp;&nbsp;&nbsp;Ledger Nano X/S
-							</Typography>
-						)}
-						{activeAddress_o.importType === 'seed' && (
-							<Typography>
-								<i>Import Type:</i>
-								&nbsp;&nbsp;&nbsp;Seed Phrase
-							</Typography>
-						)}
-						{activeAddress_o.importType === 'standard' && (
-							<Typography>
-								<i>Import Type:</i>
-								&nbsp;&nbsp;&nbsp;Public Address
-							</Typography>
-						)}
 						{!_isNil(activeAddress_o.balance) && (
-							<Typography>
-								<i>Balance:</i>
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<Typography variant="h4">
 								<FormatBalance
 									balance={activeAddress_o.balance}
 									type={activeAddressIndex_o.type}
@@ -77,11 +42,19 @@ const AddressInfoHeader = (props) => {
 						)}
 						{!_isNil(pFCTBalance) && (
 							<Typography>
-								<i>pFCT:</i>
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								<FormatBalance balance={pFCTBalance} type="pFCT" />
 							</Typography>
 						)}
+						<Typography>
+							{activeAddress_o.address}
+							<CopyToClipboard text={activeAddress_o.address}>
+								<Tooltip title="Copy" className={classes.pointer}>
+									<SvgIcon fontSize="inherit" color="primary">
+										<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+									</SvgIcon>
+								</Tooltip>
+							</CopyToClipboard>
+						</Typography>
 					</Grid>
 					<Grid item>
 						{activeAddress_o.importType === 'ledger' && (
@@ -111,6 +84,14 @@ const AddressInfoHeader = (props) => {
 	);
 };
 const styles = (theme) => ({
+	ledgerLogo: {
+		height: 15,
+		opacity: '62%',
+	},
+	sidebarIcon: {
+		height: 16,
+		opacity: '62%',
+	},
 	root: { textAlign: 'left' },
 	paper: {
 		backgroundColor: 'aliceblue',
@@ -129,6 +110,7 @@ const styles = (theme) => ({
 		borderRadius: '50%',
 		paddingBottom: '5px',
 	},
+	bold: { fontWeight: 500 },
 });
 
 const enhancer = _flowRight(withWalletContext, withLedger, withStyles(styles));

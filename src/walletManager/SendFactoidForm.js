@@ -309,6 +309,7 @@ class SendFactoidForm extends Component {
 						<Field name={sendFactoidAmountPath}>
 							{({ field, form }) => (
 								<TextField
+									type="number"
 									error={
 										errors[sendFactoidAmountPath] &&
 										touched[sendFactoidAmountPath]
@@ -446,7 +447,7 @@ class SendFactoidForm extends Component {
 							<React.Fragment>
 								{values.transactionID !== null ? (
 									<div>
-										<Paper className={classes.transaction}>
+										<Paper className={classes.transaction} elevation={2}>
 											<CheckCircle
 												nativeColor="#6fbf73"
 												className={classes.successIcon}

@@ -78,7 +78,7 @@ function AddWalletStepper(props) {
 		networkProps.network === 'testnet' ? 'Add Testnet Address' : 'Add Address';
 
 	return (
-		<Paper className={classes.paper}>
+		<Paper className={classes.paper} elevation={2}>
 			<SectionHeader text={sectionHeaderText} id="modal-title" />
 			<Stepper activeStep={activeStep} className={classes.stepper}>
 				{steps.map((label) => {
@@ -160,7 +160,7 @@ const FinalStep = ({ classes, isWalletEmpty, network }) => {
 				<Typography variant="subtitle1" gutterBottom>
 					You have finished adding a Testnet address.
 				</Typography>
-				<Paper className={classes.testnetWarning}>
+				<Paper className={classes.testnetWarning} elevation={2}>
 					<Typography className={classes.warningText}>
 						<WarningIcon className={classes.warningIcon} />
 						&nbsp;&nbsp;Use these addresses for Testnet ONLY. Do not send real
@@ -191,7 +191,7 @@ const styles = (theme) => ({
 	},
 	paper: {
 		minWidth: 565,
-		padding: theme.spacing.unit * 4,
+		padding: theme.spacing(4),
 		minHeight: 300,
 	},
 	testnetWarning: {
