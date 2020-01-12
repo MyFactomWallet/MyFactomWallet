@@ -77,7 +77,7 @@ class GenerateAddressTable extends React.Component {
 		const userAddresses = userAddressList.map((addr_o) => addr_o.address);
 
 		return (
-			<React.Fragment>
+			<>
 				<Typography variant="h6">{this.props.title}</Typography>
 				<ErrorMessage
 					name={addressesPath}
@@ -112,7 +112,7 @@ class GenerateAddressTable extends React.Component {
 											<FieldArray
 												name={addressesPath}
 												render={(arrayHelpers) => (
-													<React.Fragment>
+													<>
 														<CustomCell>
 															{duplicate ? (
 																<Tooltip title="Address already added">
@@ -165,9 +165,9 @@ class GenerateAddressTable extends React.Component {
 																	return addr_o.address === address_o.address;
 																}).nickname
 															) : (
-																<React.Fragment>
+																<>
 																	{_get(values, checkboxPath) && (
-																		<React.Fragment>
+																		<>
 																			<Field
 																				name={nicknamePath}
 																				validate={this.validateNickname}
@@ -209,12 +209,12 @@ class GenerateAddressTable extends React.Component {
 																					</span>
 																				)}
 																			/>
-																		</React.Fragment>
+																		</>
 																	)}
-																</React.Fragment>
+																</>
 															)}
 														</CustomCell>
-													</React.Fragment>
+													</>
 												)}
 											/>
 										</TableRow>
@@ -234,13 +234,13 @@ class GenerateAddressTable extends React.Component {
 				>
 					Load Five More
 					{(this.state.loading || _isEmpty(generatedAddressList)) && (
-						<React.Fragment>
+						<>
 							&nbsp;
 							<CircularProgress thickness={7} />
-						</React.Fragment>
+						</>
 					)}
 				</Button>
-			</React.Fragment>
+			</>
 		);
 	}
 }
