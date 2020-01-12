@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
-import Header from './frame/Header';
 import { BrowserRouter as Router } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import withRootTheme from './withRootTheme';
-import WalletController from './context/WalletController';
-import SeedController from './context/SeedController';
-import FactomCliController from './context/FactomCliController';
-import NetworkController from './context/NetworkController';
-import LedgerController from './context/LedgerController';
-import Disclaimer from './Disclaimer';
-import TestnetWarningBar from './TestnetWarningBar';
 import AppRouter from './AppRouter';
+import Disclaimer from './Disclaimer';
+import FactomCliController from './context/FactomCliController';
 import Footer from './frame/Footer';
+import Header from './frame/Header';
+import LedgerController from './context/LedgerController';
+import NetworkController from './context/NetworkController';
+import PropTypes from 'prop-types';
+import SeedController from './context/SeedController';
+import TestnetWarningBar from './TestnetWarningBar';
+import WalletController from './context/WalletController';
+import withRootTheme from './withRootTheme';
 
 class App extends Component {
 	render() {
@@ -27,16 +27,18 @@ class App extends Component {
 							<React.Fragment>
 								<Disclaimer />
 								<WalletController>
-									<Header />
 									<SeedController>
 										<LedgerController>
-											<div className={classes.body}>
-												<AppRouter />
-												<TestnetWarningBar />
+											<div className={classes.pageContainer}>
+												<div className={classes.content}>
+													<Header />
+													<AppRouter />
+													<TestnetWarningBar />
+													<Footer />
+												</div>
 											</div>
 										</LedgerController>
 									</SeedController>
-									<Footer />
 								</WalletController>
 							</React.Fragment>
 						</FactomCliController>
@@ -51,9 +53,12 @@ App.propTypes = {
 };
 
 const styles = (theme) => ({
-	body: {
-		width: '1200px',
-		margin: '0 auto',
+	content: {
+		paddingBottom: '125px',
+	},
+	pageContainer: {
+		position: 'relative',
+		minHeight: '100vh',
 	},
 });
 
