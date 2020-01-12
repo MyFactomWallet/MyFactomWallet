@@ -31,7 +31,7 @@ const FormTextField = ({
 }) => {
 	const FieldType = isNotFast ? Field : FastField;
 	return (
-		<React.Fragment>
+		<>
 			<FieldType name={name} {...(validate ? { validate } : {})}>
 				{({ field }) => (
 					<TextField
@@ -70,7 +70,7 @@ const FormTextField = ({
 					render={(msg) => <div className={classes.errorText}>{msg}</div>}
 				/>
 			)}
-		</React.Fragment>
+		</>
 	);
 };
 
