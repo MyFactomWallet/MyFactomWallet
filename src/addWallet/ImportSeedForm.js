@@ -44,7 +44,7 @@ class ImportSeedForm extends React.Component {
 						// eslint-disable-next-line
 						autoComplete="off"
 					>
-						<React.Fragment>
+						<>
 							<FormTextField
 								error={
 									_get(errors, mnemonicPath) && _get(touched, mnemonicPath)
@@ -58,7 +58,7 @@ class ImportSeedForm extends React.Component {
 								margin="dense"
 								fullWidth
 							/>
-						</React.Fragment>
+						</>
 
 						<br />
 						<br />

@@ -359,7 +359,7 @@ class convertPegnetForm extends Component {
 						)}
 						<br />
 						{isSubmitting ? (
-							<React.Fragment>
+							<>
 								{values.transactionID !== null ? (
 									<div>
 										<Paper className={classes.transaction} elevation={2}>
@@ -410,12 +410,12 @@ class convertPegnetForm extends Component {
 										</Button>
 									</div>
 								) : (
-									<React.Fragment>
+									<>
 										<CircularProgress thickness={7} />
 										{values.ledgerStatus}
-									</React.Fragment>
+									</>
 								)}
-							</React.Fragment>
+							</>
 						) : (
 							<Button
 								className={classes.sendButton}

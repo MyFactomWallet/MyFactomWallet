@@ -17,7 +17,7 @@ function TestnetWarningBar(props) {
 
 	if (networkProps.network === 'testnet') {
 		return (
-			<React.Fragment>
+			<>
 				<CssBaseline />
 				<div className={classes.toolbarSpace} />
 				<AppBar position="fixed" className={classes.appBar}>
@@ -30,7 +30,7 @@ function TestnetWarningBar(props) {
 						<WarningIcon className={classes.warningIcon} />
 					</Toolbar>
 				</AppBar>
-			</React.Fragment>
+			</>
 		);
 	} else {
 		return null;
