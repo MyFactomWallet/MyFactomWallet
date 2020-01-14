@@ -32,8 +32,10 @@ class App extends Component {
 											<div className={classes.pageContainer}>
 												<div className={classes.content}>
 													<Header />
-													<AppRouter />
-													<TestnetWarningBar />
+													<div className={classes.body}>
+														<AppRouter />
+														{/* <TestnetWarningBar /> */}
+													</div>
 													<Footer />
 												</div>
 											</div>
@@ -53,6 +55,10 @@ App.propTypes = {
 };
 
 const styles = (theme) => ({
+	body: {
+		width: '1200px',
+		margin: '0 auto',
+	},
 	content: {
 		paddingBottom: '125px',
 	},

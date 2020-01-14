@@ -82,9 +82,10 @@ class Header extends React.Component {
 		const { networkAnchorEl } = this.state;
 
 		const testnetActive = networkProps.network === 'testnet';
+		const appBarColor = testnetActive ? 'secondary' : 'primary';
 
 		return (
-			<AppBar position="static" className={classes.root}>
+			<AppBar position="static" color={appBarColor} className={classes.root}>
 				<Toolbar className={classes.toolbar}>
 					<IconButton
 						className={classes.menuButton}
