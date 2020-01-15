@@ -23,7 +23,7 @@ function TestnetWarningBar(props) {
 				<AppBar position="fixed" className={classes.appBar}>
 					<Toolbar className={classes.toolbar}>
 						<WarningIcon className={classes.warningIcon} />
-						<Typography variant="h3">
+						<Typography variant="h2">
 							You are connected to the Factom <b>Testnet</b>
 						</Typography>
 						&nbsp;

@@ -82,10 +82,10 @@ class Header extends React.Component {
 		const { networkAnchorEl } = this.state;
 
 		const testnetActive = networkProps.network === 'testnet';
-		const appBarColor = testnetActive ? 'secondary' : 'primary';
+		const appBarClass = testnetActive ? 'testnetRoot' : 'root';
 
 		return (
-			<AppBar position="static" color={appBarColor} className={classes.root}>
+			<AppBar position="static" className={classes[appBarClass]}>
 				<Toolbar className={classes.toolbar}>
 					<IconButton
 						className={classes.menuButton}
@@ -102,7 +102,7 @@ class Header extends React.Component {
 							MyFactomWallet
 							{testnetActive && (
 								<span className={classes.testnetHeader}>
-									&nbsp;&nbsp;TESTNET
+									&nbsp;&nbsp;<b>TESTNET</b>
 								</span>
 							)}
 						</Link>
@@ -189,6 +189,12 @@ const styles = (theme) => ({
 		flexGrow: 1,
 		marginBottom: '15px',
 	},
+	testnetRoot: {
+		flexGrow: 1,
+		marginBottom: '15px',
+		backgroundColor: '#ffa000',
+	},
+
 	toolbar: {
 		width: '90%',
 		margin: '0 auto',
@@ -220,7 +226,7 @@ const styles = (theme) => ({
 		left: `50%`,
 		transform: `translate(-50%, -50%)`,
 	},
-	testnetHeader: { color: '#ffa000' },
+	testnetHeader: { color: 'black' },
 	connected: { color: '#0ec30e' },
 	notConnected: { color: 'red' },
 });
