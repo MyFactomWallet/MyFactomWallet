@@ -11,8 +11,7 @@ function Footer(props) {
 
 	return (
 		<Grid container justify={'center'} className={classes.root}>
-			<Grid item xs={12} sm={6} md={1} />
-			<Grid item xs={12} sm={6} md={4}>
+			<Grid item xs={12} sm={6} md={3}>
 				<Typography gutterBottom className={classes.heading} color="primary">
 					MyFactomWallet is brought to you by
 				</Typography>
@@ -36,7 +35,6 @@ function Footer(props) {
 					target="_blank"
 				>
 					<Typography
-						align={'left'}
 						gutterBottom
 						color="textSecondary"
 						className={classes.body}
@@ -46,7 +44,6 @@ function Footer(props) {
 				</Link>
 				<Link href="https://factomd.net/" target="_blank">
 					<Typography
-						align={'left'}
 						gutterBottom
 						color="textSecondary"
 						className={classes.body}
@@ -61,7 +58,6 @@ function Footer(props) {
 				</Typography>
 				<Link href="https://discord.gg/79kH2pp" target="_blank">
 					<Typography
-						align={'left'}
 						gutterBottom
 						color="textSecondary"
 						className={classes.body}
@@ -71,7 +67,6 @@ function Footer(props) {
 				</Link>
 				<Link href="https://help.myfactomwallet.com/" target="_blank">
 					<Typography
-						align={'left'}
 						gutterBottom
 						color="textSecondary"
 						className={classes.body}
@@ -80,28 +75,17 @@ function Footer(props) {
 					</Typography>
 				</Link>
 			</Grid>
-			<Grid item xs={12} sm={6} md={2}>
+			<Grid item xs={12} sm={6} md={5}>
 				<Typography gutterBottom color="primary" className={classes.heading}>
 					Donations are Welcome
 				</Typography>
-				<Typography
-					align={'left'}
-					gutterBottom
-					className={classes.body}
-					color="textSecondary"
-				>
-					FCT:
+				<Typography gutterBottom className={classes.body} color="textSecondary">
+					FCT: FA2gS1XCHv7sbWkRDHZJUwqHDDDNhL3V6trgxb2DWEw93aHDa9DG
 				</Typography>
-				<Typography
-					align={'left'}
-					gutterBottom
-					color="textSecondary"
-					className={classes.body}
-				>
+				<Typography gutterBottom color="textSecondary" className={classes.body}>
 					BTC: 36xEwrdJW8rjoaQpY6NcuWwsPLdtL2utcP
 				</Typography>
 			</Grid>
-			<Grid item xs={12} sm={6} md={1} />
 		</Grid>
 	);
 }
@@ -111,7 +95,7 @@ const styles = (theme) => ({
 		position: 'absolute',
 		bottom: 0,
 		height: '110px',
-		padding: '0 200px 0 100px',
+		padding: '0 50px 0 120px',
 		width: '100%',
 	},
 	heading: {
@@ -126,6 +110,7 @@ const styles = (theme) => ({
 		color: 'textSecondary',
 		fontWeight: '400',
 		whiteSpace: 'nowrap',
+		align: 'left',
 	},
 });
 

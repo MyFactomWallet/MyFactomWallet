@@ -11,7 +11,6 @@ import LedgerController from './context/LedgerController';
 import NetworkController from './context/NetworkController';
 import PropTypes from 'prop-types';
 import SeedController from './context/SeedController';
-import TestnetWarningBar from './TestnetWarningBar';
 import WalletController from './context/WalletController';
 import withRootTheme from './withRootTheme';
 
@@ -34,7 +33,6 @@ class App extends Component {
 													<Header />
 													<div className={classes.body}>
 														<AppRouter />
-														{/* <TestnetWarningBar /> */}
 													</div>
 													<Footer />
 												</div>

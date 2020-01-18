@@ -10,6 +10,7 @@ import _noop from 'lodash/noop';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Header from '../frame/Header';
+import Footer from '../frame/Footer';
 
 class FactomCliController extends React.Component {
 	constructor(props) {
@@ -136,6 +137,9 @@ class FactomCliController extends React.Component {
 							<Typography variant="h5">
 								PLACEHOLDER Unable to connect to Factom node PLACEHOLDER
 							</Typography>
+						</Grid>
+						<Grid item xs={12}>
+							<Footer />
 						</Grid>
 					</Grid>
 				</FactomCliContext.Provider>

@@ -215,7 +215,9 @@ const AddressIcon = (props) => {
 
 	return (
 		<Grid item xs={1} className={classes.iconContainer}>
-			{/* "GiAcorn" icon is from Creative Commons https://creativecommons.org/licenses/by/3.0/legalcode */}
+			{/* "GiAcorn" icon is from the Game-icons project https://game-icons.net/
+			License by Creative Commons https://creativecommons.org/licenses/by/3.0/legalcode
+			 */}
 			{importType === 'seed' && <GiAcorn className={classes.sidebarIcon} />}
 			{importType === 'ledger' && (
 				<img
