@@ -432,7 +432,12 @@ class ConvertECForm extends Component {
 							</Typography>
 						)}
 						<br />
-
+						{_get(values, walletImportTypePath) === 'ledger' && (
+							<Typography gutterBottom>
+								<b>Note</b>: Windows 10 is not supported at this time due to an
+								issue out of our control.
+							</Typography>
+						)}
 						{isSubmitting ? (
 							<React.Fragment>
 								{values.transactionID !== null ? (

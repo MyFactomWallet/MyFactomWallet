@@ -152,8 +152,8 @@ class LedgerForm extends React.Component {
 										<ul>
 											<li>
 												<Typography style={{ fontWeight: 500 }}>
-													Ledger devices are currently not working on Windows 10
-													due to an issue out of our control.
+													Windows 10 is not supported at this time due to an
+													issue out of our control.
 												</Typography>
 											</li>
 											<li>
