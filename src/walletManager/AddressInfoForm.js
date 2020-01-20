@@ -107,20 +107,18 @@ class AddressInfoForm extends React.Component {
 									Edit Address
 								</Typography>
 								{isSubmitting && (
-									<React.Fragment>
+									<>
 										&nbsp;
 										<CircularProgress size={20} className={classes.icon} />
-									</React.Fragment>
+									</>
 								)}
 								{_get(values, savedPath) && (
-									<React.Fragment>
-										<Typography
-											style={{ color: 'green', display: 'inline-block' }}
-										>
-											&nbsp;
-											<CheckCircle className={classes.icon} />
-										</Typography>
-									</React.Fragment>
+									<Typography
+										style={{ color: 'green', display: 'inline-block' }}
+									>
+										&nbsp;
+										<CheckCircle className={classes.icon} />
+									</Typography>
 								)}
 							</Grid>
 

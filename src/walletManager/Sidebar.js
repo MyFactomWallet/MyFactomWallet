@@ -114,7 +114,7 @@ class Sidebar extends Component {
 		});
 
 		return (
-			<React.Fragment>
+			<>
 				{!_isEmpty(factoidAddresses) && (
 					<Paper className={classes.noPadding} elevation={2}>
 						<List className={classes.addressList}>
@@ -136,7 +136,7 @@ class Sidebar extends Component {
 					</Paper>
 				)}
 				{!_isEmpty(ecAddresses) && (
-					<React.Fragment>
+					<>
 						{!_isEmpty(factoidAddresses) && <br />}
 						<Paper className={classes.noPadding} elevation={2}>
 							<List className={classes.addressList}>
@@ -153,14 +153,14 @@ class Sidebar extends Component {
 								</ListItem>
 							</List>
 						</Paper>
-					</React.Fragment>
+					</>
 				)}
 				<br />
 				<div className={classes.flex}>
 					<br />
 					<AddWalletModal />
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }

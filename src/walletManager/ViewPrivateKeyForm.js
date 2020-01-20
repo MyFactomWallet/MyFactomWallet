@@ -85,16 +85,16 @@ class ViewPrivateKeyForm extends Component {
 						)}
 						<br />
 						{!_isEmpty(_get(values, privateKeyPath)) && (
-							<React.Fragment>
+							<>
 								<br />
 								<Typography variant="subtitle2" style={{ fontSize: 15 }}>
 									Private Key:&nbsp;
 									{_get(values, privateKeyPath) && (
-										<React.Fragment>
+										<>
 											{_get(values, showPasswordPath) ? (
 												_get(values, privateKeyPath)
 											) : (
-												<React.Fragment>
+												<>
 													...
 													<Tooltip title="Display Private Key">
 														<IconButton
@@ -108,18 +108,16 @@ class ViewPrivateKeyForm extends Component {
 															/>
 														</IconButton>
 													</Tooltip>
-												</React.Fragment>
+												</>
 											)}
-										</React.Fragment>
+										</>
 									)}
 								</Typography>
-							</React.Fragment>
+							</>
 						)}
 						<br />
 
-						{isSubmitting ? (
-							<React.Fragment />
-						) : (
+						{!isSubmitting && (
 							<Button
 								className={classes.sendButton}
 								variant="contained"

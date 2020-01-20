@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ImportTypeForm from './ImportTypeForm';
 import ImportFctForm from './ImportFctForm';
 import ImportEcForm from './ImportEcForm';
@@ -7,109 +7,88 @@ import LedgerForm from './LedgerForm';
 import SeedForm from './SeedForm';
 import ImportSeedForm from './ImportSeedForm';
 
-class AddWalletStepContent extends React.Component {
-	state = { mnemonic: null };
+function AddWalletStepContent(props) {
+	const [mnemonic, setMnemonic] = useState(null);
 
-	setMnemonic = (mnemonic) => {
-		this.setState({ mnemonic });
-	};
+	const {
+		activeStep,
+		updateImportType,
+		handleNext,
+		handleBack,
+		importType,
+	} = props;
 
-	render() {
-		switch (this.props.activeStep) {
-			case 0:
+	switch (activeStep) {
+		case 0:
+			return (
+				<ImportTypeForm
+					handleNext={handleNext}
+					importType={importType}
+					updateImportType={updateImportType}
+				/>
+			);
+		case 1:
+			if (importType === 'fct') {
 				return (
-					<ImportTypeForm
-						handleNext={this.props.handleNext}
-						importType={this.props.importType}
-						updateImportType={this.props.updateImportType}
+					<ImportFctForm handleNext={handleNext} handleBack={handleBack} />
+				);
+			} else if (importType === 'ec') {
+				return <ImportEcForm handleNext={handleNext} handleBack={handleBack} />;
+			} else if (importType === 'new') {
+				return (
+					<NewSeedForm
+						setMnemonic={setMnemonic}
+						mnemonic={mnemonic}
+						handleNext={handleNext}
+						handleBack={handleBack}
 					/>
 				);
-			case 1:
-				if (this.props.importType === 'fct') {
-					return (
-						<ImportFctForm
-							handleNext={this.props.handleNext}
-							handleBack={this.props.handleBack}
-						/>
-					);
-				} else if (this.props.importType === 'ec') {
-					return (
-						<ImportEcForm
-							handleNext={this.props.handleNext}
-							handleBack={this.props.handleBack}
-						/>
-					);
-				} else if (this.props.importType === 'new') {
-					return (
-						<NewSeedForm
-							setMnemonic={this.setMnemonic}
-							mnemonic={this.state.mnemonic}
-							handleNext={this.props.handleNext}
-							handleBack={this.props.handleBack}
-						/>
-					);
-				} else if (this.props.importType === 'importSeed') {
-					return (
-						<ImportSeedForm
-							setMnemonic={this.setMnemonic}
-							handleNext={this.props.handleNext}
-							handleBack={this.props.handleBack}
-						/>
-					);
-				} else if (this.props.importType === 'ledger') {
-					return (
-						<LedgerForm
-							handleNext={this.props.handleNext}
-							handleBack={this.props.handleBack}
-							type="fct"
-							key="fctLedgerForm"
-						/>
-					);
-				}
-				break;
-			case 2:
-				if (
-					this.props.importType === 'new' ||
-					this.props.importType === 'importSeed'
-				) {
-					return (
-						<SeedForm
-							mnemonic={this.state.mnemonic}
-							handleNext={this.props.handleNext}
-							type="fct"
-							key="fctSeedForm"
-						/>
-					);
-				} /* else if (this.props.importType === 'ledger') {
-					return (
-						<LedgerForm
-							handleNext={this.props.handleNext}
-							handleBack={this.props.handleBack}
-							type="ec"
-							key="ecLedgerForm"
-						/>
-					);
-				} */
-				break;
-			case 3:
-				if (
-					this.props.importType === 'new' ||
-					this.props.importType === 'importSeed'
-				) {
-					return (
-						<SeedForm
-							mnemonic={this.state.mnemonic}
-							handleNext={this.props.handleNext}
-							handleBack={this.props.handleBack}
-							type="ec"
-							key="ecSeedForm"
-						/>
-					);
-				}
-				break;
-			default:
-				return 'Unknown step';
-		}
+			} else if (importType === 'importSeed') {
+				return (
+					<ImportSeedForm
+						setMnemonic={setMnemonic}
+						handleNext={handleNext}
+						handleBack={handleBack}
+					/>
+				);
+			} else if (importType === 'ledger') {
+				return (
+					<LedgerForm
+						handleNext={handleNext}
+						handleBack={handleBack}
+						type="fct"
+						key="fctLedgerForm"
+					/>
+				);
+			}
+			break;
+		case 2:
+			if (importType === 'new' || importType === 'importSeed') {
+				return (
+					<SeedForm
+						mnemonic={mnemonic}
+						handleNext={handleNext}
+						type="fct"
+						key="fctSeedForm"
+					/>
+				);
+			}
+			break;
+		case 3:
+			if (importType === 'new' || importType === 'importSeed') {
+				return (
+					<SeedForm
+						mnemonic={mnemonic}
+						handleNext={handleNext}
+						handleBack={handleBack}
+						type="ec"
+						key="ecSeedForm"
+					/>
+				);
+			}
+			break;
+		default:
+			return 'Unknown step';
 	}
 }
 export default AddWalletStepContent;
