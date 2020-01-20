@@ -43,82 +43,80 @@ const getImportTypes = (networkProps) => {
  */
 const importTypePath = 'importType';
 
-class ImportTypeForm extends React.Component {
-	render() {
-		const {
-			classes,
-			importType,
-			networkController: { networkProps },
-		} = this.props;
+function ImportTypeForm(props) {
+	const {
+		classes,
+		importType,
+		networkController: { networkProps },
+	} = props;
 
-		return (
-			<Formik
-				initialValues={{ [importTypePath]: importType }}
-				onSubmit={(values, actions) => {
-					// proceed to next page
-					this.props.handleNext();
-				}}
-				validationSchema={Yup.object().shape({
-					[importTypePath]: Yup.string().required('Required'),
-				})}
-				render={({ values, handleChange, isSubmitting, errors, touched }) => (
-					<Form>
-						<FormControl
-							error={
-								_get(errors, importTypePath) && _get(touched, importTypePath)
-									? true
-									: false
-							}
-							component="fieldset"
-						>
-							<FormLabel component="legend">
-								How would you like to add a new address?
-								<ErrorMessage
-									name={importTypePath}
-									render={() => (
-										<span className={classes.errorText}>&nbsp;*</span>
-									)}
-								/>
-							</FormLabel>
-
-							<RadioGroup
-								aria-label="Import Type"
+	return (
+		<Formik
+			initialValues={{ [importTypePath]: importType }}
+			onSubmit={(values, actions) => {
+				// proceed to next page
+				props.handleNext();
+			}}
+			validationSchema={Yup.object().shape({
+				[importTypePath]: Yup.string().required('Required'),
+			})}
+			render={({ values, handleChange, isSubmitting, errors, touched }) => (
+				<Form>
+					<FormControl
+						error={
+							_get(errors, importTypePath) && _get(touched, importTypePath)
+								? true
+								: false
+						}
+						component="fieldset"
+					>
+						<FormLabel component="legend">
+							How would you like to add a new address?
+							<ErrorMessage
 								name={importTypePath}
-								value={_get(values, importTypePath)}
-								onChange={(e) => {
-									handleChange(e);
-									this.props.updateImportType(e.target.value);
-								}}
-							>
-								{getImportTypes(networkProps).map((option, index) => (
-									<FormControlLabel
-										key={index}
-										value={option.value}
-										control={<Radio />}
-										label={option.label}
-										disabled={option.disabled}
-									/>
-								))}
-							</RadioGroup>
-						</FormControl>
-						<br />
-						<br />
-						<div>
-							<Button disabled={true}>Back</Button>
-							<Button
-								type="submit"
-								disabled={isSubmitting}
-								variant="contained"
-								color="primary"
-							>
-								Next
-							</Button>
-						</div>
-					</Form>
-				)}
-			/>
-		);
-	}
+								render={() => (
+									<span className={classes.errorText}>&nbsp;*</span>
+								)}
+							/>
+						</FormLabel>
+
+						<RadioGroup
+							aria-label="Import Type"
+							name={importTypePath}
+							value={_get(values, importTypePath)}
+							onChange={(e) => {
+								handleChange(e);
+								props.updateImportType(e.target.value);
+							}}
+						>
+							{getImportTypes(networkProps).map((option, index) => (
+								<FormControlLabel
+									key={index}
+									value={option.value}
+									control={<Radio />}
+									label={option.label}
+									disabled={option.disabled}
+								/>
+							))}
+						</RadioGroup>
+					</FormControl>
+					<br />
+					<br />
+					<div>
+						<Button disabled={true}>Back</Button>
+						<Button
+							type="submit"
+							disabled={isSubmitting}
+							variant="contained"
+							color="primary"
+						>
+							Next
+						</Button>
+					</div>
+				</Form>
+			)}
+		/>
+	);
 }
 
 ImportTypeForm.propTypes = {

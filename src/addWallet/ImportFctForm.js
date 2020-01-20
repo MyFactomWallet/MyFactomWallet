@@ -20,92 +20,87 @@ import { NICKNAME_MAX_LENGTH } from '../constants/WALLET_CONSTANTS';
 const fctAddrPath = 'factoidAddress';
 const nicknamePath = 'nickname';
 
-class ImportFctForm extends React.Component {
-	render() {
-		const {
-			walletController: { getFactoidAddresses, newStandardAddress, addAddress },
-			networkController: { networkProps },
-		} = this.props;
+function ImportFctForm(props) {
+	const {
+		walletController: { getFactoidAddresses, newStandardAddress, addAddress },
+		networkController: { networkProps },
+	} = props;
 
-		const factoidAddresses = getFactoidAddresses();
+	const factoidAddresses = getFactoidAddresses();
 
-		return (
-			<Formik
-				initialValues={{ factoidAddress: '', nickname: '' }}
-				onSubmit={(values, actions) => {
-					const fctAddress_o = newStandardAddress(
-						get(values, fctAddrPath),
-						get(values, nicknamePath).trim()
-					);
+	return (
+		<Formik
+			initialValues={{ factoidAddress: '', nickname: '' }}
+			onSubmit={(values, actions) => {
+				const fctAddress_o = newStandardAddress(
+					get(values, fctAddrPath),
+					get(values, nicknamePath).trim()
+				);
 
-					addAddress(fctAddress_o, 'fct');
+				addAddress(fctAddress_o, 'fct');
 
-					// proceed to next page
-					this.props.handleNext();
-				}}
-				validationSchema={Yup.object().shape({
-					[fctAddrPath]: Yup.string()
-						.required('Required')
-						.test(fctAddrPath, 'Invalid Address', isValidPublicFctAddress)
-						.test(
-							fctAddrPath,
-							'Enter unique address',
-							(value) => findIndex(factoidAddresses, ['address', value]) === -1
-						),
-					[nicknamePath]: Yup.string()
-						.trim()
-						.required('Required')
-						.test(
-							nicknamePath,
-							'Enter unique nickname',
-							(value) =>
-								findIndex(factoidAddresses, [nicknamePath, value]) === -1
-						),
-				})}
-				render={({ isSubmitting, errors, touched }) => (
-					<Form>
-						<FormTextField
-							error={
-								errors.factoidAddress && touched.factoidAddress ? true : false
-							}
-							name={fctAddrPath}
-							label={
-								'Public ' + networkProps.factoidAbbreviationFull + ' Address'
-							}
-							maxLength={ADDRESS_LENGTH}
-							margin="dense"
-							fullWidth
-						/>
+				// proceed to next page
+				props.handleNext();
+			}}
+			validationSchema={Yup.object().shape({
+				[fctAddrPath]: Yup.string()
+					.required('Required')
+					.test(fctAddrPath, 'Invalid Address', isValidPublicFctAddress)
+					.test(
+						fctAddrPath,
+						'Enter unique address',
+						(value) => findIndex(factoidAddresses, ['address', value]) === -1
+					),
+				[nicknamePath]: Yup.string()
+					.trim()
+					.required('Required')
+					.test(
+						nicknamePath,
+						'Enter unique nickname',
+						(value) => findIndex(factoidAddresses, [nicknamePath, value]) === -1
+					),
+			})}
+			render={({ isSubmitting, errors, touched }) => (
+				<Form>
+					<FormTextField
+						error={
+							errors.factoidAddress && touched.factoidAddress ? true : false
+						}
+						name={fctAddrPath}
+						label={
+							'Public ' + networkProps.factoidAbbreviationFull + ' Address'
+						}
+						maxLength={ADDRESS_LENGTH}
+						margin="dense"
+						fullWidth
+					/>
 
-						<FormTextField
-							error={
-								errors[nicknamePath] && touched[nicknamePath] ? true : false
-							}
-							name={nicknamePath}
-							label="Nickname"
-							maxLength={NICKNAME_MAX_LENGTH}
-							margin="dense"
-							fullWidth
-						/>
+					<FormTextField
+						error={errors[nicknamePath] && touched[nicknamePath] ? true : false}
+						name={nicknamePath}
+						label="Nickname"
+						maxLength={NICKNAME_MAX_LENGTH}
+						margin="dense"
+						fullWidth
+					/>
 
-						<br />
-						<br />
-						<div>
-							<Button onClick={this.props.handleBack}>Back</Button>
-							<Button
-								type="submit"
-								disabled={isSubmitting}
-								variant="contained"
-								color="primary"
-							>
-								Submit
-							</Button>
-						</div>
-					</Form>
-				)}
-			/>
-		);
-	}
+					<br />
+					<br />
+					<div>
+						<Button onClick={props.handleBack}>Back</Button>
+						<Button
+							type="submit"
+							disabled={isSubmitting}
+							variant="contained"
+							color="primary"
+						>
+							Submit
+						</Button>
+					</div>
+				</Form>
+			)}
+		/>
+	);
 }
 
 ImportFctForm.propTypes = {

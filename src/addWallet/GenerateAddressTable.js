@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Field, ErrorMessage, FieldArray } from 'formik';
 import { withStyles } from '@material-ui/core/styles';
@@ -25,12 +25,12 @@ import { NICKNAME_MAX_LENGTH } from '../constants/WALLET_CONSTANTS';
  */
 const addressesPath = 'addresses';
 
-class GenerateAddressTable extends React.Component {
-	state = { loading: false };
+function GenerateAddressTable(props) {
+	const [loading, setLoading] = useState(false);
 
-	addGeneratedAddress = (nickname, address_o, index, arrayHelpers) => {
+	function addGeneratedAddress(nickname, address_o, index, arrayHelpers) {
 		if (nickname) {
-			const addr_o = this.props.newAddress(
+			const addr_o = props.newAddress(
 				address_o.address,
 				nickname.trim(),
 				index
@@ -39,10 +39,10 @@ class GenerateAddressTable extends React.Component {
 		} else {
 			arrayHelpers.replace(index, null);
 		}
-	};
+	}
 
-	validateNickname = (value) => {
-		const { userAddressList } = this.props;
+	function validateNickname(value) {
+		const { userAddressList } = props;
 		const userAddressNicknames = userAddressList.map(
 			(addr_o) => addr_o.nickname
 		);
@@ -54,195 +54,195 @@ class GenerateAddressTable extends React.Component {
 			error = 'Enter unique nickname';
 		}
 		return error;
-	};
+	}
 
-	getNext = async () => {
-		this.setState({ loading: true });
-		await this.props.getNextFive();
-		this.setState({ loading: false });
-	};
+	async function getNext() {
+		setLoading(true);
+		await props.getNextFive();
+		setLoading(false);
+	}
 
-	render() {
-		const {
-			classes,
-			generatedAddressList,
-			userAddressList, // existing addresses
-			values,
-			errors,
-			touched,
-			setFieldValue,
-			handleChange,
-		} = this.props;
+	const {
+		classes,
+		generatedAddressList,
+		userAddressList, // existing addresses
+		values,
+		errors,
+		touched,
+		setFieldValue,
+		handleChange,
+		type,
+		title,
+	} = props;
 
-		const userAddresses = userAddressList.map((addr_o) => addr_o.address);
+	const userAddresses = userAddressList.map((addr_o) => addr_o.address);
 
-		return (
-			<>
-				<Typography variant="h6">{this.props.title}</Typography>
-				<ErrorMessage
-					name={addressesPath}
-					render={(msg) => (
-						<span className={classes.errorText}>
-							<br />
-							{msg}
-						</span>
-					)}
-				/>
-				<Paper className={classes.root} elevation={2}>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<CustomCell />
-								<CustomCell>Address</CustomCell>
-								<CustomCell>Balance</CustomCell>
-								<CustomCell>Nickname</CustomCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{!_isEmpty(generatedAddressList) &&
-								generatedAddressList.map((address_o, index) => {
-									const checkboxPath = 'checkbox_' + index;
-									const nicknamePath = 'nickname_' + index;
-									const duplicate =
-										userAddresses.indexOf(address_o.address) === -1
-											? false
-											: true;
-									return (
-										<TableRow key={index}>
-											<FieldArray
-												name={addressesPath}
-												render={(arrayHelpers) => (
-													<>
-														<CustomCell>
-															{duplicate ? (
-																<Tooltip title="Address already added">
+	return (
+		<>
+			<Typography variant="h6">{title}</Typography>
+			<ErrorMessage
+				name={addressesPath}
+				render={(msg) => (
+					<span className={classes.errorText}>
+						<br />
+						{msg}
+					</span>
+				)}
+			/>
+			<Paper className={classes.root} elevation={2}>
+				<Table>
+					<TableHead>
+						<TableRow>
+							<CustomCell />
+							<CustomCell>Address</CustomCell>
+							<CustomCell>Balance</CustomCell>
+							<CustomCell>Nickname</CustomCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{!_isEmpty(generatedAddressList) &&
+							generatedAddressList.map((address_o, index) => {
+								const checkboxPath = 'checkbox_' + index;
+								const nicknamePath = 'nickname_' + index;
+								const duplicate =
+									userAddresses.indexOf(address_o.address) === -1
+										? false
+										: true;
+								return (
+									<TableRow key={index}>
+										<FieldArray
+											name={addressesPath}
+											render={(arrayHelpers) => (
+												<>
+													<CustomCell>
+														{duplicate ? (
+															<Tooltip title="Address already added">
+																<FormControlLabel
+																	control={
+																		<Checkbox
+																			checked
+																			disabled
+																			name={checkboxPath}
+																			color="primary"
+																		/>
+																	}
+																	label={index + 1}
+																	labelPlacement="start"
+																/>
+															</Tooltip>
+														) : (
+															<Field
+																name={checkboxPath}
+																render={({ field, form }) => (
 																	<FormControlLabel
 																		control={
 																			<Checkbox
-																				checked
-																				disabled
 																				name={checkboxPath}
 																				color="primary"
+																				onChange={(e) => {
+																					arrayHelpers.replace(index, null);
+																					setFieldValue(nicknamePath, '');
+																					handleChange(e);
+																				}}
 																			/>
 																		}
 																		label={index + 1}
 																		labelPlacement="start"
 																	/>
-																</Tooltip>
-															) : (
-																<Field
-																	name={checkboxPath}
-																	render={({ field, form }) => (
-																		<FormControlLabel
-																			control={
-																				<Checkbox
-																					name={checkboxPath}
-																					color="primary"
+																)}
+															/>
+														)}
+													</CustomCell>
+													<CustomCell>{address_o.address}</CustomCell>
+													<CustomCell>
+														<FormatBalance
+															balance={address_o.balance}
+															type={type}
+														/>
+													</CustomCell>
+													<CustomCell>
+														{duplicate ? (
+															userAddressList.find((addr_o) => {
+																return addr_o.address === address_o.address;
+															}).nickname
+														) : (
+															<>
+																{_get(values, checkboxPath) && (
+																	<>
+																		<Field
+																			name={nicknamePath}
+																			validate={validateNickname}
+																		>
+																			{({ field }) => (
+																				<TextField
+																					{...field}
 																					onChange={(e) => {
-																						arrayHelpers.replace(index, null);
-																						setFieldValue(nicknamePath, '');
 																						handleChange(e);
+																						addGeneratedAddress(
+																							e.target.value,
+																							address_o,
+																							index,
+																							arrayHelpers
+																						);
+																					}}
+																					autoFocus
+																					margin="dense"
+																					fullWidth
+																					error={
+																						errors[nicknamePath] &&
+																						touched[nicknamePath]
+																							? true
+																							: false
+																					}
+																					inputProps={{
+																						maxLength: NICKNAME_MAX_LENGTH,
 																					}}
 																				/>
-																			}
-																			label={index + 1}
-																			labelPlacement="start"
+																			)}
+																		</Field>
+																		<ErrorMessage
+																			name={nicknamePath}
+																			render={(msg) => (
+																				<span
+																					className={classes.errorTextSmall}
+																				>
+																					{msg}
+																				</span>
+																			)}
 																		/>
-																	)}
-																/>
-															)}
-														</CustomCell>
-														<CustomCell>{address_o.address}</CustomCell>
-														<CustomCell>
-															<FormatBalance
-																balance={address_o.balance}
-																type={this.props.type}
-															/>
-														</CustomCell>
-														<CustomCell>
-															{duplicate ? (
-																userAddressList.find((addr_o) => {
-																	return addr_o.address === address_o.address;
-																}).nickname
-															) : (
-																<>
-																	{_get(values, checkboxPath) && (
-																		<>
-																			<Field
-																				name={nicknamePath}
-																				validate={this.validateNickname}
-																			>
-																				{({ field }) => (
-																					<TextField
-																						{...field}
-																						onChange={(e) => {
-																							handleChange(e);
-																							this.addGeneratedAddress(
-																								e.target.value,
-																								address_o,
-																								index,
-																								arrayHelpers
-																							);
-																						}}
-																						autoFocus
-																						margin="dense"
-																						fullWidth
-																						error={
-																							errors[nicknamePath] &&
-																							touched[nicknamePath]
-																								? true
-																								: false
-																						}
-																						inputProps={{
-																							maxLength: NICKNAME_MAX_LENGTH,
-																						}}
-																					/>
-																				)}
-																			</Field>
-																			<ErrorMessage
-																				name={nicknamePath}
-																				render={(msg) => (
-																					<span
-																						className={classes.errorTextSmall}
-																					>
-																						{msg}
-																					</span>
-																				)}
-																			/>
-																		</>
-																	)}
-																</>
-															)}
-														</CustomCell>
-													</>
-												)}
-											/>
-										</TableRow>
-									);
-								})}
-						</TableBody>
-						<TableFooter />
-					</Table>
-				</Paper>
-				<br />
-				<Button
-					type="button"
-					onClick={this.getNext}
-					variant="outlined"
-					color="primary"
-					disabled={this.state.loading}
-				>
-					Load Five More
-					{(this.state.loading || _isEmpty(generatedAddressList)) && (
-						<>
-							&nbsp;
-							<CircularProgress thickness={7} />
-						</>
-					)}
-				</Button>
-			</>
-		);
-	}
+																	</>
+																)}
+															</>
+														)}
+													</CustomCell>
+												</>
+											)}
+										/>
+									</TableRow>
+								);
+							})}
+					</TableBody>
+					<TableFooter />
+				</Table>
+			</Paper>
+			<br />
+			<Button
+				type="button"
+				onClick={getNext}
+				variant="outlined"
+				color="primary"
+				disabled={loading}
+			>
+				Load Five More
+				{(loading || _isEmpty(generatedAddressList)) && (
+					<>
+						&nbsp;
+						<CircularProgress thickness={7} />
+					</>
+				)}
+			</Button>
+		</>
+	);
 }
 const CustomCell = withStyles((theme) => ({
 	head: {
