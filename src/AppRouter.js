@@ -1,37 +1,33 @@
 import { Route, Switch } from 'react-router-dom';
 import _flowRight from 'lodash/flowRight';
-import React, { Component } from 'react';
+import React from 'react';
 import { withWalletContext } from './context/WalletContext';
 import WalletManager from './walletManager/WalletManager';
 import AddInitialWallet from './addWallet/AddInitialWallet';
 
-class AppRouter extends Component {
-	render() {
-		const {
-			walletController: {
-				readyToManageWallet,
-				isWalletEmpty,
-				setReadyToManageWallet,
-			},
-		} = this.props;
+function AppRouter(props) {
+	const {
+		walletController: {
+			readyToManageWallet,
+			isWalletEmpty,
+			setReadyToManageWallet,
+		},
+	} = props;
 
-		return (
-			<Switch>
-				<Route
-					path="/"
-					render={() =>
-						readyToManageWallet && !isWalletEmpty() ? (
-							<WalletManager />
-						) : (
-							<AddInitialWallet
-								setReadyToManageWallet={setReadyToManageWallet}
-							/>
-						)
-					}
-				/>
-			</Switch>
-		);
-	}
+	return (
+		<Switch>
+			<Route
+				path="/"
+				render={() =>
+					readyToManageWallet && !isWalletEmpty() ? (
+						<WalletManager />
+					) : (
+						<AddInitialWallet setReadyToManageWallet={setReadyToManageWallet} />
+					)
+				}
+			/>
+		</Switch>
+	);
 }
 
 const enhancer = _flowRight(withWalletContext);
