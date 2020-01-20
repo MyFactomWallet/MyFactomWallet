@@ -23,116 +23,112 @@ const privateKeyPath = 'privateKey';
 const showPasswordPath = 'showPassword;';
 const seedPath = 'seed';
 
-class ViewPrivateKeyForm extends Component {
-	verifySeed = (seed) => {
-		const activeAddress_o = this.props.walletController.getActiveAddress();
-		return this.props.seedController.verifySeed(seed, activeAddress_o);
-	};
-
-	render() {
-		const {
-			classes,
-			walletController: { getActiveAddress },
-			seedController: { getPrivateKey },
-		} = this.props;
-
-		const activeAddress_o = getActiveAddress();
-
-		return (
-			<Formik
-				enableReinitialize
-				initialValues={{
-					[privateKeyPath]: '',
-					[seedPath]: '',
-					[showPasswordPath]: false,
-					addressToReinitialize: activeAddress_o.address,
-				}}
-				onSubmit={async (values, actions) => {
-					const { seed } = values;
-					try {
-						const mnemonic = seed.trim();
-						const privateKey = getPrivateKey(mnemonic, activeAddress_o);
-						actions.setFieldValue(privateKeyPath, privateKey);
-					} catch (err) {
-						console.log(err);
-					}
-				}}
-				validationSchema={Yup.object().shape({
-					[seedPath]: Yup.string()
-						.trim()
-						.required('Required')
-						.test(seedPath, 'Invalid Seed Phrase', this.verifySeed),
-				})}
-				render={({ isSubmitting, errors, touched, values, setFieldValue }) => (
-					<Form
-						autoComplete="nope"
-						// eslint-disable-next-line
-						autoComplete="off"
-					>
-						<AddressInfoHeader />
-						{_isEmpty(_get(values, privateKeyPath)) && (
-							<FormTextField
-								name={seedPath}
-								fullWidth
-								label="Seed Phrase"
-								placeholder={
-									'Enter Seed Phrase for ' + activeAddress_o.nickname
-								}
-								error={_get(errors, seedPath) && _get(touched, seedPath)}
-								disabled={isSubmitting}
-								multiline
-							/>
-						)}
-						<br />
-						{!_isEmpty(_get(values, privateKeyPath)) && (
-							<>
-								<br />
-								<Typography variant="subtitle2" style={{ fontSize: 15 }}>
-									Private Key:&nbsp;
-									{_get(values, privateKeyPath) && (
-										<>
-											{_get(values, showPasswordPath) ? (
-												_get(values, privateKeyPath)
-											) : (
-												<>
-													...
-													<Tooltip title="Display Private Key">
-														<IconButton
-															onClick={() => {
-																setFieldValue(showPasswordPath, true);
-															}}
-														>
-															<Visibility
-																color="secondary"
-																style={{ fontSize: 35 }}
-															/>
-														</IconButton>
-													</Tooltip>
-												</>
-											)}
-										</>
-									)}
-								</Typography>
-							</>
-						)}
-						<br />
-
-						{!isSubmitting && (
-							<Button
-								className={classes.sendButton}
-								variant="contained"
-								color="primary"
-								type="submit"
-								disabled={isSubmitting}
-							>
-								Submit
-							</Button>
-						)}
-					</Form>
-				)}
-			/>
-		);
+function ViewPrivateKeyForm(props) {
+	function verifySeed(seed) {
+		const activeAddress_o = props.walletController.getActiveAddress();
+		return props.seedController.verifySeed(seed, activeAddress_o);
 	}
+
+	const {
+		classes,
+		walletController: { getActiveAddress },
+		seedController: { getPrivateKey },
+	} = props;
+
+	const activeAddress_o = getActiveAddress();
+
+	return (
+		<Formik
+			enableReinitialize
+			initialValues={{
+				[privateKeyPath]: '',
+				[seedPath]: '',
+				[showPasswordPath]: false,
+				addressToReinitialize: activeAddress_o.address,
+			}}
+			onSubmit={async (values, actions) => {
+				const { seed } = values;
+				try {
+					const mnemonic = seed.trim();
+					const privateKey = getPrivateKey(mnemonic, activeAddress_o);
+					actions.setFieldValue(privateKeyPath, privateKey);
+				} catch (err) {
+					console.log(err);
+				}
+			}}
+			validationSchema={Yup.object().shape({
+				[seedPath]: Yup.string()
+					.trim()
+					.required('Required')
+					.test(seedPath, 'Invalid Seed Phrase', verifySeed),
+			})}
+			render={({ isSubmitting, errors, touched, values, setFieldValue }) => (
+				<Form
+					autoComplete="nope"
+					// eslint-disable-next-line
+					autoComplete="off"
+				>
+					<AddressInfoHeader />
+					{_isEmpty(_get(values, privateKeyPath)) && (
+						<FormTextField
+							name={seedPath}
+							fullWidth
+							label="Seed Phrase"
+							placeholder={'Enter Seed Phrase for ' + activeAddress_o.nickname}
+							error={_get(errors, seedPath) && _get(touched, seedPath)}
+							disabled={isSubmitting}
+							multiline
+						/>
+					)}
+					<br />
+					{!_isEmpty(_get(values, privateKeyPath)) && (
+						<>
+							<br />
+							<Typography variant="subtitle2" style={{ fontSize: 15 }}>
+								Private Key:&nbsp;
+								{_get(values, privateKeyPath) && (
+									<>
+										{_get(values, showPasswordPath) ? (
+											_get(values, privateKeyPath)
+										) : (
+											<>
+												...
+												<Tooltip title="Display Private Key">
+													<IconButton
+														onClick={() => {
+															setFieldValue(showPasswordPath, true);
+														}}
+													>
+														<Visibility
+															color="secondary"
+															style={{ fontSize: 35 }}
+														/>
+													</IconButton>
+												</Tooltip>
+											</>
+										)}
+									</>
+								)}
+							</Typography>
+						</>
+					)}
+					<br />
+
+					{!isSubmitting && (
+						<Button
+							className={classes.sendButton}
+							variant="contained"
+							color="primary"
+							type="submit"
+							disabled={isSubmitting}
+						>
+							Submit
+						</Button>
+					)}
+				</Form>
+			)}
+		/>
+	);
 }
 
 ViewPrivateKeyForm.propTypes = {

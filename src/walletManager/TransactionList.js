@@ -9,50 +9,48 @@ import Typography from '@material-ui/core/Typography';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Tooltip from '@material-ui/core/Tooltip';
 
-class TransactionList extends React.Component {
-	render() {
-		const {
-			classes,
-			walletController: { getActiveAddress },
-			networkController: { networkProps },
-		} = this.props;
+function TransactionList(props) {
+	const {
+		classes,
+		walletController: { getActiveAddress },
+		networkController: { networkProps },
+	} = props;
 
-		const activeAddress_o = getActiveAddress();
+	const activeAddress_o = getActiveAddress();
 
-		return (
-			<>
-				{!_isEmpty(activeAddress_o.transactions) && (
-					<>
-						<Typography variant="h6">Recent Transactions</Typography>
-						{activeAddress_o.transactions.map(function(transaction, index) {
-							return (
-								<Typography
-									key={index}
-									gutterBottom
-									className={classes.transaction}
-								>
-									<b>Tx ID:</b> {transaction}{' '}
-									<Tooltip title="Open Factom Explorer">
-										<a
-											target="_blank"
-											rel="noopener noreferrer"
-											href={
-												networkProps.explorerURL +
-												'/transaction?txid=' +
-												transaction
-											}
-										>
-											<OpenInNew color="primary" style={{ fontSize: 15 }} />
-										</a>
-									</Tooltip>
-								</Typography>
-							);
-						})}
-					</>
-				)}
-			</>
-		);
-	}
+	return (
+		<>
+			{!_isEmpty(activeAddress_o.transactions) && (
+				<>
+					<Typography variant="h6">Recent Transactions</Typography>
+					{activeAddress_o.transactions.map(function(transaction, index) {
+						return (
+							<Typography
+								key={index}
+								gutterBottom
+								className={classes.transaction}
+							>
+								<b>Tx ID:</b> {transaction}{' '}
+								<Tooltip title="Open Factom Explorer">
+									<a
+										target="_blank"
+										rel="noopener noreferrer"
+										href={
+											networkProps.explorerURL +
+											'/transaction?txid=' +
+											transaction
+										}
+									>
+										<OpenInNew color="primary" style={{ fontSize: 15 }} />
+									</a>
+								</Tooltip>
+							</Typography>
+						);
+					})}
+				</>
+			)}
+		</>
+	);
 }
 
 TransactionList.propTypes = {
