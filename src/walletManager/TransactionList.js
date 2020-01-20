@@ -20,9 +20,9 @@ class TransactionList extends React.Component {
 		const activeAddress_o = getActiveAddress();
 
 		return (
-			<React.Fragment>
+			<>
 				{!_isEmpty(activeAddress_o.transactions) && (
-					<React.Fragment>
+					<>
 						<Typography variant="h6">Recent Transactions</Typography>
 						{activeAddress_o.transactions.map(function(transaction, index) {
 							return (
@@ -48,9 +48,9 @@ class TransactionList extends React.Component {
 								</Typography>
 							);
 						})}
-					</React.Fragment>
+					</>
 				)}
-			</React.Fragment>
+			</>
 		);
 	}
 }

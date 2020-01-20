@@ -358,7 +358,7 @@ class SendFactoidForm extends Component {
 							</Grid>
 						</Grid>
 						{_get(values, walletImportTypePath) === 'standard' && (
-							<React.Fragment>
+							<>
 								<Field name={privateKeyPath}>
 									{({ field, form }) => (
 										<TextField
@@ -390,10 +390,10 @@ class SendFactoidForm extends Component {
 										<div className={classes.errorText}>{msg}</div>
 									)}
 								/>
-							</React.Fragment>
+							</>
 						)}
 						{_get(values, walletImportTypePath) === 'seed' && (
-							<React.Fragment>
+							<>
 								<Field name={seedPath}>
 									{({ field, form }) => (
 										<TextField
@@ -423,7 +423,7 @@ class SendFactoidForm extends Component {
 										<div className={classes.errorText}>{msg}</div>
 									)}
 								/>
-							</React.Fragment>
+							</>
 						)}
 
 						{values.sendFactoidAmount ? (
@@ -444,7 +444,7 @@ class SendFactoidForm extends Component {
 						)}
 						<br />
 						{isSubmitting ? (
-							<React.Fragment>
+							<>
 								{values.transactionID !== null ? (
 									<div>
 										<Paper className={classes.transaction} elevation={2}>
@@ -495,12 +495,12 @@ class SendFactoidForm extends Component {
 										</Button>
 									</div>
 								) : (
-									<React.Fragment>
+									<>
 										<CircularProgress thickness={7} />
 										{values.ledgerStatus}
-									</React.Fragment>
+									</>
 								)}
-							</React.Fragment>
+							</>
 						) : (
 							<Button
 								className={classes.sendButton}

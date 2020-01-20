@@ -22,7 +22,7 @@ class WalletManager extends Component {
 		const activeAddress = getActiveAddress();
 
 		return (
-			<React.Fragment>
+			<>
 				{!_isNil(activeAddress) && (
 					<Grid container spacing={3} item xs={12}>
 						<Grid item xs={4}>
@@ -39,7 +39,7 @@ class WalletManager extends Component {
 						</Grid>
 					</Grid>
 				)}
-			</React.Fragment>
+			</>
 		);
 	}
 }

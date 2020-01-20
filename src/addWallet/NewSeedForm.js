@@ -54,7 +54,7 @@ class NewSeedForm extends React.Component {
 						autoComplete="off"
 					>
 						{this.state.step === 1 && (
-							<React.Fragment>
+							<>
 								<Typography
 									style={{ fontWeight: 500 }}
 									className={classes.warningText}
@@ -68,23 +68,21 @@ class NewSeedForm extends React.Component {
 									Seed Phrase:
 								</Typography>
 								<Typography>{this.props.mnemonic}</Typography>
-							</React.Fragment>
+							</>
 						)}
 						{this.state.step === 2 && (
-							<React.Fragment>
-								<FormTextField
-									error={
-										_get(errors, mnemonicPath) && _get(touched, mnemonicPath)
-											? true
-											: false
-									}
-									name={mnemonicPath}
-									label="Verify Seed Phrase"
-									autoFocus
-									margin="dense"
-									fullWidth
-								/>
-							</React.Fragment>
+							<FormTextField
+								error={
+									_get(errors, mnemonicPath) && _get(touched, mnemonicPath)
+										? true
+										: false
+								}
+								name={mnemonicPath}
+								label="Verify Seed Phrase"
+								autoFocus
+								margin="dense"
+								fullWidth
+							/>
 						)}
 
 						<br />

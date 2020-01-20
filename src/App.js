@@ -20,26 +20,22 @@ class App extends Component {
 
 		return (
 			<Router>
-				<React.Fragment>
-					<NetworkController>
-						<FactomCliController>
-							<React.Fragment>
-								<Disclaimer />
-								<WalletController>
-									<Header />
-									<SeedController>
-										<LedgerController>
-											<div className={classes.body}>
-												<AppRouter />
-												<TestnetWarningBar />
-											</div>
-										</LedgerController>
-									</SeedController>
-								</WalletController>
-							</React.Fragment>
-						</FactomCliController>
-					</NetworkController>
-				</React.Fragment>
+				<NetworkController>
+					<FactomCliController>
+						<Disclaimer />
+						<WalletController>
+							<Header />
+							<SeedController>
+								<LedgerController>
+									<div className={classes.body}>
+										<AppRouter />
+										<TestnetWarningBar />
+									</div>
+								</LedgerController>
+							</SeedController>
+						</WalletController>
+					</FactomCliController>
+				</NetworkController>
 			</Router>
 		);
 	}
