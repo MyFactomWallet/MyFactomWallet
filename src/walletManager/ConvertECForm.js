@@ -27,7 +27,7 @@ import { FACTOSHI_MULTIPLIER } from '../constants/WALLET_CONSTANTS';
 import ConvertTransactionPreview from './ConvertTransactionPreview';
 import Paper from '@material-ui/core/Paper';
 import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
-import { ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
+import { AMOUNT_REGEX, ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
 
 /**
  * Constants
@@ -318,6 +318,14 @@ class ConvertECForm extends Component {
 											: false
 									}
 									{...field}
+									onChange={(e) => {
+										if (
+											e.target.value === '' ||
+											AMOUNT_REGEX.test(e.target.value)
+										) {
+											handleChange(e);
+										}
+									}}
 									placeholder={
 										'Enter Amount (' + networkProps.ecAbbreviation + ')'
 									}

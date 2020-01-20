@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import { Container, withStyles } from '@material-ui/core/';
 import AppRouter from './AppRouter';
 import Disclaimer from './Disclaimer';
 import FactomCliController from './context/FactomCliController';
@@ -20,30 +20,26 @@ class App extends Component {
 
 		return (
 			<Router>
-				<React.Fragment>
-					<NetworkController>
-						<FactomCliController>
-							<React.Fragment>
-								<Disclaimer />
-								<WalletController>
-									<SeedController>
-										<LedgerController>
-											<div className={classes.pageContainer}>
-												<div className={classes.content}>
-													<Header />
-													<div className={classes.body}>
-														<AppRouter />
-													</div>
-													<Footer />
-												</div>
-											</div>
-										</LedgerController>
-									</SeedController>
-								</WalletController>
-							</React.Fragment>
-						</FactomCliController>
-					</NetworkController>
-				</React.Fragment>
+				<NetworkController>
+					<FactomCliController>
+						<Disclaimer />
+						<WalletController>
+							<SeedController>
+								<LedgerController>
+									<div className={classes.pageContainer}>
+										<div className={classes.content}>
+											<Header />
+											<Container>
+												<AppRouter />
+											</Container>
+											<Footer />
+										</div>
+									</div>
+								</LedgerController>
+							</SeedController>
+						</WalletController>
+					</FactomCliController>
+				</NetworkController>
 			</Router>
 		);
 	}
@@ -53,10 +49,6 @@ App.propTypes = {
 };
 
 const styles = (theme) => ({
-	body: {
-		width: '1200px',
-		margin: '0 auto',
-	},
 	content: {
 		paddingBottom: '125px',
 	},

@@ -9,12 +9,26 @@ import { withStyles } from '@material-ui/core/styles';
 function Footer(props) {
 	const { classes } = props;
 
+	const SectionHeading = ({ text }) => {
+		return (
+			<Typography gutterBottom color="primary" className={classes.heading}>
+				{text}
+			</Typography>
+		);
+	};
+
+	const SectionText = ({ text }) => {
+		return (
+			<Typography gutterBottom color="textSecondary">
+				{text}
+			</Typography>
+		);
+	};
+
 	return (
 		<Grid container justify={'center'} className={classes.root}>
 			<Grid item xs={12} sm={6} md={3}>
-				<Typography gutterBottom className={classes.heading} color="primary">
-					MyFactomWallet is brought to you by
-				</Typography>
+				<SectionHeading text="MyFactomWallet is brought to you by" />
 				<Link
 					href="https://factomize.com/forums/major-contributors/ano/bedrock-solutions/"
 					target="_blank"
@@ -27,64 +41,30 @@ function Footer(props) {
 				</Link>
 			</Grid>
 			<Grid item xs={12} sm={6} md={2}>
-				<Typography gutterBottom className={classes.heading} color="primary">
-					Resources
-				</Typography>
+				<SectionHeading text="Resources" />
 				<Link
 					href="https://github.com/MyFactomWallet/MyFactomWallet/"
 					target="_blank"
 				>
-					<Typography
-						gutterBottom
-						color="textSecondary"
-						className={classes.body}
-					>
-						Github
-					</Typography>
+					<SectionText text="Github" />
 				</Link>
 				<Link href="https://factomd.net/" target="_blank">
-					<Typography
-						gutterBottom
-						color="textSecondary"
-						className={classes.body}
-					>
-						Factom Open Node
-					</Typography>
+					<SectionText text="Factom Open Node" />
 				</Link>
 			</Grid>
 			<Grid item xs={12} sm={6} md={2}>
-				<Typography gutterBottom className={classes.heading} color="primary">
-					Support
-				</Typography>
+				<SectionHeading text="Support" />
 				<Link href="https://discord.gg/79kH2pp" target="_blank">
-					<Typography
-						gutterBottom
-						color="textSecondary"
-						className={classes.body}
-					>
-						Discord
-					</Typography>
+					<SectionText text="Discord" />
 				</Link>
 				<Link href="https://help.myfactomwallet.com/" target="_blank">
-					<Typography
-						gutterBottom
-						color="textSecondary"
-						className={classes.body}
-					>
-						Ledger Nano X/S docs
-					</Typography>
+					<SectionText text="Ledger Nano X/S docs" />
 				</Link>
 			</Grid>
 			<Grid item xs={12} sm={6} md={5}>
-				<Typography gutterBottom color="primary" className={classes.heading}>
-					Donations are Welcome
-				</Typography>
-				<Typography gutterBottom className={classes.body} color="textSecondary">
-					FCT: FA2gS1XCHv7sbWkRDHZJUwqHDDDNhL3V6trgxb2DWEw93aHDa9DG
-				</Typography>
-				<Typography gutterBottom color="textSecondary" className={classes.body}>
-					BTC: 36xEwrdJW8rjoaQpY6NcuWwsPLdtL2utcP
-				</Typography>
+				<SectionHeading text="Donations are Welcome" />
+				<SectionText text="FCT: FA2gS1XCHv7sbWkRDHZJUwqHDDDNhL3V6trgxb2DWEw93aHDa9DG" />
+				<SectionText text="BTC: 36xEwrdJW8rjoaQpY6NcuWwsPLdtL2utcP" />
 			</Grid>
 		</Grid>
 	);
@@ -95,22 +75,14 @@ const styles = (theme) => ({
 		position: 'absolute',
 		bottom: 0,
 		height: '110px',
-		padding: '0 50px 0 120px',
+		padding: '0 0 0 70px',
 		width: '100%',
 	},
 	heading: {
-		align: 'left',
 		fontWeight: '500',
-		whiteSpace: 'nowrap',
 	},
 	logo: {
 		width: '130px',
-	},
-	body: {
-		color: 'textSecondary',
-		fontWeight: '400',
-		whiteSpace: 'nowrap',
-		align: 'left',
 	},
 });
 

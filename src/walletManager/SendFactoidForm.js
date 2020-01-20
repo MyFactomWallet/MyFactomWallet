@@ -30,6 +30,7 @@ import {
 	FACTOID_MULTIPLIER,
 	ADDRESS_LENGTH,
 } from '../constants/WALLET_CONSTANTS';
+import { AMOUNT_REGEX } from '../constants/WALLET_CONSTANTS';
 
 /**
  * Constants
@@ -316,6 +317,14 @@ class SendFactoidForm extends Component {
 											: false
 									}
 									{...field}
+									onChange={(e) => {
+										if (
+											e.target.value === '' ||
+											AMOUNT_REGEX.test(e.target.value)
+										) {
+											handleChange(e);
+										}
+									}}
 									placeholder={
 										'Enter Amount (' + networkProps.factoidAbbreviation + ')'
 									}

@@ -26,6 +26,7 @@ import {
 	FACTOSHI_MULTIPLIER,
 	FACTOID_MULTIPLIER,
 	ADDRESS_LENGTH,
+	AMOUNT_REGEX,
 	DISABLE_AUTOCOMPLETE,
 } from '../constants/WALLET_CONSTANTS';
 import { PFCT_LBL } from '../constants/PEGNET_CONSTANTS';
@@ -284,6 +285,14 @@ class convertPegnetForm extends Component {
 							name={AMOUNT_PATH}
 							isNotFast
 							error={errors[AMOUNT_PATH] && touched[AMOUNT_PATH] ? true : false}
+							onChange={(e) => {
+								if (
+									e.target.value === '' ||
+									AMOUNT_REGEX.test(e.target.value)
+								) {
+									handleChange(e);
+								}
+							}}
 							placeholder={'Enter Amount of (' + PFCT_LBL + ')'}
 							label="Amount"
 							fullWidth={true}
