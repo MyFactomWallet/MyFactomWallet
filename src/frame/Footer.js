@@ -9,26 +9,22 @@ import { withStyles } from '@material-ui/core/styles';
 function Footer(props) {
 	const { classes } = props;
 
-	const SectionHeading = ({ text }) => {
-		return (
-			<Typography gutterBottom color="primary" className={classes.heading}>
-				{text}
-			</Typography>
-		);
-	};
+	const SectionHeading = (props) => (
+		<Typography gutterBottom color="primary" className={classes.heading}>
+			{props.children}
+		</Typography>
+	);
 
-	const SectionText = ({ text }) => {
-		return (
-			<Typography gutterBottom color="textSecondary">
-				{text}
-			</Typography>
-		);
-	};
+	const SectionText = (props) => (
+		<Typography gutterBottom color="textSecondary">
+			{props.children}
+		</Typography>
+	);
 
 	return (
-		<Grid container justify={'center'} className={classes.root}>
+		<Grid container justify="center" className={classes.root}>
 			<Grid item xs={12} sm={6} md={3}>
-				<SectionHeading text="MyFactomWallet is brought to you by" />
+				<SectionHeading>MyFactomWallet is brought to you by</SectionHeading>
 				<Link
 					href="https://factomize.com/forums/major-contributors/ano/bedrock-solutions/"
 					target="_blank"
@@ -41,30 +37,32 @@ function Footer(props) {
 				</Link>
 			</Grid>
 			<Grid item xs={12} sm={6} md={2}>
-				<SectionHeading text="Resources" />
+				<SectionHeading>Resources</SectionHeading>
 				<Link
 					href="https://github.com/MyFactomWallet/MyFactomWallet/"
 					target="_blank"
 				>
-					<SectionText text="Github" />
+					<SectionText>Github</SectionText>
 				</Link>
 				<Link href="https://factomd.net/" target="_blank">
-					<SectionText text="Factom Open Node" />
+					<SectionText>Factom Open Node</SectionText>
 				</Link>
 			</Grid>
 			<Grid item xs={12} sm={6} md={2}>
-				<SectionHeading text="Support" />
+				<SectionHeading>Support</SectionHeading>
 				<Link href="https://discord.gg/79kH2pp" target="_blank">
-					<SectionText text="Discord" />
+					<SectionText>Discord</SectionText>
 				</Link>
 				<Link href="https://help.myfactomwallet.com/" target="_blank">
-					<SectionText text="Ledger Nano X/S docs" />
+					<SectionText>Documentation</SectionText>
 				</Link>
 			</Grid>
 			<Grid item xs={12} sm={6} md={5}>
-				<SectionHeading text="Donations are Welcome" />
-				<SectionText text="FCT: FA2gS1XCHv7sbWkRDHZJUwqHDDDNhL3V6trgxb2DWEw93aHDa9DG" />
-				<SectionText text="BTC: 36xEwrdJW8rjoaQpY6NcuWwsPLdtL2utcP" />
+				<SectionHeading>Donations are Welcome</SectionHeading>
+				<SectionText>
+					FCT, PEG: FA2gS1XCHv7sbWkRDHZJUwqHDDDNhL3V6trgxb2DWEw93aHDa9DG
+				</SectionText>
+				<SectionText>BTC: 36xEwrdJW8rjoaQpY6NcuWwsPLdtL2utcP</SectionText>
 			</Grid>
 		</Grid>
 	);
@@ -75,7 +73,7 @@ const styles = (theme) => ({
 		position: 'absolute',
 		bottom: 0,
 		height: '110px',
-		padding: '0 0 0 70px',
+		padding: '0 0 0 20px',
 		width: '100%',
 	},
 	heading: {
