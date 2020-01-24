@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import { Container } from '@material-ui/core/';
+import { Grid } from '@material-ui/core/';
 import _flowRight from 'lodash/flowRight';
-import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { withWalletContext } from '../context/WalletContext';
@@ -23,12 +24,14 @@ class AddInitialWallet extends Component {
 				: 'Manage Wallet';
 
 		return (
-			<Grid container item xs={12} justify="center">
-				<AddWalletStepper
-					handleClose={() => this.props.setReadyToManageWallet(true)}
-					handleCloseText={handleCloseText}
-				/>
-			</Grid>
+			<Container>
+				<Grid container justify="center">
+					<AddWalletStepper
+						handleClose={() => this.props.setReadyToManageWallet(true)}
+						handleCloseText={handleCloseText}
+					/>
+				</Grid>
+			</Container>
 		);
 	}
 }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import _flowRight from 'lodash/flowRight';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Container, withStyles } from '@material-ui/core/';
+import { withStyles } from '@material-ui/core/';
 import AppRouter from './AppRouter';
 import Disclaimer from './Disclaimer';
 import FactomCliController from './context/FactomCliController';
@@ -29,9 +29,7 @@ class App extends Component {
 									<div className={classes.pageContainer}>
 										<div className={classes.content}>
 											<Header />
-											<Container>
-												<AppRouter />
-											</Container>
+											<AppRouter />
 											<Footer />
 										</div>
 									</div>

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Container } from '@material-ui/core/';
 import _isNil from 'lodash/isNil';
 import Sidebar from './Sidebar.js';
 import WalletTabContent from './WalletTabContent.js';
@@ -19,20 +20,22 @@ function WalletManager(props) {
 
 	if (!_isNil(activeAddress)) {
 		return (
-			<Grid container spacing={3}>
-				<Grid item md={4} xs={12}>
-					<Sidebar />
-				</Grid>
+			<Container>
+				<Grid container spacing={3}>
+					<Grid item md={4} xs={12}>
+						<Sidebar />
+					</Grid>
 
-				<Grid item md={8} xs={12}>
-					<Paper elevation={2}>
-						<WalletTabContent
-							type={activeAddressIndex_o.type}
-							activeAddress={activeAddress}
-						/>
-					</Paper>
+					<Grid item md={8} xs={12}>
+						<Paper elevation={2}>
+							<WalletTabContent
+								type={activeAddressIndex_o.type}
+								activeAddress={activeAddress}
+							/>
+						</Paper>
+					</Grid>
 				</Grid>
-			</Grid>
+			</Container>
 		);
 	} else {
 		return <></>;

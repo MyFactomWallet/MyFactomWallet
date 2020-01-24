@@ -9,13 +9,13 @@ import { withStyles } from '@material-ui/core/styles';
 function Footer(props) {
 	const { classes } = props;
 
-	const SectionHeading = (props) => (
+	const Heading = (props) => (
 		<Typography gutterBottom color="primary" className={classes.heading}>
 			{props.children}
 		</Typography>
 	);
 
-	const SectionText = (props) => (
+	const Text = (props) => (
 		<Typography gutterBottom color="textSecondary">
 			{props.children}
 		</Typography>
@@ -24,7 +24,7 @@ function Footer(props) {
 	return (
 		<Grid container justify="center" className={classes.root}>
 			<Grid item xs={12} sm={6} md={3}>
-				<SectionHeading>MyFactomWallet is brought to you by</SectionHeading>
+				<Heading>MyFactomWallet is brought to you by</Heading>
 				<Link
 					href="https://factomize.com/forums/major-contributors/ano/bedrock-solutions/"
 					target="_blank"
@@ -37,32 +37,32 @@ function Footer(props) {
 				</Link>
 			</Grid>
 			<Grid item xs={12} sm={6} md={2}>
-				<SectionHeading>Resources</SectionHeading>
+				<Heading>Resources</Heading>
 				<Link
 					href="https://github.com/MyFactomWallet/MyFactomWallet/"
 					target="_blank"
 				>
-					<SectionText>Github</SectionText>
+					<Text>Github</Text>
 				</Link>
 				<Link href="https://factomd.net/" target="_blank">
-					<SectionText>Factom Open Node</SectionText>
+					<Text>Factom Open Node</Text>
 				</Link>
 			</Grid>
 			<Grid item xs={12} sm={6} md={2}>
-				<SectionHeading>Support</SectionHeading>
+				<Heading>Support</Heading>
 				<Link href="https://discord.gg/79kH2pp" target="_blank">
-					<SectionText>Discord</SectionText>
+					<Text>Discord</Text>
 				</Link>
 				<Link href="https://help.myfactomwallet.com/" target="_blank">
-					<SectionText>Documentation</SectionText>
+					<Text>Documentation</Text>
 				</Link>
 			</Grid>
 			<Grid item xs={12} sm={6} md={5}>
-				<SectionHeading>Donations are Welcome</SectionHeading>
-				<SectionText>
+				<Heading>Donations are Welcome</Heading>
+				<Text>
 					FCT, PEG: FA2gS1XCHv7sbWkRDHZJUwqHDDDNhL3V6trgxb2DWEw93aHDa9DG
-				</SectionText>
-				<SectionText>BTC: 36xEwrdJW8rjoaQpY6NcuWwsPLdtL2utcP</SectionText>
+				</Text>
+				<Text>BTC: 36xEwrdJW8rjoaQpY6NcuWwsPLdtL2utcP</Text>
 			</Grid>
 		</Grid>
 	);
