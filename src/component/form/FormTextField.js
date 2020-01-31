@@ -61,6 +61,7 @@ const FormTextField = ({
 						InputLabelProps={{
 							...(shrink ? { shrink } : {}),
 						}}
+						data-cy="formTextField"
 					/>
 				)}
 			</FieldType>

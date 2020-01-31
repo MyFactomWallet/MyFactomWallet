@@ -109,6 +109,7 @@ function ImportTypeForm(props) {
 							disabled={isSubmitting}
 							variant="contained"
 							color="primary"
+							data-cy="next"
 						>
 							Next
 						</Button>

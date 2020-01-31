@@ -67,7 +67,9 @@ class NewSeedForm extends React.Component {
 								<Typography style={{ fontWeight: 500 }}>
 									Seed Phrase:
 								</Typography>
-								<Typography>{this.props.mnemonic}</Typography>
+								<Typography data-cy="mnemonic">
+									{this.props.mnemonic}
+								</Typography>
 							</>
 						)}
 						{this.state.step === 2 && (
