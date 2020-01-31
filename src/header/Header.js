@@ -84,7 +84,7 @@ class Header extends React.Component {
 		const testnetActive = networkProps.network === 'testnet';
 
 		return (
-			<AppBar position="static" className={classes.root}>
+			<AppBar position="static" className={classes.root} data-cy="appBarHeader">
 				<Toolbar className={classes.toolbar}>
 					<IconButton
 						className={classes.menuButton}
@@ -126,7 +126,11 @@ class Header extends React.Component {
 						}}
 						className={testnetActive ? classes.testnetHeader : classes.menuText}
 					>
-						{blockHeight ? blockHeight : <div style={{ width: 48 }} />}
+						{blockHeight ? (
+							<span data-cy="blockHeight">{blockHeight}</span>
+						) : (
+							<div style={{ width: 48 }} />
+						)}
 						&nbsp;
 						{(isConnected && !error) || greenConnection ? (
 							<FiberManualRecord
