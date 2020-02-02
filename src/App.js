@@ -22,13 +22,13 @@ class App extends Component {
 			<Router>
 				<NetworkController>
 					<FactomCliController>
-						<Disclaimer />
 						<WalletController>
 							<SeedController>
 								<LedgerController>
 									<div className={classes.pageContainer}>
 										<div className={classes.content}>
 											<Header />
+											<Disclaimer />
 											<AppRouter />
 											<Footer />
 										</div>
@@ -48,11 +48,11 @@ App.propTypes = {
 
 const styles = (theme) => ({
 	content: {
-		paddingBottom: '125px',
+		paddingBottom: '134px',
 	},
 	pageContainer: {
-		position: 'relative',
 		minHeight: '100vh',
+		position: 'relative',
 	},
 });
 

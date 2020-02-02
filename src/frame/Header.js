@@ -87,7 +87,9 @@ class Header extends React.Component {
 			<AppBar
 				position="static"
 				className={
-					testnetActive ? [classes.testnetRoot, classes.root] : classes.root
+					testnetActive
+						? `${classes.testnetRoot} ${classes.root}`
+						: classes.root
 				}
 			>
 				<Toolbar className={classes.toolbar}>
@@ -129,7 +131,9 @@ class Header extends React.Component {
 						onClick={(e) => {
 							if (!disabled) this.handleNetworkClick(e);
 						}}
-						className={testnetActive ? classes.testnetHeader : classes.menuText}
+						className={
+							testnetActive ? classes.testnetHeaderText : classes.menuText
+						}
 					>
 						{blockHeight ? blockHeight : <div style={{ width: 48 }} />}
 						&nbsp;
@@ -196,7 +200,6 @@ const styles = (theme) => ({
 	testnetRoot: {
 		backgroundColor: '#ffa000',
 	},
-
 	toolbar: {
 		width: '90%',
 		margin: '0 auto',
@@ -229,6 +232,7 @@ const styles = (theme) => ({
 		transform: `translate(-50%, -50%)`,
 	},
 	testnetHeader: { color: 'black', fontWeight: '700' },
+	testnetHeaderText: { color: 'black' },
 	connected: { color: '#0ec30e' },
 	notConnected: { color: 'red' },
 });
