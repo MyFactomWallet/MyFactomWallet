@@ -127,7 +127,9 @@ function Sidebar(props) {
 						</ListItem>
 
 						<ListItem disableGutters className={classes.walletList}>
-							<div className={classes.listAddrRoot}>{listfactoidAddresses}</div>
+							<div data-cy="fctAddressList" className={classes.listAddrRoot}>
+								{listfactoidAddresses}
+							</div>
 						</ListItem>
 					</List>
 				</Paper>
@@ -146,7 +148,9 @@ function Sidebar(props) {
 								</Typography>
 							</ListItem>
 							<ListItem disableGutters className={classes.walletList}>
-								<div className={classes.listAddrRoot}>{listecAddresses}</div>
+								<div data-cy="ecAddressList" className={classes.listAddrRoot}>
+									{listecAddresses}
+								</div>
 							</ListItem>
 						</List>
 					</Paper>
