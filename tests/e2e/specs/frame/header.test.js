@@ -1,4 +1,5 @@
-const openNodeUrl = 'https://api.factomd.net/v2';
+import { openNodeUrl } from '../../../constants';
+
 let data = {
 	jsonrpc: '2.0',
 	id: 0,

@@ -317,6 +317,7 @@ class SendFactoidForm extends Component {
 											: false
 									}
 									{...field}
+									data-cy="tokenAmount"
 									onChange={(e) => {
 										if (
 											e.target.value === '' ||

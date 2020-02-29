@@ -29,11 +29,15 @@ const AddressInfoHeader = (props) => {
 			<Paper className={classes.paper}>
 				<Grid container justify="space-between">
 					<Grid item>
-						<Typography className={classes.bold} gutterBottom>
+						<Typography
+							data-cy="addressNickname"
+							className={classes.bold}
+							gutterBottom
+						>
 							{activeAddress_o.nickname}
 						</Typography>
 						{!_isNil(activeAddress_o.balance) && (
-							<Typography variant="h4">
+							<Typography data-cy="balance" variant="h4">
 								<FormatBalance
 									balance={activeAddress_o.balance}
 									type={activeAddressIndex_o.type}
@@ -45,7 +49,7 @@ const AddressInfoHeader = (props) => {
 								<FormatBalance balance={pFCTBalance} type="pFCT" />
 							</Typography>
 						)}
-						<Typography>
+						<Typography data-cy="address">
 							{activeAddress_o.address}
 							<CopyToClipboard text={activeAddress_o.address}>
 								<Tooltip title="Copy" className={classes.pointer}>

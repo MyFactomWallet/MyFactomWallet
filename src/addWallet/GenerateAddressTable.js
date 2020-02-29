@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
-import Typography from '@material-ui/core/Typography';
+
 import { Field, ErrorMessage, FieldArray } from 'formik';
 import { withStyles } from '@material-ui/core/styles';
-import _isEmpty from 'lodash/isEmpty';
-import _get from 'lodash/get';
-import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import FormatBalance from '../walletManager/shared/BalanceFormatter.js';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import TableFooter from '@material-ui/core/TableFooter';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
+import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
-import Button from '@material-ui/core/Button';
-import FormatBalance from '../walletManager/shared/BalanceFormatter.js';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import _isEmpty from 'lodash/isEmpty';
+import _get from 'lodash/get';
+
 import { NICKNAME_MAX_LENGTH } from '../constants/WALLET_CONSTANTS';
 
 /**
@@ -104,6 +106,8 @@ function GenerateAddressTable(props) {
 							generatedAddressList.map((address_o, index) => {
 								const checkboxPath = 'checkbox_' + index;
 								const nicknamePath = 'nickname_' + index;
+								const address = 'address_' + index;
+								const balance = 'balance_' + index;
 								const duplicate =
 									userAddresses.indexOf(address_o.address) === -1
 										? false
@@ -153,8 +157,10 @@ function GenerateAddressTable(props) {
 															/>
 														)}
 													</CustomCell>
-													<CustomCell>{address_o.address}</CustomCell>
-													<CustomCell>
+													<CustomCell name={address}>
+														{address_o.address}
+													</CustomCell>
+													<CustomCell name={balance}>
 														<FormatBalance
 															balance={address_o.balance}
 															type={type}
