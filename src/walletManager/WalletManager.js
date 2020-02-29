@@ -7,13 +7,17 @@ import Paper from '@material-ui/core/Paper';
 import { withWalletContext } from '../context/WalletContext';
 
 function WalletManager(props) {
-	useEffect(() => {
-		props.walletController.updateBalances();
-	}, []);
-
 	const {
-		walletController: { getActiveAddress, activeAddressIndex_o },
+		walletController: {
+			updateBalances,
+			getActiveAddress,
+			activeAddressIndex_o,
+		},
 	} = props;
+
+	useEffect(() => {
+		updateBalances();
+	}, [updateBalances]);
 
 	const activeAddress = getActiveAddress();
 

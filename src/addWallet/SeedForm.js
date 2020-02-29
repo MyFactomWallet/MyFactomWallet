@@ -24,6 +24,15 @@ const getTitle = (networkProps) => {
 };
 
 function SeedForm(props) {
+	const {
+		mnemonic,
+		type,
+		handleNext,
+		networkController: { networkProps },
+		seedController: { getSeedAddresses },
+		walletController: { getAddresses, addAddresses, newSeedAddress },
+	} = props;
+
 	const [generatedAddressList, setGeneratedAddressList] = useState([]);
 
 	const [count, setCount] = useState(5);
@@ -31,19 +40,20 @@ function SeedForm(props) {
 		async function fetchData() {
 			await fetchAddresses();
 		}
+
+		async function fetchAddresses() {
+			const newAddressList = await getSeedAddresses(
+				mnemonic,
+				count - 5,
+				5,
+				type
+			);
+
+			setGeneratedAddressList((prevState) => [...prevState, ...newAddressList]);
+		}
+
 		fetchData();
-	}, [count]);
-
-	async function fetchAddresses() {
-		const newAddressList = await props.seedController.getSeedAddresses(
-			props.mnemonic,
-			count - 5,
-			5,
-			props.type
-		);
-
-		setGeneratedAddressList((prevState) => [...prevState, ...newAddressList]);
-	}
+	}, [count, mnemonic, type, getSeedAddresses]);
 
 	function getNextFive() {
 		setCount((prevCount) => setCount(prevCount + 5));
@@ -54,12 +64,6 @@ function SeedForm(props) {
 			.filter((key) => key.startsWith('checkbox'))
 			.some((key) => formValues[key]);
 	}
-
-	const {
-		type,
-		walletController: { getAddresses, addAddresses, newSeedAddress },
-		networkController: { networkProps },
-	} = props;
 
 	let userAddressList = getAddresses(type);
 
@@ -77,10 +81,10 @@ function SeedForm(props) {
 					}
 				}
 				// add addresses
-				addAddresses(validAddresses, props.type);
+				addAddresses(validAddresses, type);
 
 				// proceed to next page
-				props.handleNext();
+				handleNext();
 			}}
 			render={({
 				isSubmitting,
