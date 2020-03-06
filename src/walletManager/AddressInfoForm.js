@@ -102,18 +102,14 @@ function AddressInfoForm(props) {
 				<Form>
 					<Grid container item xs={12} justify="space-between">
 						<Grid item>
-							<Typography style={{ display: 'inline-block' }} variant="h6">
+							<Typography display="inline" variant="h6">
 								Edit Address
 							</Typography>
 							{isSubmitting && (
-								<>
-									&nbsp;
-									<CircularProgress size={20} className={classes.icon} />
-								</>
+								<CircularProgress size={20} className={classes.icon} />
 							)}
 							{_get(values, savedPath) && (
-								<Typography style={{ color: 'green', display: 'inline-block' }}>
-									&nbsp;
+								<Typography display="inline" style={{ color: 'green' }}>
 									<CheckCircle className={classes.icon} />
 								</Typography>
 							)}
@@ -155,7 +151,7 @@ function AddressInfoForm(props) {
 							</Menu>
 						</Grid>
 					</Grid>
-					<Grid item xs={12}>
+					<Grid item xs={12} className={classes.textAlignLeft}>
 						<FormTextField
 							error={
 								errors[nicknamePath] && touched[nicknamePath] ? true : false
@@ -179,7 +175,7 @@ function AddressInfoForm(props) {
 							maxLength={NICKNAME_MAX_LENGTH}
 						/>
 					</Grid>
-					<Grid item xs={12}>
+					<Grid item xs={12} className={classes.textAlignLeft}>
 						<Field
 							name={saveLocallyPath}
 							render={({ field, form }) => (
@@ -211,13 +207,15 @@ AddressInfoForm.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
-const styles = (theme) => ({
+const styles = () => ({
 	deleteButton: { marginLeft: 15 },
 	deleteConfirmationText: { color: 'red' },
 	icon: {
 		position: 'relative',
 		top: '5px',
+		left: '6px',
 	},
+	textAlignLeft: { textAlign: 'left' },
 });
 
 const enhancer = _flowRight(withWalletContext, withStyles(styles));
