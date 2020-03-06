@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import _flowRight from 'lodash/flowRight';
 import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
