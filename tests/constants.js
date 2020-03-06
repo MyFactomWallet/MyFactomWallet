@@ -6,3 +6,6 @@ export const seedWarning =
 export const bip32Account = 0;
 
 export const openNodeUrl = 'https://api.factomd.net/v2';
+
+export const FACTOID_MULTIPLIER = 100000000;
+export const FACTOSHI_MULTIPLIER = 0.00000001;

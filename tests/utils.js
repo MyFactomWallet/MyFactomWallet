@@ -1,5 +1,11 @@
-import { bip32Account } from './constants';
 const bip44 = require('factombip44');
+const Big = require('big.js');
+import {
+	bip32Account,
+	FACTOID_MULTIPLIER,
+	FACTOSHI_MULTIPLIER,
+} from './constants';
+import { Transaction } from 'factom/dist/factom';
 
 import {
 	isValidPublicEcAddress,
@@ -31,9 +37,34 @@ export const getEcPrivateKey = (mnemonic, address, index) => {
 };
 
 export const toFactoshis = (factoids) => {
-	return factoids * 100000000;
+	return factoids * FACTOID_MULTIPLIER;
 };
 
 export const toFactoids = (factoshis) => {
-	return factoshis * 0.00000001;
+	const bigFactoshis = new Big(factoshis);
+	const factoids = bigFactoshis.times(FACTOSHI_MULTIPLIER);
+
+	return factoids.valueOf();
+};
+
+export const getMaxFactoshis = (balance, fee) => {
+	const balanceInFactoshis = new Big(balance);
+	const maxFactoshis = balanceInFactoshis.minus(fee);
+	if (maxFactoshis < 0) {
+		return 0;
+	}
+
+	return maxFactoshis.valueOf();
+};
+
+export const getFactoshiFee = (ecRate) => {
+	const exampleAddress = 'FA3E6enA33y9f5K9q9nrWfcDNrVR4zAp4xpniizNjQbV4RAmPjat';
+
+	const fee = Transaction.builder()
+		.input(exampleAddress, Number.MAX_SAFE_INTEGER)
+		.output(exampleAddress, Number.MAX_SAFE_INTEGER)
+		.build()
+		.computeRequiredFees(ecRate, { rcdType: 1 });
+
+	return fee;
 };
