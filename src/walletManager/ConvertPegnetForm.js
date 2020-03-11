@@ -5,7 +5,6 @@ import _get from 'lodash/get';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { withStyles } from '@material-ui/core/styles';
-import { withFactomCli } from '../context/FactomCliContext';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
@@ -16,20 +15,20 @@ import AddressInfoHeader from './shared/AddressInfoHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Tooltip from '@material-ui/core/Tooltip';
+import axios from 'axios';
+
+import { withFactomCli } from '../context/FactomCliContext';
 import { withWalletContext } from '../context/WalletContext';
 import { withSeed } from '../context/SeedContext';
 import { withNetwork } from '../context/NetworkContext';
 import { withLedger } from '../context/LedgerContext';
 import FormTextField from '../component/form/FormTextField';
-
 import {
-	FACTOSHI_MULTIPLIER,
-	FACTOID_MULTIPLIER,
 	ADDRESS_LENGTH,
 	DISABLE_AUTOCOMPLETE,
 } from '../constants/WALLET_CONSTANTS';
 import { PFCT_LBL } from '../constants/PEGNET_CONSTANTS';
-import axios from 'axios';
+import { toFactoids, toFactoshis } from '../utils';
 
 const AMOUNT_PATH = 'amount';
 const KEY_PATH = 'key';
@@ -105,7 +104,7 @@ class convertPegnetForm extends Component {
 	};
 
 	getMaxFCT(balance, fee) {
-		const maxFactoids = balance * FACTOSHI_MULTIPLIER - fee;
+		const maxFactoids = toFactoids(balance) - fee;
 		if (maxFactoids < 0) {
 			return 0;
 		}
@@ -139,7 +138,7 @@ class convertPegnetForm extends Component {
 
 		const activeAddress_o = getActiveAddress();
 
-		const maxAmount = activeAddress_o.balance * FACTOSHI_MULTIPLIER;
+		const maxAmount = toFactoids(activeAddress_o.balance);
 
 		const minAmount = this.state.sendFactoidFee;
 
@@ -158,7 +157,7 @@ class convertPegnetForm extends Component {
 				}}
 				onSubmit={async (values, actions) => {
 					const { amount, key, seed, keyType } = values;
-					const factoshipFCTAmount = Math.round(FACTOID_MULTIPLIER * amount);
+					const factoshipFCTAmount = Math.round(toFactoshis(amount));
 
 					let transaction = {};
 
@@ -272,9 +271,7 @@ class convertPegnetForm extends Component {
 							<br />
 							<Typography align="left">
 								{!_isNil(this.state.pFCTBalance)
-									? this.state.pFCTBalance * FACTOSHI_MULTIPLIER +
-									  ' ' +
-									  PFCT_LBL
+									? `${toFactoids(this.state.pFCTBalance)} ${PFCT_LBL}`
 									: 'Loading...'}
 							</Typography>
 						</Paper>
