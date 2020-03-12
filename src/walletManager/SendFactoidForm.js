@@ -56,6 +56,7 @@ class SendFactoidForm extends Component {
 	};
 
 	getMaxFactoshis = (balance, fee) => {
+		Big.RM = 0;
 		const balanceInFactoshis = new Big(balance);
 		const maxFactoshis = balanceInFactoshis.minus(fee);
 		if (maxFactoshis.valueOf() < 0) {

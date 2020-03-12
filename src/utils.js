@@ -17,8 +17,9 @@ export const toFactoids = (factoshis) => {
 };
 
 export const addBig = (x, y) => {
+	Big.RM = 0;
 	const bigX = new Big(x);
-	const sum = bigX.plus(y).toFixed(8);
+	const sum = bigX.plus(y);
 
 	return sum.toString();
 };

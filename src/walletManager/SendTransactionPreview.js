@@ -12,9 +12,7 @@ const SendTransactionPreview = (props) => {
 	// total send amount
 	const totalFactoidAmount = addBig(factoidAmount, sendFactoidFee);
 
-	const transferFactoidAmountText = factoidAmount.toLocaleString(undefined, {
-		maximumFractionDigits: 8,
-	});
+	const transferFactoidAmountText = factoidAmount.toLocaleString();
 
 	const totalFactoidAmountText = `${parseFloat(
 		totalFactoidAmount
@@ -22,9 +20,9 @@ const SendTransactionPreview = (props) => {
 		maximumFractionDigits: 8,
 	})} ${networkProps.factoidAbbreviation}`;
 
-	const feeFactoidAmountText = `${sendFactoidFee.toLocaleString(undefined, {
-		maximumFractionDigits: 8,
-	})} ${networkProps.factoidAbbreviation}`;
+	const feeFactoidAmountText = `${sendFactoidFee.toLocaleString()} ${
+		networkProps.factoidAbbreviation
+	}`;
 
 	return (
 		<Paper className={classes.root} elevation={2}>
