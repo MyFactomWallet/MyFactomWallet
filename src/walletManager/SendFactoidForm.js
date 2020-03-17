@@ -62,7 +62,7 @@ class SendFactoidForm extends Component {
 		if (maxFactoshis.valueOf() < 0) {
 			return 0;
 		}
-		return maxFactoshis.valueOf();
+		return parseFloat(maxFactoshis.toString());
 	};
 
 	verifyKey = (privateKey) => {
