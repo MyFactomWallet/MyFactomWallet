@@ -18,7 +18,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Tooltip from '@material-ui/core/Tooltip';
 import { isValidPublicFctAddress } from 'factom/dist/factom';
-import Big from 'big.js';
 
 import { withFactomCli } from '../context/FactomCliContext';
 import { withWalletContext } from '../context/WalletContext';
@@ -27,8 +26,11 @@ import { withNetwork } from '../context/NetworkContext';
 import { withLedger } from '../context/LedgerContext';
 import SendTransactionPreview from './SendTransactionPreview';
 import AddressInfoHeader from './shared/AddressInfoHeader';
-import { ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
-import { toFactoshis, toFactoids } from '../utils';
+import {
+	ADDRESS_LENGTH,
+	AMOUNT_VALIDATION,
+} from '../constants/WALLET_CONSTANTS';
+import { toFactoshis, toFactoids, minusBig } from '../utils';
 
 /**
  * Constants
@@ -39,7 +41,6 @@ const myFctWalletAnchorElPath = 'myFctWalletAnchorEl';
 const privateKeyPath = 'privateKey';
 const seedPath = 'seed';
 const walletImportTypePath = 'walletImportType';
-const amountValidation = /^\d*[.]{0,1}\d{0,8}$/;
 
 class SendFactoidForm extends Component {
 	state = { sendFactoshiFee: null };
@@ -56,13 +57,11 @@ class SendFactoidForm extends Component {
 	};
 
 	getMaxFactoshis = (balance, fee) => {
-		Big.RM = 0;
-		const balanceInFactoshis = new Big(balance);
-		const maxFactoshis = balanceInFactoshis.minus(fee);
-		if (maxFactoshis.valueOf() < 0) {
+		const maxFactoshis = minusBig(balance, fee);
+		if (maxFactoshis < 0) {
 			return 0;
 		}
-		return parseFloat(maxFactoshis.toString());
+		return maxFactoshis;
 	};
 
 	verifyKey = (privateKey) => {
@@ -213,7 +212,7 @@ class SendFactoidForm extends Component {
 						.typeError('Must be a number')
 						.positive('Must be greater than 0')
 						.test(sendFactoidAmountPath, 'Limit 8 decimal places', (value) =>
-							(value + '').match(amountValidation)
+							(value + '').match(AMOUNT_VALIDATION)
 						)
 						.max(maxAmount, this.insufficientFundsMessage),
 					[walletImportTypePath]: Yup.string(),

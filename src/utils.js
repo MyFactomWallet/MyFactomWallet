@@ -9,20 +9,26 @@ export const toFactoshis = (factoids) => {
 	const bigFactoids = new Big(factoids);
 	const factoshis = bigFactoids.times(FACTOID_MULTIPLIER);
 
-	return parseFloat(factoshis.toString());
+	return parseFloat(factoshis);
 };
 
 export const toFactoids = (factoshis) => {
 	const bigFactoshis = new Big(factoshis);
 	const factoids = bigFactoshis.times(FACTOSHI_MULTIPLIER);
 
-	return parseFloat(factoids.toString());
+	return parseFloat(factoids);
 };
 
 export const addBig = (x, y) => {
-	Big.RM = 0;
 	const bigX = new Big(x);
 	const sum = bigX.plus(y);
 
-	return parseFloat(sum.toString());
+	return parseFloat(sum);
+};
+
+export const minusBig = (x, y) => {
+	const bigX = new Big(x);
+	const diff = bigX.minus(y);
+
+	return parseFloat(diff);
 };

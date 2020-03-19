@@ -14,3 +14,5 @@ export const DISABLE_AUTOCOMPLETE = {
 	// eslint-disable-next-line
 	autoComplete: 'off',
 };
+
+export const AMOUNT_VALIDATION = /^\d*[.]{0,1}\d{0,8}$/;
