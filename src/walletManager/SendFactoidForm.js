@@ -26,10 +26,7 @@ import { withNetwork } from '../context/NetworkContext';
 import { withLedger } from '../context/LedgerContext';
 import SendTransactionPreview from './SendTransactionPreview';
 import AddressInfoHeader from './shared/AddressInfoHeader';
-import {
-	ADDRESS_LENGTH,
-	AMOUNT_VALIDATION,
-} from '../constants/WALLET_CONSTANTS';
+import { ADDRESS_LENGTH, FACTOID_REGEX } from '../constants/WALLET_CONSTANTS';
 import { toFactoshis, toFactoids, minusBig } from '../utils';
 
 /**
@@ -212,7 +209,7 @@ class SendFactoidForm extends Component {
 						.typeError('Must be a number')
 						.positive('Must be greater than 0')
 						.test(sendFactoidAmountPath, 'Limit 8 decimal places', (value) =>
-							(value + '').match(AMOUNT_VALIDATION)
+							(value + '').match(FACTOID_REGEX)
 						)
 						.max(maxAmount, this.insufficientFundsMessage),
 					[walletImportTypePath]: Yup.string(),

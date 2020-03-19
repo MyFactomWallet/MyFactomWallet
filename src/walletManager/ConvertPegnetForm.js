@@ -157,7 +157,7 @@ class convertPegnetForm extends Component {
 				}}
 				onSubmit={async (values, actions) => {
 					const { amount, key, seed, keyType } = values;
-					const factoshipFCTAmount = Math.round(toFactoshis(amount));
+					const factoshipFCTAmount = toFactoshis(amount);
 
 					let transaction = {};
 

@@ -15,4 +15,4 @@ export const DISABLE_AUTOCOMPLETE = {
 	autoComplete: 'off',
 };
 
-export const AMOUNT_VALIDATION = /^\d*[.]{0,1}\d{0,8}$/;
+export const FACTOID_REGEX = /^\d*[.]{0,1}\d{0,8}$/;
