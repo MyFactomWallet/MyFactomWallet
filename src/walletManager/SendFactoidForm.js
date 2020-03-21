@@ -93,7 +93,7 @@ class SendFactoidForm extends Component {
 		const activeAddress_o = getActiveAddress();
 
 		let maxAmount;
-		if (this.state.sendFactoshiFee != null) {
+		if (this.state.sendFactoshiFee != null && activeAddress_o.balance != null) {
 			const maxFactoshis = this.getMaxFactoshis(
 				activeAddress_o.balance,
 				this.state.sendFactoshiFee
