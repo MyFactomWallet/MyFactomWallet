@@ -23,11 +23,12 @@ import { withSeed } from '../context/SeedContext';
 import { withWalletContext } from '../context/WalletContext';
 import { withNetwork } from '../context/NetworkContext';
 import { isValidPublicEcAddress } from 'factom/dist/factom';
-import { FACTOSHI_MULTIPLIER } from '../constants/WALLET_CONSTANTS';
 import ConvertTransactionPreview from './ConvertTransactionPreview';
 import Paper from '@material-ui/core/Paper';
 import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
+
 import { ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
+import { toFactoids } from '../utils';
 
 /**
  * Constants
@@ -415,12 +416,9 @@ class ConvertECForm extends Component {
 								ecAmount={_get(values, entryCreditAmountPath)}
 								factoidAmount={
 									this.state.ecRate *
-									_get(values, entryCreditAmountPath) *
-									FACTOSHI_MULTIPLIER
+									toFactoids(_get(values, entryCreditAmountPath))
 								}
-								sendFactoidFee={
-									this.state.sendFactoshiFee * FACTOSHI_MULTIPLIER
-								}
+								sendFactoidFee={toFactoids(this.state.sendFactoshiFee)}
 							/>
 						) : (
 							''
