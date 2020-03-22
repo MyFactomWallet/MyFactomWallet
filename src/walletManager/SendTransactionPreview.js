@@ -3,31 +3,29 @@ import _flowRight from 'lodash/flowRight';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { addBig, toFactoids } from '../utils';
 
 const SendTransactionPreview = (props) => {
-	const { factoidAmount, classes, networkProps, sendFactoidFee } = props;
+	const { factoidAmount, classes, networkProps, sendFactoshiFee } = props;
+	const sendFactoidFee = toFactoids(sendFactoshiFee);
 
 	// total send amount
-	const totalFactoidAmount = factoidAmount + sendFactoidFee;
+	const totalFactoidAmount = addBig(factoidAmount, sendFactoidFee);
 
-	// format output
 	const transferFactoidAmountText = factoidAmount.toLocaleString(undefined, {
 		maximumFractionDigits: 8,
 	});
 
-	const totalFactoidAmountText =
-		totalFactoidAmount.toLocaleString(undefined, {
+	const totalFactoidAmountText = `${totalFactoidAmount.toLocaleString(
+		undefined,
+		{
 			maximumFractionDigits: 8,
-		}) +
-		' ' +
-		networkProps.factoidAbbreviation;
+		}
+	)} ${networkProps.factoidAbbreviation}`;
 
-	const feeFactoidAmountText =
-		sendFactoidFee.toLocaleString(undefined, {
-			maximumFractionDigits: 8,
-		}) +
-		' ' +
-		networkProps.factoidAbbreviation;
+	const feeFactoidAmountText = `${sendFactoidFee.toLocaleString(undefined, {
+		maximumFractionDigits: 8,
+	})} ${networkProps.factoidAbbreviation}`;
 
 	return (
 		<Paper className={classes.root} elevation={2}>
