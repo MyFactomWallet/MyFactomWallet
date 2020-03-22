@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { NetworkContext } from '../../context/NetworkContext';
-import { FACTOSHI_MULTIPLIER } from '../../constants/WALLET_CONSTANTS';
+import { toFactoids } from '../../utils';
 
 const FormatBalance = (props) => {
 	const { networkProps } = useContext(NetworkContext);
@@ -20,7 +20,7 @@ const FormatFCTBalance = (props) => {
 	let result = '';
 
 	const factoshiBalance = balance;
-	const factoidBalance = parseInt(factoshiBalance, 10) * FACTOSHI_MULTIPLIER;
+	const factoidBalance = toFactoids(parseInt(factoshiBalance, 10));
 
 	result = (
 		<span>
