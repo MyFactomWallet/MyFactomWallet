@@ -5,12 +5,14 @@ import _isEmpty from 'lodash/isEmpty';
 import _noop from 'lodash/noop';
 import _isNil from 'lodash/isNil';
 import _pick from 'lodash/pick';
+import { Transaction, getPublicAddress } from 'factom/dist/factom';
+
+import { BURN_ADDR } from '../constants/PEGNET_CONSTANTS';
 import { WalletContext } from './WalletContext';
 import { withFactomCli } from './FactomCliContext';
 import { withNetwork } from './NetworkContext';
-import { FACTOSHI_MULTIPLIER } from '../constants/WALLET_CONSTANTS';
-import { Transaction, getPublicAddress } from 'factom/dist/factom';
-import { BURN_ADDR } from '../constants/PEGNET_CONSTANTS';
+import { toFactoids } from '../utils';
+
 /**
  * Constants
  */
@@ -377,8 +379,7 @@ class WalletController extends React.Component {
 	getFactoidFee = async () => {
 		const factoshiFee = await this.getFactoshiFee();
 
-		//fix floating point decimal
-		return factoshiFee * FACTOSHI_MULTIPLIER;
+		return toFactoids(factoshiFee);
 	};
 
 	signConvertToPFCT = ({ key, amount }) => {
