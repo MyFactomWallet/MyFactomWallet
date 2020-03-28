@@ -52,17 +52,25 @@ function Sidebar(props) {
 					updateBalances();
 				}}
 				className={expanded ? classes.expanded : ''}
+				data-cy={`sidebarFctIndex_${index}`}
 			>
 				<ExpansionPanelSummary className={classes.addressSummary}>
 					<Grid container justify="space-between" style={addressContainer}>
 						<Grid item xs={6}>
-							<Typography className={classes.break} style={nicknameStyle}>
+							<Typography
+								className={classes.break}
+								style={nicknameStyle}
+								data-cy="sidebarFctNickname"
+							>
 								{wallet.nickname}
 							</Typography>
 						</Grid>
 						{!_isNil(wallet.balance) && (
 							<Grid item xs={5}>
-								<Typography className={classes.break}>
+								<Typography
+									className={classes.break}
+									data-cy="sidebarFctBalance"
+								>
 									<FormatBalance balance={wallet.balance} type="fct" />
 								</Typography>
 							</Grid>
@@ -90,17 +98,25 @@ function Sidebar(props) {
 					updateBalances();
 				}}
 				className={expanded ? classes.expanded : ''}
+				data-cy={`sidebarEcIndex_${index}`}
 			>
 				<ExpansionPanelSummary className={classes.addressSummary}>
 					<Grid container justify="space-between" style={addressContainer}>
 						<Grid item xs={6}>
-							<Typography className={classes.break} style={nicknameStyle}>
+							<Typography
+								className={classes.break}
+								style={nicknameStyle}
+								data-cy="sidebarEcNickname"
+							>
 								{wallet.nickname}
 							</Typography>
 						</Grid>
 						{!_isNil(wallet.balance) && (
 							<Grid item xs={5}>
-								<Typography className={classes.break}>
+								<Typography
+									className={classes.break}
+									data-cy="sidebarEcBalance"
+								>
 									<FormatBalance balance={wallet.balance} type="ec" />
 								</Typography>
 							</Grid>

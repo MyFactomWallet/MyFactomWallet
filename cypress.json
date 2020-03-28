@@ -1,5 +1,8 @@
 {
 	"chromeWebSecurity": false,
 	"video": false,
-	"pluginsFile": "tests/e2e/plugins/index.js"
+	"pluginsFile": "tests/e2e/plugins/index.js",
+	"env": {
+		"network": "mainnet"
+	}
 }
