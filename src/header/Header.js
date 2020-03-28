@@ -100,7 +100,7 @@ class Header extends React.Component {
 						<Link className={classes.menuText} to="/">
 							MyFactomWallet
 							{testnetActive && (
-								<span className={classes.testnetHeader}>
+								<span className={classes.testnetHeader} data-cy="testnetHeader">
 									&nbsp;&nbsp;TESTNET
 								</span>
 							)}

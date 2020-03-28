@@ -1,11 +1,8 @@
 const bip44 = require('factombip44');
 const Big = require('big.js');
-import {
-	bip32Account,
-	FACTOID_MULTIPLIER,
-	FACTOSHI_MULTIPLIER,
-} from './constants';
 import { Transaction } from 'factom/dist/factom';
+
+import { FACTOID_MULTIPLIER, FACTOSHI_MULTIPLIER } from './constants';
 
 import {
 	isValidPublicEcAddress,
@@ -14,7 +11,7 @@ import {
 	seedToPrivateEcAddress,
 } from 'factom/dist/factom';
 
-export const getFctPrivateKey = (mnemonic, address, index) => {
+export const getFctPrivateKey = (mnemonic, address, index, bip32Account) => {
 	let privateKey = null;
 	const wallet = new bip44.FactomBIP44(mnemonic);
 	if (isValidPublicFctAddress(address)) {
@@ -25,7 +22,7 @@ export const getFctPrivateKey = (mnemonic, address, index) => {
 	return privateKey;
 };
 
-export const getEcPrivateKey = (mnemonic, address, index) => {
+export const getEcPrivateKey = (mnemonic, address, index, bip32Account) => {
 	let privateKey = null;
 	const wallet = new bip44.FactomBIP44(mnemonic);
 	if (isValidPublicEcAddress(address)) {
@@ -37,24 +34,25 @@ export const getEcPrivateKey = (mnemonic, address, index) => {
 };
 
 export const toFactoshis = (factoids) => {
-	return factoids * FACTOID_MULTIPLIER;
+	const bigFactoids = new Big(factoids);
+	const factoshis = bigFactoids.times(FACTOID_MULTIPLIER);
+
+	return parseFloat(factoshis);
 };
 
 export const toFactoids = (factoshis) => {
 	const bigFactoshis = new Big(factoshis);
 	const factoids = bigFactoshis.times(FACTOSHI_MULTIPLIER);
 
-	return factoids.valueOf();
+	return parseFloat(factoids);
 };
 
 export const getMaxFactoshis = (balance, fee) => {
-	const balanceInFactoshis = new Big(balance);
-	const maxFactoshis = balanceInFactoshis.minus(fee);
+	const maxFactoshis = minusBig(balance, fee);
 	if (maxFactoshis < 0) {
 		return 0;
 	}
-
-	return maxFactoshis.valueOf();
+	return maxFactoshis;
 };
 
 export const getFactoshiFee = (ecRate) => {
@@ -67,4 +65,18 @@ export const getFactoshiFee = (ecRate) => {
 		.computeRequiredFees(ecRate, { rcdType: 1 });
 
 	return fee;
+};
+
+export const addBig = (x, y) => {
+	const bigX = new Big(x);
+	const sum = bigX.plus(y);
+
+	return parseFloat(sum);
+};
+
+export const minusBig = (x, y) => {
+	const bigX = new Big(x);
+	const diff = bigX.minus(y);
+
+	return parseFloat(diff);
 };

@@ -1,28 +1,29 @@
-import { openNodeUrl } from '../../../constants';
+import { networkProps } from '../../../constants';
 
-let data = {
+const openApiPayload = {
 	jsonrpc: '2.0',
 	id: 0,
 	method: 'directory-block-head',
 };
+const network = Cypress.env('network');
 
-describe('Header tests', function() {
-	it('Validate Mainnet Block Height', function() {
+describe('Test the header', function() {
+	it('Has the correct Block Height', function() {
 		cy.request({
 			method: 'POST',
-			url: openNodeUrl,
-			body: JSON.stringify(data),
+			url: networkProps[network].apiUrl,
+			body: JSON.stringify(openApiPayload),
 			headers: {
 				'Content-Type': 'application/json',
 			},
 		}).then((response) => {
-			cy.log(response.body.result.keymr);
-			data['params'] = { keymr: response.body.result.keymr };
-			data['method'] = 'directory-block';
+			let directoryBlockPayload = openApiPayload;
+			directoryBlockPayload['params'] = { keymr: response.body.result.keymr };
+			directoryBlockPayload['method'] = 'directory-block';
 			cy.request({
 				method: 'POST',
-				url: openNodeUrl,
-				body: JSON.stringify(data),
+				url: networkProps[network].apiUrl,
+				body: JSON.stringify(openApiPayload),
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -36,9 +37,12 @@ describe('Header tests', function() {
 		});
 	});
 
-	it('Validate Header Text', function() {
+	it('Has the correct text', function() {
 		cy.get('[data-cy=appBarHeader]').contains('Wallet');
 		cy.get('[data-cy=appBarHeader]').contains('Help');
 		cy.get('[data-cy=appBarHeader]').contains('MyFactomWallet');
+		if (network === 'testnet') {
+			cy.get('[data-cy="testnetHeader"]').contains('TESTNET');
+		}
 	});
 });
