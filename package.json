@@ -21,7 +21,7 @@
 		"react-dom": "^16.8.4",
 		"react-icons": "^3.7.0",
 		"react-router-dom": "^4.3.1",
-		"react-scripts": "3.0.1",
+		"react-scripts": "^3.4.1",
 		"yup": "^0.26.10"
 	},
 	"scripts": {
