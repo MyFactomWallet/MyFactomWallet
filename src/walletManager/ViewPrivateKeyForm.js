@@ -84,7 +84,11 @@ function ViewPrivateKeyForm(props) {
 					{!_isEmpty(_get(values, privateKeyPath)) && (
 						<>
 							<br />
-							<Typography variant="subtitle2" style={{ fontSize: 15 }}>
+							<Typography
+								data-cy="privateKey"
+								variant="subtitle2"
+								style={{ fontSize: 15 }}
+							>
 								Private Key:&nbsp;
 								{_get(values, privateKeyPath) && (
 									<>

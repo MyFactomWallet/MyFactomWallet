@@ -214,7 +214,11 @@ function ConfirmationDialogRaw(props) {
 				</ul>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={handleClose} color="primary">
+				<Button
+					data-cy="disclaimer-accept"
+					onClick={handleClose}
+					color="primary"
+				>
 					Accept
 				</Button>
 			</DialogActions>
