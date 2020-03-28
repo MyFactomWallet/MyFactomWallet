@@ -25,6 +25,34 @@ Many thanks to [MyEtherWallet](https://github.com/MyEtherWallet/) for inspiratio
 
 ## End-to-End tests
 
+Save this file at `tests/e2e/config.yaml`
+
+```yaml
+addresses:
+  mainnet:
+    - ecAddress: <yourEcAddress>
+      ecName: e2e EC Mainnet 1
+      fctAddress: <yourFctAddress>
+      fctName: e2e Fct Mainnet 1
+      seed: <yourSeedPhrase>
+    - ecAddress: <anotherEcAddress>
+      ecName: e2e EC Mainnet 2
+      fctAddress: <anotherFctAddress>
+      fctName: e2e Fct Mainnet 2
+      seed: <anotherSeedPhrase>
+  testnet:
+    - ecAddress: <yourEcAddress>
+      ecName: e2e EC Testnet 1
+      fctAddress: <yourFctAddress>
+      fctName: e2e Fct Testnet 1
+      seed: <yourSeedPhrase>
+    - ecAddress: <anotherEcAddress>
+      ecName: e2e EC Testnet 2
+      fctAddress: <anotherFctAddress>
+      fctName: e2e Fct Testnet 2
+      seed: <anotherSeedPhrase>
+```
+
 E2E tests are run using [Cypress](https://www.cypress.io/) and can either be run using the test runner or the command line.
 
 ### Test Runner
