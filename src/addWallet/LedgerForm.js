@@ -260,7 +260,6 @@ class LedgerForm extends React.Component {
 							</>
 						)}
 						<br />
-						<br />
 						<div>
 							<Button onClick={this.props.handleBack}>Back</Button>
 							<Button

@@ -90,7 +90,7 @@ function GenerateAddressTable(props) {
 				)}
 			/>
 			<Paper className={classes.root} elevation={2}>
-				<Table>
+				<Table size="small">
 					<TableHead>
 						<TableRow>
 							<CustomCell />
