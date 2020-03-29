@@ -134,7 +134,16 @@ class FactomCliController extends React.Component {
 						</Grid>
 						<Grid item xs={12} justify="center" container>
 							<Typography variant="h5">
-								PLACEHOLDER Unable to connect to Factom node PLACEHOLDER
+								Unable to connect to Factom node. Please go to the
+								#myfactomwallet channel on{' '}
+								<a
+									target="_blank"
+									rel="noopener noreferrer"
+									href={'https://discord.gg/79kH2pp'}
+								>
+									Discord
+								</a>
+								&nbsp;for support.
 							</Typography>
 						</Grid>
 					</Grid>

@@ -24,13 +24,13 @@ function HelpModal(props) {
 				<Paper className={classes.modalContent} elevation={2}>
 					<SectionHeader text="Help" id="modal-title" />
 					<Typography>
-						Please go to the #myfactomwallet channel on The Factoid Authority's{' '}
+						Please go to the #myfactomwallet channel on{' '}
 						<a
 							target="_blank"
 							rel="noopener noreferrer"
 							href={'https://discord.gg/79kH2pp'}
 						>
-							Discord server
+							Discord
 						</a>
 						&nbsp;for support.
 					</Typography>
