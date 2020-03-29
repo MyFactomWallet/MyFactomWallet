@@ -3,9 +3,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 const theme = createMuiTheme({
-	palette: {
-		primary: { main: '#0F609B' },
-	},
+	palette: {},
 });
 
 function withRootTheme(Component) {
