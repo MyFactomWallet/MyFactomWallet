@@ -11,27 +11,33 @@ Replace the values in < > with your own.
 ```yaml
 addresses:
   mainnet:
-    - ecAddress: <yourEcAddress>
-      ecName: e2e EC Mainnet 1
-      fctAddress: <yourFctAddress>
-      fctName: e2e Fct Mainnet 1
-      seed: <yourSeedPhrase>
-    - ecAddress: <anotherEcAddress>
-      ecName: e2e EC Mainnet 2
-      fctAddress: <anotherFctAddress>
-      fctName: e2e Fct Mainnet 2
-      seed: <anotherSeedPhrase>
+    mnemonic:
+      - ecAddress: <yourEcAddress>
+        ecName: e2e EC Mainnet 1
+        fctAddress: <yourFctAddress>
+        fctName: e2e Fct Mainnet 1
+        seed: <yourSeedPhrase>
+        index: <>
+      - ecAddress: <anotherEcAddress>
+        ecName: e2e EC Mainnet 2
+        fctAddress: <anotherFctAddress>
+        fctName: e2e Fct Mainnet 2
+        seed: <anotherSeedPhrase>
+        index: <>
   testnet:
-    - ecAddress: <yourEcAddress>
-      ecName: e2e EC Testnet 1
-      fctAddress: <yourFctAddress>
-      fctName: e2e Fct Testnet 1
-      seed: <yourSeedPhrase>
-    - ecAddress: <anotherEcAddress>
-      ecName: e2e EC Testnet 2
-      fctAddress: <anotherFctAddress>
-      fctName: e2e Fct Testnet 2
-      seed: <anotherSeedPhrase>
+    mnemonic:
+      - ecAddress: <yourEcAddress>
+        ecName: e2e EC Testnet 1
+        fctAddress: <yourFctAddress>
+        fctName: e2e Fct Testnet 1
+        seed: <yourSeedPhrase>
+        index: <>
+      - ecAddress: <anotherEcAddress>
+        ecName: e2e EC Testnet 2
+        fctAddress: <anotherFctAddress>
+        fctName: e2e Fct Testnet 2
+        seed: <anotherSeedPhrase>
+        index: <>
 ```
 
 E2E tests can either be run using the test runner or the command line.

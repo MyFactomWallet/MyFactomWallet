@@ -14,8 +14,8 @@ describe('Import Addresses from Mnemonic seed', function() {
 	it('Can import addresses and make transactions', function() {
 		cy.readFile('./tests/e2e/config.yaml').then((data) => {
 			const config = YAML.parse(data);
-			const addressOne = config.addresses.mainnet[0];
-			const addressTwo = config.addresses.mainnet[1];
+			const addressOne = config.addresses.mainnet.mnemonic[0];
+			const addressTwo = config.addresses.mainnet.mnemonic[1];
 
 			// Import first seed address
 			cy.contains('Import addresses from mnemonic seed phrase').click();
@@ -24,23 +24,23 @@ describe('Import Addresses from Mnemonic seed', function() {
 				.click();
 			cy.get('[name="mnemonic"]').type(addressOne.seed);
 			cy.contains('Next').click();
-			cy.get('[name="address_0"]')
+			cy.get(`[name="address_${addressOne.index}"]`)
 				.invoke('text')
 				.then((text) => {
 					expect(text).equal(addressOne.fctAddress);
 				});
-			cy.get('[name="checkbox_0"]').click();
-			cy.get('[name="nickname_0"]').type(addressOne.fctName);
+			cy.get(`[name="checkbox_${addressOne.index}"]`).click();
+			cy.get(`[name="nickname_${addressOne.index}"]`).type(addressOne.fctName);
 			cy.get('[type="submit"]')
 				.contains('Add and Continue')
 				.click();
-			cy.get('[name="address_0"]')
+			cy.get(`[name="address_${addressOne.index}"]`)
 				.invoke('text')
 				.then((text) => {
 					expect(text).equal(addressOne.ecAddress);
 				});
-			cy.get('[name="checkbox_0"]').click();
-			cy.get('[name="nickname_0"]').type(addressOne.ecName);
+			cy.get(`[name="checkbox_${addressOne.index}"]`).click();
+			cy.get(`[name="nickname_${addressOne.index}"]`).type(addressOne.ecName);
 			cy.get('[type="submit"]')
 				.contains('Add and Continue')
 				.click();
@@ -53,23 +53,23 @@ describe('Import Addresses from Mnemonic seed', function() {
 				.click();
 			cy.get('[name="mnemonic"]').type(addressTwo.seed);
 			cy.contains('Next').click();
-			cy.get('[name="address_0"]')
+			cy.get(`[name="address_${addressTwo.index}"]`)
 				.invoke('text')
 				.then((text) => {
 					expect(text).equal(addressTwo.fctAddress);
 				});
-			cy.get('[name="checkbox_0"]').click();
-			cy.get('[name="nickname_0"]').type(addressTwo.fctName);
+			cy.get(`[name="checkbox_${addressTwo.index}"]`).click();
+			cy.get(`[name="nickname_${addressTwo.index}"]`).type(addressTwo.fctName);
 			cy.get('[type="submit"]')
 				.contains('Add and Continue')
 				.click();
-			cy.get('[name="address_0"]')
+			cy.get(`[name="address_${addressTwo.index}"]`)
 				.invoke('text')
 				.then((text) => {
 					expect(text).equal(addressTwo.ecAddress);
 				});
-			cy.get('[name="checkbox_0"]').click();
-			cy.get('[name="nickname_0"]').type(addressTwo.ecName);
+			cy.get(`[name="checkbox_${addressTwo.index}"]`).click();
+			cy.get(`[name="nickname_${addressTwo.index}"]`).type(addressTwo.ecName);
 			cy.get('[type="submit"]')
 				.contains('Add and Continue')
 				.click();

@@ -23,9 +23,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 Many thanks to [MyEtherWallet](https://github.com/MyEtherWallet/) for inspiration.
 
-See
-[TESTINGS.md](https://github.com/MyFactomWallet/MyFactomWallet/blob/master/tests/TESTING.md)
-for how to run the tests.
+See [TESTING.md](https://github.com/MyFactomWallet/MyFactomWallet/blob/master/tests/TESTING.md) for how to run the tests.
 
 ## Tools
 
