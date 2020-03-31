@@ -91,11 +91,10 @@ class ConvertECForm extends Component {
 
 		let maxAmount;
 		if (this.state.sendFactoshiFee != null && activeAddress_o.balance != null) {
-			const maxEc = this.getMaxEC(
+			maxAmount = this.getMaxEC(
 				activeAddress_o.balance,
 				this.state.sendFactoshiFee
 			);
-			maxAmount = maxEc;
 		}
 
 		return (
@@ -186,6 +185,7 @@ class ConvertECForm extends Component {
 						actions.setFieldValue('transactionID', txId);
 						updateBalances();
 					} catch (err) {
+						console.log(err);
 						actions.resetForm();
 
 						actions.setFieldValue(
