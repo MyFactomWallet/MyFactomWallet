@@ -21,7 +21,7 @@ import Paper from '@material-ui/core/Paper';
 import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
 
 import { ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
-import { toFactoids, minusBig } from '../utils';
+import { toFactoids, minusBig, divideBig } from '../utils';
 import { withFactomCli } from '../context/FactomCliContext';
 import { withLedger } from '../context/LedgerContext';
 import { withNetwork } from '../context/NetworkContext';
@@ -51,7 +51,7 @@ class ConvertECForm extends Component {
 
 	getMaxEC(balance, fee) {
 		const maxFactoshis = minusBig(balance, fee);
-		let maxEntryCredits = maxFactoshis / this.state.ecRate;
+		let maxEntryCredits = divideBig(maxFactoshis, this.state.ecRate);
 		if (maxEntryCredits < 0) {
 			return 0;
 		}
@@ -186,7 +186,6 @@ class ConvertECForm extends Component {
 						actions.setFieldValue('transactionID', txId);
 						updateBalances();
 					} catch (err) {
-						console.log(err);
 						actions.resetForm();
 
 						actions.setFieldValue(
