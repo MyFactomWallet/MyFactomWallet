@@ -26,16 +26,20 @@
 	},
 	"scripts": {
 		"analyze": "source-map-explorer build/static/js/main.*",
+		"cypress:open": "npx cypress open",
+		"cypress:run": "npx cypress run",
 		"start": "react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject"
 	},
 	"devDependencies": {
+		"cypress": "^4.2.0",
 		"husky": "^3.0.1",
 		"lint-staged": "^9.2.0",
 		"prettier": "1.16.4",
-		"source-map-explorer": "^1.7.0"
+		"source-map-explorer": "^1.7.0",
+		"yamljs": "^0.3.0"
 	},
 	"husky": {
 		"hooks": {

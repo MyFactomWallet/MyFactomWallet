@@ -14,10 +14,11 @@ import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
-import FormatBalance from '../walletManager/shared/BalanceFormatter.js';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
+import FormatBalance from '../walletManager/shared/BalanceFormatter.js';
 import { NICKNAME_MAX_LENGTH } from '../constants/WALLET_CONSTANTS';
 
 /**
@@ -104,6 +105,8 @@ function GenerateAddressTable(props) {
 							generatedAddressList.map((address_o, index) => {
 								const checkboxPath = 'checkbox_' + index;
 								const nicknamePath = 'nickname_' + index;
+								const address = 'address_' + index;
+								const balance = 'balance_' + index;
 								const duplicate =
 									userAddresses.indexOf(address_o.address) === -1
 										? false
@@ -153,8 +156,10 @@ function GenerateAddressTable(props) {
 															/>
 														)}
 													</CustomCell>
-													<CustomCell>{address_o.address}</CustomCell>
-													<CustomCell>
+													<CustomCell name={address}>
+														{address_o.address}
+													</CustomCell>
+													<CustomCell name={balance}>
 														<FormatBalance
 															balance={address_o.balance}
 															type={type}

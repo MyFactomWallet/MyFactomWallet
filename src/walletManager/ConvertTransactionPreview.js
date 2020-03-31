@@ -38,20 +38,25 @@ const ConvertTransactionPreview = (props) => {
 	return (
 		<Paper className={classes.root} elevation={2}>
 			<div>Transaction Preview</div>
-			<span className={classes.convertECAmountText}>{convertECAmountText}</span>
+			<span data-cy="ecPreviewAmount" className={classes.convertECAmountText}>
+				{convertECAmountText}
+			</span>
 			<span className={classes.ecUnitText}>
 				{' ' + networkProps.ecAbbreviation}
 			</span>
 			<hr className={classes.divider} />
 			<div className={classes.detail}>
 				<div>Total Cost:</div>
-				<div className={classes.factoidCostSmallText}>
+				<div
+					data-cy="ecPreviewTotalAmount"
+					className={classes.factoidCostSmallText}
+				>
 					{totalFactoidCostText}
 				</div>
 			</div>
 			<div className={classes.detail}>
 				<div>Network Fee:</div>
-				<div className={classes.factoidCostSmallText}>
+				<div data-cy="networkFee" className={classes.factoidCostSmallText}>
 					{feeFactoidAmountText}
 				</div>
 			</div>

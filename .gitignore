@@ -5,6 +5,7 @@
 
 # testing
 /coverage
+tests/e2e/config.yaml
 
 # production
 /build
