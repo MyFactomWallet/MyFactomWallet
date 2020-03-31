@@ -30,7 +30,10 @@ const SendTransactionPreview = (props) => {
 	return (
 		<Paper className={classes.root} elevation={2}>
 			<div>Transaction Preview</div>
-			<span className={classes.transferFactoidAmountText}>
+			<span
+				data-cy="previewAmount"
+				className={classes.transferFactoidAmountText}
+			>
 				{transferFactoidAmountText}
 			</span>
 			<span className={classes.transferFactoidUnitText}>
@@ -39,13 +42,16 @@ const SendTransactionPreview = (props) => {
 			<hr className={classes.divider} />
 			<div className={classes.detail}>
 				<div>Total Amount:</div>
-				<div className={classes.factoidAmountSmallText}>
+				<div
+					data-cy="previewTotalAmount"
+					className={classes.factoidAmountSmallText}
+				>
 					{totalFactoidAmountText}
 				</div>
 			</div>
 			<div className={classes.detail}>
 				<div>Network Fee:</div>
-				<div className={classes.factoidAmountSmallText}>
+				<div data-cy="networkFee" className={classes.factoidAmountSmallText}>
 					{feeFactoidAmountText}
 				</div>
 			</div>

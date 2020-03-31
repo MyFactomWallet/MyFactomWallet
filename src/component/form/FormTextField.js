@@ -28,6 +28,7 @@ const FormTextField = ({
 	type = 'text',
 	validate,
 	width,
+	dataCy = 'formTextField',
 }) => {
 	const FieldType = isNotFast ? Field : FastField;
 	return (
@@ -61,6 +62,7 @@ const FormTextField = ({
 						InputLabelProps={{
 							...(shrink ? { shrink } : {}),
 						}}
+						data-cy={dataCy}
 					/>
 				)}
 			</FieldType>

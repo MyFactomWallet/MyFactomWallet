@@ -22,8 +22,8 @@ class App extends Component {
 			<Router>
 				<NetworkController>
 					<FactomCliController>
-						<Disclaimer />
 						<WalletController>
+							<Disclaimer />
 							<Header />
 							<SeedController>
 								<LedgerController>
