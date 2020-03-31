@@ -90,7 +90,7 @@ function GenerateAddressTable(props) {
 				)}
 			/>
 			<Paper className={classes.root} elevation={2}>
-				<Table>
+				<Table size="small">
 					<TableHead>
 						<TableRow>
 							<CustomCell />
@@ -221,26 +221,32 @@ function GenerateAddressTable(props) {
 									</TableRow>
 								);
 							})}
+						<TableRow>
+							<CustomCell />
+							<CustomCell>
+								<Button
+									type="button"
+									onClick={getNext}
+									variant="outlined"
+									color="primary"
+									disabled={loading}
+								>
+									{_isEmpty(generatedAddressList)
+										? 'Loading'
+										: 'Load Five More'}
+									{(loading || _isEmpty(generatedAddressList)) && (
+										<>
+											&nbsp;
+											<CircularProgress thickness={5} size={15} />
+										</>
+									)}
+								</Button>
+							</CustomCell>
+						</TableRow>
 					</TableBody>
 					<TableFooter />
 				</Table>
 			</Paper>
-			<br />
-			<Button
-				type="button"
-				onClick={getNext}
-				variant="outlined"
-				color="primary"
-				disabled={loading}
-			>
-				Load Five More
-				{(loading || _isEmpty(generatedAddressList)) && (
-					<>
-						&nbsp;
-						<CircularProgress thickness={7} />
-					</>
-				)}
-			</Button>
 		</>
 	);
 }
