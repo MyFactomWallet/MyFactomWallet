@@ -6,6 +6,7 @@ export const fctNickname = 'Factoid Nickname';
 export const seedWarning =
 	'Write down your seed carefully on a piece of paper. This seed provides access to all the derived addresses. If you lose this seed, you will lose access to your addresses forever!';
 export const updateEcNickname = 'Entry Credit Nickname';
+export const convertEcAmount = 1;
 export const networkProps = {
 	mainnet: {
 		network: 'mainnet',

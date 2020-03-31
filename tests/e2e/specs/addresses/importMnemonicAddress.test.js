@@ -1,5 +1,11 @@
-import { toFactoids, getFactoshiFee, getMaxFactoshis } from '../../../utils';
-import { networkProps } from '../../../constants';
+import {
+	toFactoids,
+	getFactoshiFee,
+	getMaxFactoshis,
+	addBig,
+	minusBig,
+} from '../../../utils';
+import { networkProps, convertEcAmount } from '../../../constants';
 
 const YAML = require('yamljs');
 
@@ -134,95 +140,124 @@ describe('Import Addresses from Mnemonic seed', function() {
 							);
 						});
 				});
-
-				//ec addresses
-				cy.get('[data-cy="sidebarEcIndex_0"]').within(() => {
-					cy.get('[data-cy="sidebarEcNickname"]').should(
-						'have.text',
-						addressOne.ecName
-					);
-					cy.get('[data-cy="sidebarEcBalance"]')
-						.invoke('text')
-						.then((text) => {
-							expect(text.replace(/\u00a0/g, ' ')).equal(
-								`0  ${networkProps[network].ecAbbreviation}`
-							);
-						});
-				});
-				cy.get('[data-cy="sidebarEcIndex_1"]').within(() => {
-					cy.get('[data-cy="sidebarEcNickname"]').should(
-						'have.text',
-						addressTwo.ecName
-					);
-					cy.get('[data-cy="sidebarEcBalance"]')
-						.invoke('text')
-						.then((text) => {
-							expect(text.replace(/\u00a0/g, ' ')).equal(
-								`0  ${networkProps[network].ecAbbreviation}`
-							);
-						});
-				});
-
-				// S E N D  F A C T O I D  T A B
-				cy.contains('Send Factoid').click();
-				cy.contains('Send to one of my addresses').click();
-				cy.get('[id="simple-menu"]')
-					.contains(addressTwo.fctName)
-					.click();
-				cy.get('[name="recipientAddress"]').should(
-					'have.value',
-					addressTwo.fctAddress
-				);
-				cy.contains('Use Max').click();
-				let entryRatePayload = openApiPayload;
-				entryRatePayload['method'] = 'entry-credit-rate';
+				let ecBalancePayload = openApiPayload;
+				ecBalancePayload['method'] = 'entry-credit-balance';
+				ecBalancePayload['params'] = { address: addressOne.ecAddress };
 				cy.request({
 					method: 'POST',
 					url: networkProps[network].apiUrl,
-					body: JSON.stringify(entryRatePayload),
+					body: JSON.stringify(factoidBalancePayload),
 					headers: {
 						'Content-Type': 'application/json',
 					},
 				}).then((response) => {
-					const ecRate = response.body.result.rate;
-					const maxFactoshis = getMaxFactoshis(
-						addressOneBalance,
-						getFactoshiFee(ecRate)
-					);
-					const maxFactoids = toFactoids(maxFactoshis);
-					cy.get('[name="seed"]').type(addressOne.seed);
-					cy.get('[name="sendFactoidAmount"]').should(
-						'have.value',
-						maxFactoids.toString()
-					);
-					cy.get('[data-cy="previewAmount"]').should(
-						'have.text',
-						maxFactoids.toString()
-					);
-					cy.get('[data-cy="networkFee"]').should(
-						'have.text',
-						`${toFactoids(getFactoshiFee(ecRate))} ${
-							networkProps[network].factoidAbbreviation
-						}`
-					);
-					cy.get('[data-cy="previewTotalAmount"]').should(
-						'have.text',
-						`${toFactoids(addressOneBalance)} ${
-							networkProps[network].factoidAbbreviation
-						}`
-					);
-					// Send max factoids (first address -> second address)
-					cy.contains('Send Factoids').click();
-					cy.wait(5000);
-					cy.contains('Transaction ID');
-					cy.get('[data-cy="balance"]')
-						.invoke('text')
-						.then((text) => {
-							// Test Balance
-							expect(text.replace(/\u00a0/g, ' ')).equal(
-								`0  ${networkProps[network].factoidAbbreviation}`
+					const addressOneEcBalance = response.body.result.balance;
+
+					//ec addresses
+					cy.get('[data-cy="sidebarEcIndex_0"]').within(() => {
+						cy.get('[data-cy="sidebarEcNickname"]').should(
+							'have.text',
+							addressOne.ecName
+						);
+						cy.get('[data-cy="sidebarEcBalance"]')
+							.invoke('text')
+							.then((text) => {
+								expect(text.replace(/\u00a0/g, ' ')).equal(
+									`${addressOneEcBalance}  ${
+										networkProps[network].ecAbbreviation
+									}`
+								);
+							});
+					});
+
+					ecBalancePayload['params'] = { address: addressTwo.ecAddress };
+					cy.request({
+						method: 'POST',
+						url: networkProps[network].apiUrl,
+						body: JSON.stringify(factoidBalancePayload),
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					}).then((response) => {
+						const addressTwoEcBalance = response.body.result.balance;
+						cy.get('[data-cy="sidebarEcIndex_1"]').within(() => {
+							cy.get('[data-cy="sidebarEcNickname"]').should(
+								'have.text',
+								addressTwo.ecName
 							);
+							cy.get('[data-cy="sidebarEcBalance"]')
+								.invoke('text')
+								.then((text) => {
+									expect(text.replace(/\u00a0/g, ' ')).equal(
+										`${addressTwoEcBalance}  ${
+											networkProps[network].ecAbbreviation
+										}`
+									);
+								});
 						});
+					});
+
+					// S E N D  F A C T O I D  T A B
+					cy.contains('Send Factoid').click();
+					cy.contains('Send to one of my addresses').click();
+					cy.get('[id="simple-menu"]')
+						.contains(addressTwo.fctName)
+						.click();
+					cy.get('[name="recipientAddress"]').should(
+						'have.value',
+						addressTwo.fctAddress
+					);
+					cy.contains('Use Max').click();
+					let entryRatePayload = openApiPayload;
+					entryRatePayload['method'] = 'entry-credit-rate';
+					cy.request({
+						method: 'POST',
+						url: networkProps[network].apiUrl,
+						body: JSON.stringify(entryRatePayload),
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					}).then((response) => {
+						const ecRate = response.body.result.rate;
+						const maxFactoshis = getMaxFactoshis(
+							addressOneBalance,
+							getFactoshiFee(ecRate)
+						);
+						const maxFactoids = toFactoids(maxFactoshis);
+						cy.get('[name="seed"]').type(addressOne.seed);
+						cy.get('[name="sendFactoidAmount"]').should(
+							'have.value',
+							maxFactoids.toString()
+						);
+						cy.get('[data-cy="previewAmount"]').should(
+							'have.text',
+							maxFactoids.toString()
+						);
+						cy.get('[data-cy="networkFee"]').should(
+							'have.text',
+							`${toFactoids(getFactoshiFee(ecRate))} ${
+								networkProps[network].factoidAbbreviation
+							}`
+						);
+						cy.get('[data-cy="previewTotalAmount"]').should(
+							'have.text',
+							`${toFactoids(addressOneBalance)} ${
+								networkProps[network].factoidAbbreviation
+							}`
+						);
+						// Send max factoids (first address -> second address)
+						cy.contains('Send Factoids').click();
+						cy.wait(5000);
+						cy.contains('Transaction ID');
+						cy.get('[data-cy="balance"]')
+							.invoke('text')
+							.then((text) => {
+								// Test Balance
+								expect(text.replace(/\u00a0/g, ' ')).equal(
+									`0  ${networkProps[network].factoidAbbreviation}`
+								);
+							});
+					});
 
 					// switch to second address
 					cy.get('[data-cy="fctAddressList"]')
@@ -249,7 +284,6 @@ describe('Import Addresses from Mnemonic seed', function() {
 						},
 					}).then((response) => {
 						const addressTwoBalance = response.body.result.balance;
-						cy.log(`addressTwoBalance ${addressTwoBalance}`);
 						cy.get('[data-cy="balance"]')
 							.invoke('text')
 							.then((text) => {
@@ -313,7 +347,6 @@ describe('Import Addresses from Mnemonic seed', function() {
 							},
 						}).then((response) => {
 							const newEcRate = response.body.result.rate;
-							cy.log(`newEcRate: ${newEcRate}`);
 							const newMaxFactoshis = getMaxFactoshis(
 								addressTwoBalance,
 								getFactoshiFee(newEcRate)
@@ -405,6 +438,83 @@ describe('Import Addresses from Mnemonic seed', function() {
 											`0  ${networkProps[network].factoidAbbreviation}`
 										);
 									});
+							});
+
+							// C O N V E R T  T O  EC  T A B
+							cy.contains(
+								`Convert to ${networkProps[network].ecAbbreviation}`
+							).click();
+							cy.contains('Send to one of my addresses').click();
+							cy.get('[id="simple-menu"]')
+								.contains(addressOne.ecName)
+								.click();
+							cy.get('[name="entryCreditAmount"]').type(convertEcAmount);
+							cy.get('[name="seed"]').type(addressOne.seed);
+							cy.request({
+								method: 'POST',
+								url: networkProps[network].apiUrl,
+								body: JSON.stringify(entryRatePayload),
+								headers: {
+									'Content-Type': 'application/json',
+								},
+							}).then((response) => {
+								const convertEcRate = response.body.result.rate;
+								const convertEcFee = toFactoids(getFactoshiFee(convertEcRate));
+								cy.get('[data-cy="ecPreviewAmount"]').should(
+									'have.text',
+									convertEcAmount.toString()
+								);
+								cy.get('[data-cy="networkFee"]').should(
+									'have.text',
+									`${convertEcFee} ${networkProps[network].factoidAbbreviation}`
+								);
+								const factoidAmount =
+									convertEcRate * toFactoids(convertEcAmount);
+								const totalFactoidAmount = addBig(factoidAmount, convertEcFee);
+								cy.get('[data-cy="ecPreviewTotalAmount"]').should(
+									'have.text',
+									`${totalFactoidAmount} ${
+										networkProps[network].factoidAbbreviation
+									}`
+								);
+								cy.contains(
+									`Convert ${networkProps[network].factoidAbbreviation} to ${
+										networkProps[network].ecAbbreviation
+									}`
+								).click();
+								cy.wait(5000);
+								const newAddressOneFctBalance = minusBig(
+									newMaxFactoids,
+									totalFactoidAmount
+								);
+								const newAddressOneEcBalance =
+									addressOneEcBalance + convertEcAmount;
+
+								// Test sidebar FCT balance
+								cy.get('[data-cy="sidebarFctIndex_0"]').within(() => {
+									cy.get('[data-cy="sidebarFctBalance"]')
+										.invoke('text')
+										.then((text) => {
+											expect(text.replace(/\u00a0/g, ' ')).equal(
+												`${newAddressOneFctBalance}  ${
+													networkProps[network].factoidAbbreviation
+												}`
+											);
+										});
+								});
+
+								// Test sidebar EC balance
+								cy.get('[data-cy="sidebarEcIndex_0"]').within(() => {
+									cy.get('[data-cy="sidebarEcBalance"]')
+										.invoke('text')
+										.then((text) => {
+											expect(text.replace(/\u00a0/g, ' ')).equal(
+												`${newAddressOneEcBalance}  ${
+													networkProps[network].ecAbbreviation
+												}`
+											);
+										});
+								});
 							});
 						});
 					});
