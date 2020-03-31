@@ -115,87 +115,89 @@ function AddressInfoForm(props) {
 							)}
 						</Grid>
 
-						<Grid item>
-							<Tooltip title="Delete address">
-								<Fab
-									className={classes.fab}
-									size="small"
-									style={{ boxShadow: 'none' }}
-									disabled={isSubmitting}
-									onClick={(event) => {
-										if (!isSubmitting) {
-											setFieldValue(deleteAnchorElPath, event.currentTarget);
-										}
-									}}
-								>
-									<DeleteForever />
-								</Fab>
-							</Tooltip>
-							<Menu
-								id="simple-menu"
-								anchorEl={values[deleteAnchorElPath]}
-								open={Boolean(values[deleteAnchorElPath])}
-								onClose={() => {
-									setFieldValue(deleteAnchorElPath, null);
+						<Grid item xs={12} className={classes.textAlignLeft}>
+							<FormTextField
+								error={
+									errors[nicknamePath] && touched[nicknamePath] ? true : false
+								}
+								name={nicknamePath}
+								disabled={isSubmitting}
+								onChange={(e) => {
+									setFieldValue(savedPath, false);
+
+									setFieldValue(oldNicknamePath, _get(values, nicknamePath));
+
+									handleChange(e);
 								}}
-							>
-								<MenuItem
-									onClick={() => {
-										deleteAddress(activeAddressIndex_o);
+								onBlur={async (e) => {
+									await handleBlur(e);
+									if (e.target.value !== _get(values, oldNicknamePath)) {
+										submitForm();
+									}
+								}}
+								label="Nickname"
+								maxLength={NICKNAME_MAX_LENGTH}
+							/>
+						</Grid>
+						<Grid container item xs={12} className={classes.pushDown}>
+							<Grid item xs={6} className={classes.textAlignLeft}>
+								<Field
+									name={saveLocallyPath}
+									render={({ field, form }) => (
+										<FormControlLabel
+											control={
+												<Checkbox
+													onChange={async (e) => {
+														await handleChange(e);
+														submitForm();
+													}}
+													disabled={isSubmitting}
+													name={saveLocallyPath}
+													checked={field.value}
+													color="default"
+												/>
+											}
+											label="Save to browser"
+										/>
+									)}
+								/>
+							</Grid>
+							<Grid item xs={1}>
+								<Tooltip title="Delete address">
+									<Fab
+										className={classes.fab}
+										size="small"
+										style={{ boxShadow: 'none', width: 35, height: 35 }}
+										disabled={isSubmitting}
+										onClick={(event) => {
+											if (!isSubmitting) {
+												setFieldValue(deleteAnchorElPath, event.currentTarget);
+											}
+										}}
+									>
+										<DeleteForever />
+									</Fab>
+								</Tooltip>
+								<Menu
+									id="simple-menu"
+									anchorEl={values[deleteAnchorElPath]}
+									open={Boolean(values[deleteAnchorElPath])}
+									onClose={() => {
 										setFieldValue(deleteAnchorElPath, null);
 									}}
-									className={classes.deleteConfirmationText}
 								>
-									Confirm Delete
-								</MenuItem>
-							</Menu>
+									<MenuItem
+										onClick={() => {
+											deleteAddress(activeAddressIndex_o);
+											setFieldValue(deleteAnchorElPath, null);
+										}}
+										className={classes.deleteConfirmationText}
+									>
+										Confirm Delete
+									</MenuItem>
+								</Menu>
+							</Grid>
 						</Grid>
-					</Grid>
-					<Grid item xs={12} className={classes.textAlignLeft}>
-						<FormTextField
-							error={
-								errors[nicknamePath] && touched[nicknamePath] ? true : false
-							}
-							name={nicknamePath}
-							disabled={isSubmitting}
-							onChange={(e) => {
-								setFieldValue(savedPath, false);
-
-								setFieldValue(oldNicknamePath, _get(values, nicknamePath));
-
-								handleChange(e);
-							}}
-							onBlur={async (e) => {
-								await handleBlur(e);
-								if (e.target.value !== _get(values, oldNicknamePath)) {
-									submitForm();
-								}
-							}}
-							label="Nickname"
-							maxLength={NICKNAME_MAX_LENGTH}
-						/>
-					</Grid>
-					<Grid item xs={12} className={classes.textAlignLeft}>
-						<Field
-							name={saveLocallyPath}
-							render={({ field, form }) => (
-								<FormControlLabel
-									control={
-										<Checkbox
-											onChange={async (e) => {
-												await handleChange(e);
-												submitForm();
-											}}
-											disabled={isSubmitting}
-											name={saveLocallyPath}
-											checked={field.value}
-											color="default"
-										/>
-									}
-									label="Save to browser"
-								/>
-							)}
-						/>
 					</Grid>
 				</Form>
 			)}
@@ -216,6 +218,8 @@ const styles = () => ({
 		left: '6px',
 	},
 	textAlignLeft: { textAlign: 'left' },
+	fab: { backgroundColor: '#3f51b545' },
+	pushDown: { paddingTop: '7px' },
 });
 
 const enhancer = _flowRight(withWalletContext, withStyles(styles));
