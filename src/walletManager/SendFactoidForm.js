@@ -435,7 +435,6 @@ class SendFactoidForm extends Component {
 						) : (
 							''
 						)}
-
 						<br />
 						{!_isNil(values.transactionError) && (
 							<Typography className={classes.transactionErrorText}>
@@ -443,6 +442,12 @@ class SendFactoidForm extends Component {
 							</Typography>
 						)}
 						<br />
+						{_get(values, walletImportTypePath) === 'ledger' && (
+							<Typography gutterBottom>
+								<b>Note</b>: Windows 10 is not supported at this time due to an
+								issue out of our control.
+							</Typography>
+						)}
 						{isSubmitting ? (
 							<>
 								{values.transactionID !== null ? (
