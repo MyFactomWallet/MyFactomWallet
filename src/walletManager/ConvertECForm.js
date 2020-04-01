@@ -90,7 +90,11 @@ class ConvertECForm extends Component {
 		const ecAddresses = getEntryCreditAddresses();
 
 		let maxAmount;
-		if (this.state.sendFactoshiFee != null && activeAddress_o.balance != null) {
+		if (
+			this.state.sendFactoshiFee != null &&
+			activeAddress_o.balance != null &&
+			this.state.ecRate != null
+		) {
 			maxAmount = this.getMaxEC(
 				activeAddress_o.balance,
 				this.state.sendFactoshiFee
@@ -206,6 +210,7 @@ class ConvertECForm extends Component {
 						.required('Required')
 						.typeError('Must be a number')
 						.positive('Must be greater than 0')
+						.integer('Must be a whole number')
 						.max(maxAmount, 'Insufficient Funds'),
 					[walletImportTypePath]: Yup.string(),
 					[privateKeyPath]: Yup.string().when(walletImportTypePath, {
@@ -232,6 +237,7 @@ class ConvertECForm extends Component {
 					setFieldValue,
 					handleReset,
 					handleChange,
+					isValid,
 				}) => (
 					<Form
 						autoComplete="nope"
@@ -413,7 +419,7 @@ class ConvertECForm extends Component {
 							</>
 						)}
 
-						{_get(values, entryCreditAmountPath) ? (
+						{_get(values, entryCreditAmountPath) && isValid ? (
 							<ConvertTransactionPreview
 								networkProps={networkProps}
 								ecAmount={_get(values, entryCreditAmountPath)}
