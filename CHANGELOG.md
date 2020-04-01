@@ -17,7 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added error handling around connecting to nodes
 - Converted React components to use hooks
 - Added FactomEventEmitter to fetch new directory blocks when they are available
-- Added MIT License
 - Changed from HashRouter to BrowserRouter
 - Refactor form fields to use reusable components
 - Updated edit address form to save automatically
@@ -43,3 +42,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sign transactions with private key, mnemonic seed phrase, or Ledger device
 - Save public addresses to local browser storage
 - Support for fully audit-able and decentralized on-chain voting
+- MIT License
