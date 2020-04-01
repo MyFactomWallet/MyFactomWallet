@@ -3,37 +3,37 @@ import _flowRight from 'lodash/flowRight';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { addBig, toFactoids } from '../utils';
 
 const SendTransactionPreview = (props) => {
-	const { factoidAmount, classes, networkProps, sendFactoidFee } = props;
+	const { factoidAmount, classes, networkProps, sendFactoshiFee } = props;
+	const sendFactoidFee = toFactoids(sendFactoshiFee);
 
 	// total send amount
-	const totalFactoidAmount = factoidAmount + sendFactoidFee;
+	const totalFactoidAmount = addBig(factoidAmount, sendFactoidFee);
 
-	// format output
 	const transferFactoidAmountText = factoidAmount.toLocaleString(undefined, {
 		maximumFractionDigits: 8,
 	});
 
-	const totalFactoidAmountText =
-		totalFactoidAmount.toLocaleString(undefined, {
+	const totalFactoidAmountText = `${totalFactoidAmount.toLocaleString(
+		undefined,
+		{
 			maximumFractionDigits: 8,
-		}) +
-		' ' +
-		networkProps.factoidAbbreviation;
+		}
+	)} ${networkProps.factoidAbbreviation}`;
 
-	const feeFactoidAmountText =
-		sendFactoidFee.toLocaleString(undefined, {
-			maximumFractionDigits: 8,
-		}) +
-		' ' +
-		networkProps.factoidAbbreviation;
+	const feeFactoidAmountText = `${sendFactoidFee.toLocaleString(undefined, {
+		maximumFractionDigits: 8,
+	})} ${networkProps.factoidAbbreviation}`;
 
 	return (
 		<Paper className={classes.root} elevation={2}>
 			<div>Transaction Preview</div>
-			<br />
-			<span className={classes.transferFactoidAmountText}>
+			<span
+				data-cy="previewAmount"
+				className={classes.transferFactoidAmountText}
+			>
 				{transferFactoidAmountText}
 			</span>
 			<span className={classes.transferFactoidUnitText}>
@@ -42,13 +42,16 @@ const SendTransactionPreview = (props) => {
 			<hr className={classes.divider} />
 			<div className={classes.detail}>
 				<div>Total Amount:</div>
-				<div className={classes.factoidAmountSmallText}>
+				<div
+					data-cy="previewTotalAmount"
+					className={classes.factoidAmountSmallText}
+				>
 					{totalFactoidAmountText}
 				</div>
 			</div>
 			<div className={classes.detail}>
 				<div>Network Fee:</div>
-				<div className={classes.factoidAmountSmallText}>
+				<div data-cy="networkFee" className={classes.factoidAmountSmallText}>
 					{feeFactoidAmountText}
 				</div>
 			</div>
@@ -63,8 +66,8 @@ const styles = {
 		width: '75%',
 		margin: '0 auto',
 		paddingTop: '26px',
+		paddingBottom: '16px',
 		marginTop: '39px',
-		height: '194px',
 		borderRadius: '10px',
 		backgroundColor: '#eef1f4',
 		textAlign: 'center',
@@ -85,8 +88,8 @@ const styles = {
 	},
 	detail: {
 		display: 'inline-block',
-		paddingLeft: '65px',
-		paddingRight: '65px',
+		paddingLeft: '30px',
+		paddingRight: '30px',
 	},
 	divider: {
 		width: '50%',

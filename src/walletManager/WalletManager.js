@@ -1,53 +1,46 @@
-import React, { Component } from 'react';
-import _flowRight from 'lodash/flowRight';
+import React, { useEffect } from 'react';
 import _isNil from 'lodash/isNil';
 import Sidebar from './Sidebar.js';
 import WalletTabContent from './WalletTabContent.js';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import { withWalletContext } from '../context/WalletContext';
 
-class WalletManager extends Component {
-	componentDidMount() {
-		this.props.walletController.updateBalances();
-	}
+function WalletManager(props) {
+	const {
+		walletController: {
+			updateBalances,
+			getActiveAddress,
+			activeAddressIndex_o,
+		},
+	} = props;
 
-	render() {
-		const {
-			walletController: { getActiveAddress, activeAddressIndex_o },
-		} = this.props;
+	useEffect(() => {
+		updateBalances();
+	}, [updateBalances]);
 
-		const activeAddress = getActiveAddress();
+	const activeAddress = getActiveAddress();
 
+	if (!_isNil(activeAddress)) {
 		return (
-			<React.Fragment>
-				{!_isNil(activeAddress) && (
-					<Grid container spacing={24} item xs={12}>
-						<Grid item xs={4}>
-							<Sidebar />
-						</Grid>
+			<Grid container spacing={3}>
+				<Grid item md={4} xs={12}>
+					<Sidebar />
+				</Grid>
 
-						<Grid item xs={8}>
-							<Paper>
-								<WalletTabContent
-									type={activeAddressIndex_o.type}
-									activeAddress={activeAddress}
-								/>
-							</Paper>
-						</Grid>
-					</Grid>
-				)}
-			</React.Fragment>
+				<Grid item md={8} xs={12}>
+					<Paper elevation={2}>
+						<WalletTabContent
+							type={activeAddressIndex_o.type}
+							activeAddress={activeAddress}
+						/>
+					</Paper>
+				</Grid>
+			</Grid>
 		);
+	} else {
+		return <></>;
 	}
 }
-WalletManager.propTypes = {
-	classes: PropTypes.object.isRequired,
-};
 
-const styles = (theme) => ({});
-
-const enhancer = _flowRight(withWalletContext, withStyles(styles));
-export default enhancer(WalletManager);
+export default withWalletContext(WalletManager);

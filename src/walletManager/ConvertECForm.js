@@ -7,7 +7,6 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
-import { withFactomCli } from '../context/FactomCliContext';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
@@ -17,15 +16,19 @@ import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Tooltip from '@material-ui/core/Tooltip';
-import AddressInfoHeader from './shared/AddressInfoHeader';
-import { withLedger } from '../context/LedgerContext';
-import { withSeed } from '../context/SeedContext';
-import { withWalletContext } from '../context/WalletContext';
-import { withNetwork } from '../context/NetworkContext';
 import { isValidPublicEcAddress } from 'factom/dist/factom';
-import ConvertTransactionPreview from './ConvertTransactionPreview';
 import Paper from '@material-ui/core/Paper';
 import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
+
+import { ADDRESS_LENGTH } from '../constants/WALLET_CONSTANTS';
+import { toFactoids, minusBig, divideBig } from '../utils';
+import { withFactomCli } from '../context/FactomCliContext';
+import { withLedger } from '../context/LedgerContext';
+import { withNetwork } from '../context/NetworkContext';
+import { withSeed } from '../context/SeedContext';
+import { withWalletContext } from '../context/WalletContext';
+import AddressInfoHeader from './shared/AddressInfoHeader';
+import ConvertTransactionPreview from './ConvertTransactionPreview';
 
 /**
  * Constants
@@ -37,9 +40,6 @@ const privateKeyPath = 'privateKey';
 const walletImportTypePath = 'walletImportType';
 const seedPath = 'seed';
 
-const FACTOSHI_MULTIPLIER = 0.00000001;
-const EC_ADDRESS_LENGTH = 52;
-
 class ConvertECForm extends Component {
 	state = { sendFactoshiFee: null, ecRate: null };
 
@@ -50,8 +50,8 @@ class ConvertECForm extends Component {
 	}
 
 	getMaxEC(balance, fee) {
-		const maxFactoshis = balance - fee;
-		let maxEntryCredits = maxFactoshis / this.state.ecRate;
+		const maxFactoshis = minusBig(balance, fee);
+		let maxEntryCredits = divideBig(maxFactoshis, this.state.ecRate);
 		if (maxEntryCredits < 0) {
 			return 0;
 		}
@@ -89,10 +89,17 @@ class ConvertECForm extends Component {
 		const activeAddress_o = getActiveAddress();
 		const ecAddresses = getEntryCreditAddresses();
 
-		const maxAmount = this.getMaxEC(
-			activeAddress_o.balance,
-			this.state.sendFactoshiFee
-		);
+		let maxAmount;
+		if (
+			this.state.sendFactoshiFee != null &&
+			activeAddress_o.balance != null &&
+			this.state.ecRate != null
+		) {
+			maxAmount = this.getMaxEC(
+				activeAddress_o.balance,
+				this.state.sendFactoshiFee
+			);
+		}
 
 		return (
 			<Formik
@@ -201,7 +208,9 @@ class ConvertECForm extends Component {
 						),
 					[entryCreditAmountPath]: Yup.number()
 						.required('Required')
-						.positive('Must be a positive number')
+						.typeError('Must be a number')
+						.positive('Must be greater than 0')
+						.integer('Must be a whole number')
 						.max(maxAmount, 'Insufficient Funds'),
 					[walletImportTypePath]: Yup.string(),
 					[privateKeyPath]: Yup.string().when(walletImportTypePath, {
@@ -228,6 +237,7 @@ class ConvertECForm extends Component {
 					setFieldValue,
 					handleReset,
 					handleChange,
+					isValid,
 				}) => (
 					<Form
 						autoComplete="nope"
@@ -260,7 +270,7 @@ class ConvertECForm extends Component {
 									disabled={isSubmitting}
 									inputProps={{
 										spellCheck: false,
-										maxLength: EC_ADDRESS_LENGTH,
+										maxLength: ADDRESS_LENGTH,
 										autoComplete: 'nope',
 										// eslint-disable-next-line
 										autoComplete: 'off',
@@ -341,7 +351,7 @@ class ConvertECForm extends Component {
 							</Grid>
 						</Grid>
 						{_get(values, walletImportTypePath) === 'standard' && (
-							<React.Fragment>
+							<>
 								<Field name={privateKeyPath}>
 									{({ field, form }) => (
 										<TextField
@@ -359,7 +369,7 @@ class ConvertECForm extends Component {
 											disabled={isSubmitting}
 											inputProps={{
 												spellCheck: false,
-												maxLength: EC_ADDRESS_LENGTH,
+												maxLength: ADDRESS_LENGTH,
 												autoComplete: 'nope',
 												// eslint-disable-next-line
 												autoComplete: 'off',
@@ -373,10 +383,10 @@ class ConvertECForm extends Component {
 										<div className={classes.errorText}>{msg}</div>
 									)}
 								/>
-							</React.Fragment>
+							</>
 						)}
 						{_get(values, walletImportTypePath) === 'seed' && (
-							<React.Fragment>
+							<>
 								<Field name={seedPath}>
 									{({ field, form }) => (
 										<TextField
@@ -406,21 +416,18 @@ class ConvertECForm extends Component {
 										<div className={classes.errorText}>{msg}</div>
 									)}
 								/>
-							</React.Fragment>
+							</>
 						)}
 
-						{_get(values, entryCreditAmountPath) ? (
+						{_get(values, entryCreditAmountPath) && isValid ? (
 							<ConvertTransactionPreview
 								networkProps={networkProps}
 								ecAmount={_get(values, entryCreditAmountPath)}
 								factoidAmount={
 									this.state.ecRate *
-									_get(values, entryCreditAmountPath) *
-									FACTOSHI_MULTIPLIER
+									toFactoids(_get(values, entryCreditAmountPath))
 								}
-								sendFactoidFee={
-									this.state.sendFactoshiFee * FACTOSHI_MULTIPLIER
-								}
+								sendFactoidFee={toFactoids(this.state.sendFactoshiFee)}
 							/>
 						) : (
 							''
@@ -439,10 +446,10 @@ class ConvertECForm extends Component {
 							</Typography>
 						)}
 						{isSubmitting ? (
-							<React.Fragment>
+							<>
 								{values.transactionID !== null ? (
 									<div>
-										<Paper className={classes.transaction}>
+										<Paper className={classes.transaction} elevation={2}>
 											<CheckCircle
 												nativeColor="#6fbf73"
 												className={classes.successIcon}
@@ -490,12 +497,12 @@ class ConvertECForm extends Component {
 										</Button>
 									</div>
 								) : (
-									<React.Fragment>
+									<>
 										<CircularProgress thickness={7} />
 										{values.ledgerStatus}
-									</React.Fragment>
+									</>
 								)}
-							</React.Fragment>
+							</>
 						) : (
 							<Button
 								className={classes.sendButton}

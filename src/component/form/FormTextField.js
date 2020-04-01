@@ -6,6 +6,7 @@ import { Field, FastField, ErrorMessage } from 'formik';
 const FormTextField = ({
 	accept,
 	autoComplete = false,
+	autoFocus,
 	classes,
 	disabled = false,
 	displayError = true,
@@ -17,30 +18,38 @@ const FormTextField = ({
 	multiline,
 	name,
 	onChange,
+	onBlur,
 	onKeyPress,
+	margin,
+	placeholder,
 	shrink = false,
 	spellCheck = false,
 	step = false,
 	type = 'text',
 	validate,
 	width,
+	dataCy = 'formTextField',
 }) => {
 	const FieldType = isNotFast ? Field : FastField;
 	return (
-		<React.Fragment>
+		<>
 			<FieldType name={name} {...(validate ? { validate } : {})}>
 				{({ field }) => (
 					<TextField
 						{...field}
 						{...(onChange ? { onChange } : {})}
+						{...(onBlur ? { onBlur } : {})}
 						{...{
+							autoFocus,
 							error,
 							disabled,
 							fullWidth,
 							label,
+							placeholder,
 							type,
 							multiline,
 							onKeyPress,
+							margin,
 						}}
 						inputProps={{
 							autoComplete: autoComplete ? 'on' : 'off',
@@ -53,6 +62,7 @@ const FormTextField = ({
 						InputLabelProps={{
 							...(shrink ? { shrink } : {}),
 						}}
+						data-cy={dataCy}
 					/>
 				)}
 			</FieldType>
@@ -62,12 +72,12 @@ const FormTextField = ({
 					render={(msg) => <div className={classes.errorText}>{msg}</div>}
 				/>
 			)}
-		</React.Fragment>
+		</>
 	);
 };
 
 const styles = (theme) => ({
-	errorText: { color: 'red', fontSize: '13px' },
+	errorText: { color: 'red', fontSize: '13px', textAlign: 'left' },
 });
 
 export default withStyles(styles)(FormTextField);

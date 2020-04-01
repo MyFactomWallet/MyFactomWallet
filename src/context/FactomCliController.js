@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FactomCliContext } from './FactomCliContext';
-import { FactomCli } from 'factom/dist/factom';
+import { FactomCli, FactomEventEmitter } from 'factom/dist/factom';
 import { withNetwork } from './NetworkContext';
 import defaultsDeep from 'lodash/fp/defaultsDeep';
 import _flowRight from 'lodash/flowRight';
 import _flow from 'lodash/flow';
 import _noop from 'lodash/noop';
-import * as moment from 'moment';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Header from '../header/Header';
 
 class FactomCliController extends React.Component {
 	constructor(props) {
@@ -15,11 +17,9 @@ class FactomCliController extends React.Component {
 
 		this.state = {
 			connectToServer: this.connectToServer,
-			getDefaultConnectionParams: this.getDefaultConnectionParams,
-			getEstimatedBlockTimestamp: this.getEstimatedBlockTimestamp,
 			blockHeight: null,
-			blockTimestamp: null,
-			isStateHydrated: false,
+			isConnected: false,
+			error: false,
 		};
 	}
 
@@ -38,48 +38,7 @@ class FactomCliController extends React.Component {
 
 	async componentDidMount() {
 		await this.connectToServer();
-
-		this.blockHeightTimerId = setInterval(this.updateBlockHeight, 60000);
-
-		await this.smartSetState({ isStateHydrated: true });
 	}
-
-	componentWillUnmount() {
-		clearInterval(this.blockHeightTimerId);
-	}
-
-	updateBlockHeight = async () => {
-		const result = await this.state.factomCli.getDirectoryBlockHead();
-
-		const { height, timestamp } = result;
-
-		if (height !== this.state.blockHeight) {
-			// process new block
-			this.setState({
-				blockHeight: height,
-				blockTimestamp: timestamp,
-			});
-		}
-	};
-
-	getEstimatedBlockTimestamp = (blockHeight) => {
-		const currentHeight = this.state.blockHeight;
-
-		const currentBlockStartDate = moment.unix(this.state.blockTimestamp).utc();
-
-		// get number of blocks between heights
-		const blocks = blockHeight - currentHeight;
-
-		// add time for blocks
-		const minutes = blocks * 10;
-
-		const estimatedDate = currentBlockStartDate
-			.clone()
-			.add(minutes * 60 * 1000, 'milliseconds');
-
-		// return Unix Timestamp (milliseconds)
-		return estimatedDate.valueOf();
-	};
 
 	getDefaultConnectionParams = () => {
 		const connectionParams = {
@@ -93,17 +52,71 @@ class FactomCliController extends React.Component {
 	newFactomCli = (connectionParams) =>
 		new FactomCli(defaultsDeep(this.defaultConnectionParams, connectionParams));
 
+	newFactomEmitter = (factomCli) =>
+		new FactomEventEmitter(factomCli, {
+			interval: 10000,
+		});
+
+	updateBlock = (directoryBlock) => {
+		const { height } = directoryBlock;
+		// process new block
+		this.setState({
+			blockHeight: height,
+		});
+	};
+
 	connectToServer = async () => {
+		// reset state
+		await this.smartSetState({
+			isConnected: false,
+			blockHeight: null,
+		});
+
+		// disable event emitter
+		if (this.state.factomEmitter) {
+			this.state.factomEmitter.removeListener(
+				'newDirectoryBlock',
+				this.updateBlock
+			);
+		}
+
 		const connectionParams = {
 			host: this.props.networkController.networkProps.apiHost,
 			port: this.props.networkController.networkProps.apiPort,
 		};
 
-		await this.smartSetState({
-			factomCli: this.newFactomCli(connectionParams),
-		});
+		const factomCli = this.newFactomCli(connectionParams);
+		try {
+			// test connection
+			if (
+				await factomCli.factomdApi('properties', null, {
+					timeout: 2000,
+					retry: { retries: 0 },
+				})
+			) {
+				// successful connection
+				const factomEmitter = this.newFactomEmitter(factomCli);
 
-		await this.updateBlockHeight();
+				await this.smartSetState({
+					factomCli,
+					factomEmitter,
+				});
+
+				await this.state.factomEmitter.on(
+					'newDirectoryBlock',
+					this.updateBlock
+				);
+
+				await this.smartSetState({
+					isConnected: true,
+				});
+			}
+		} catch (e) {
+			// unsuccessful connection
+			console.log('Error connecting to server.');
+			console.log(e);
+			await this.smartSetState({ error: true });
+		}
 	};
 
 	smartSetState = (newState, afterSetState = _noop) =>
@@ -112,14 +125,42 @@ class FactomCliController extends React.Component {
 		);
 
 	render() {
-		if (this.state.isStateHydrated) {
+		if (this.state.error) {
+			return (
+				<FactomCliContext.Provider value={this.state}>
+					<Grid container>
+						<Grid item xs={12}>
+							<Header disabled />
+						</Grid>
+						<Grid item xs={12} justify="center" container>
+							<Typography variant="h5">
+								Unable to connect to Factom node. Please go to the
+								#myfactomwallet channel on{' '}
+								<a
+									target="_blank"
+									rel="noopener noreferrer"
+									href={'https://discord.gg/79kH2pp'}
+								>
+									Discord
+								</a>
+								&nbsp;for support.
+							</Typography>
+						</Grid>
+					</Grid>
+				</FactomCliContext.Provider>
+			);
+		} else if (!this.state.isConnected) {
+			return (
+				<FactomCliContext.Provider value={this.state}>
+					<Header disabled greenConnection />
+				</FactomCliContext.Provider>
+			);
+		} else {
 			return (
 				<FactomCliContext.Provider value={this.state}>
 					{this.props.children}
 				</FactomCliContext.Provider>
 			);
-		} else {
-			return null;
 		}
 	}
 }

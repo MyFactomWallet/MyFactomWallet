@@ -21,7 +21,7 @@ const FormSelectField = ({
 	const FieldType = isNotFast ? Field : FastField;
 
 	return (
-		<React.Fragment>
+		<>
 			<FieldType name={name} {...(validate ? { validate } : {})}>
 				{({ field }) => (
 					<FormControl {...{ disabled, error }}>
@@ -40,7 +40,6 @@ const FormSelectField = ({
 								</MenuItem>
 							))}
 						</Select>
-						{/* <FormHelperText /> */}
 					</FormControl>
 				)}
 			</FieldType>
@@ -48,7 +47,7 @@ const FormSelectField = ({
 				name={name}
 				render={(msg) => <div className={classes.errorText}>{msg}</div>}
 			/>
-		</React.Fragment>
+		</>
 	);
 };
 

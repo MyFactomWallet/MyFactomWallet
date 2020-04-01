@@ -1,8 +1,4 @@
 {
 	"telemetry.enableTelemetry": false,
-	"prettier.useTabs": true,
-	"prettier.singleQuote": true,
-	"prettier.arrowParens": "always",
-	"prettier.trailingComma": "es5",
 	"editor.formatOnSave": true
 }

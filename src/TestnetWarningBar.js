@@ -17,20 +17,20 @@ function TestnetWarningBar(props) {
 
 	if (networkProps.network === 'testnet') {
 		return (
-			<React.Fragment>
+			<>
 				<CssBaseline />
 				<div className={classes.toolbarSpace} />
 				<AppBar position="fixed" className={classes.appBar}>
 					<Toolbar className={classes.toolbar}>
 						<WarningIcon className={classes.warningIcon} />
-						<Typography variant="h3">
+						<Typography data-cy="testnetWarning" variant="h3">
 							You are connected to the Factom <b>Testnet</b>
 						</Typography>
 						&nbsp;
 						<WarningIcon className={classes.warningIcon} />
 					</Toolbar>
 				</AppBar>
-			</React.Fragment>
+			</>
 		);
 	} else {
 		return null;

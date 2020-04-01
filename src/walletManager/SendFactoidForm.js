@@ -6,7 +6,6 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
-import { withFactomCli } from '../context/FactomCliContext';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
@@ -15,16 +14,20 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
-import AddressInfoHeader from './shared/AddressInfoHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import Tooltip from '@material-ui/core/Tooltip';
+import { isValidPublicFctAddress } from 'factom/dist/factom';
+
+import { withFactomCli } from '../context/FactomCliContext';
 import { withWalletContext } from '../context/WalletContext';
 import { withSeed } from '../context/SeedContext';
 import { withNetwork } from '../context/NetworkContext';
 import { withLedger } from '../context/LedgerContext';
-import { isValidPublicFctAddress } from 'factom/dist/factom';
 import SendTransactionPreview from './SendTransactionPreview';
+import AddressInfoHeader from './shared/AddressInfoHeader';
+import { ADDRESS_LENGTH, FACTOID_REGEX } from '../constants/WALLET_CONSTANTS';
+import { toFactoshis, toFactoids, minusBig } from '../utils';
 
 /**
  * Constants
@@ -36,25 +39,27 @@ const privateKeyPath = 'privateKey';
 const seedPath = 'seed';
 const walletImportTypePath = 'walletImportType';
 
-const FACTOSHI_MULTIPLIER = 0.00000001;
-const FACTOID_MULTIPLIER = 100000000;
-const FCT_ADDRESS_LENGTH = 52;
-
 class SendFactoidForm extends Component {
-	state = { sendFactoidFee: null };
+	state = { sendFactoshiFee: null };
 
 	async componentDidMount() {
-		const sendFactoidFee = await this.props.walletController.getFactoidFee();
-		this.setState({ sendFactoidFee });
+		const sendFactoshiFee = await this.props.walletController.getFactoshiFee();
+		this.setState({ sendFactoshiFee });
 	}
 
-	getMaxFCT(balance, fee) {
-		const maxFactoids = balance * FACTOSHI_MULTIPLIER - fee;
-		if (maxFactoids < 0) {
+	insufficientFundsMessage = () => {
+		return `Insufficient Funds (Transaction Fee is ${toFactoids(
+			this.state.sendFactoshiFee
+		)} ${this.props.networkController.networkProps.factoidAbbreviation})`;
+	};
+
+	getMaxFactoshis = (balance, fee) => {
+		const maxFactoshis = minusBig(balance, fee);
+		if (maxFactoshis < 0) {
 			return 0;
 		}
-		return maxFactoids;
-	}
+		return maxFactoshis;
+	};
 
 	verifyKey = (privateKey) => {
 		const activeAddress_o = this.props.walletController.getActiveAddress();
@@ -87,10 +92,14 @@ class SendFactoidForm extends Component {
 		const factoidAddresses = getFactoidAddresses();
 		const activeAddress_o = getActiveAddress();
 
-		const maxAmount = this.getMaxFCT(
-			activeAddress_o.balance,
-			this.state.sendFactoidFee
-		);
+		let maxAmount;
+		if (this.state.sendFactoshiFee != null && activeAddress_o.balance != null) {
+			const maxFactoshis = this.getMaxFactoshis(
+				activeAddress_o.balance,
+				this.state.sendFactoshiFee
+			);
+			maxAmount = toFactoids(maxFactoshis);
+		}
 
 		return (
 			<Formik
@@ -116,18 +125,18 @@ class SendFactoidForm extends Component {
 					} = values;
 					let transaction = {};
 					const importType = _get(values, walletImportTypePath);
+					const amount = toFactoshis(sendFactoidAmount);
+					const toAddr = recipientAddress;
 					try {
 						if (importType === 'standard') {
 							transaction = await factomCli.createFactoidTransaction(
 								privateKey,
-								recipientAddress,
-								Math.round(FACTOID_MULTIPLIER * sendFactoidAmount)
+								toAddr,
+								amount
 							);
 						} else if (importType === 'seed') {
 							const mnemonic = seed.trim();
 							const index = activeAddress_o.index;
-							const toAddr = recipientAddress;
-							const amount = Math.round(sendFactoidAmount * FACTOID_MULTIPLIER);
 							const type = 'sendFCT';
 
 							const seedTrans_o = {
@@ -160,8 +169,6 @@ class SendFactoidForm extends Component {
 							}
 
 							const fromAddr = activeAddress_o.address;
-							const toAddr = recipientAddress;
-							const amount = Math.round(sendFactoidAmount * FACTOID_MULTIPLIER);
 							const index = activeAddress_o.index;
 
 							const ledgerTrans_o = {
@@ -199,8 +206,12 @@ class SendFactoidForm extends Component {
 						),
 					[sendFactoidAmountPath]: Yup.number()
 						.required('Required')
-						.positive('Must be a positive number')
-						.max(maxAmount, 'Insufficient Funds'),
+						.typeError('Must be a number')
+						.positive('Must be greater than 0')
+						.test(sendFactoidAmountPath, 'Limit 8 decimal places', (value) =>
+							(value + '').match(FACTOID_REGEX)
+						)
+						.max(maxAmount, this.insufficientFundsMessage),
 					[walletImportTypePath]: Yup.string(),
 					[privateKeyPath]: Yup.string().when(walletImportTypePath, {
 						is: 'standard',
@@ -226,6 +237,7 @@ class SendFactoidForm extends Component {
 					setFieldValue,
 					handleReset,
 					handleChange,
+					isValid,
 				}) => (
 					<Form
 						autoComplete="nope"
@@ -258,7 +270,7 @@ class SendFactoidForm extends Component {
 									disabled={isSubmitting}
 									inputProps={{
 										spellCheck: false,
-										maxLength: FCT_ADDRESS_LENGTH,
+										maxLength: ADDRESS_LENGTH,
 										autoComplete: 'nope',
 										// eslint-disable-next-line
 										autoComplete: 'off',
@@ -347,7 +359,7 @@ class SendFactoidForm extends Component {
 							</Grid>
 						</Grid>
 						{_get(values, walletImportTypePath) === 'standard' && (
-							<React.Fragment>
+							<>
 								<Field name={privateKeyPath}>
 									{({ field, form }) => (
 										<TextField
@@ -365,7 +377,7 @@ class SendFactoidForm extends Component {
 											disabled={isSubmitting}
 											inputProps={{
 												spellCheck: false,
-												maxLength: FCT_ADDRESS_LENGTH,
+												maxLength: ADDRESS_LENGTH,
 												autoComplete: 'nope',
 												// eslint-disable-next-line
 												autoComplete: 'off',
@@ -379,10 +391,10 @@ class SendFactoidForm extends Component {
 										<div className={classes.errorText}>{msg}</div>
 									)}
 								/>
-							</React.Fragment>
+							</>
 						)}
 						{_get(values, walletImportTypePath) === 'seed' && (
-							<React.Fragment>
+							<>
 								<Field name={seedPath}>
 									{({ field, form }) => (
 										<TextField
@@ -412,14 +424,13 @@ class SendFactoidForm extends Component {
 										<div className={classes.errorText}>{msg}</div>
 									)}
 								/>
-							</React.Fragment>
+							</>
 						)}
-
-						{values.sendFactoidAmount ? (
+						{values.sendFactoidAmount && isValid ? (
 							<SendTransactionPreview
 								networkProps={networkProps}
 								factoidAmount={values.sendFactoidAmount}
-								sendFactoidFee={this.state.sendFactoidFee}
+								sendFactoshiFee={this.state.sendFactoshiFee}
 							/>
 						) : (
 							''
@@ -438,10 +449,10 @@ class SendFactoidForm extends Component {
 							</Typography>
 						)}
 						{isSubmitting ? (
-							<React.Fragment>
+							<>
 								{values.transactionID !== null ? (
 									<div>
-										<Paper className={classes.transaction}>
+										<Paper className={classes.transaction} elevation={2}>
 											<CheckCircle
 												nativeColor="#6fbf73"
 												className={classes.successIcon}
@@ -489,12 +500,12 @@ class SendFactoidForm extends Component {
 										</Button>
 									</div>
 								) : (
-									<React.Fragment>
+									<>
 										<CircularProgress thickness={7} />
 										{values.ledgerStatus}
-									</React.Fragment>
+									</>
 								)}
-							</React.Fragment>
+							</>
 						) : (
 							<Button
 								className={classes.sendButton}

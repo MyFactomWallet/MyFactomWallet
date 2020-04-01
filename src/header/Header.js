@@ -11,8 +11,7 @@ import logo from '../headerLogo.png';
 import { Link } from 'react-router-dom';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import CloudDone from '@material-ui/icons/CloudDoneOutlined';
+import FiberManualRecord from '@material-ui/icons/FiberManualRecord';
 import CustomNodeForm from './CustomNodeForm';
 import Modal from '@material-ui/core/Modal';
 import { withWalletContext } from '../context/WalletContext';
@@ -20,11 +19,8 @@ import { withNetwork } from '../context/NetworkContext';
 import { withFactomCli } from '../context/FactomCliContext';
 import HelpModal from './HelpModal';
 
-//import CloudOff from '@material-ui/icons/CloudOff';
-
-class ButtonAppBar extends React.Component {
+class Header extends React.Component {
 	state = {
-		voteAnchorEl: null,
 		networkAnchorEl: null,
 		openCustomNodeForm: false,
 	};
@@ -35,14 +31,6 @@ class ButtonAppBar extends React.Component {
 
 	handleCloseCustomNodeForm = () => {
 		this.setState({ openCustomNodeForm: false });
-	};
-
-	handleVoteClick = (event) => {
-		this.setState({ voteAnchorEl: event.currentTarget });
-	};
-
-	handleVoteClose = () => {
-		this.setState({ voteAnchorEl: null });
 	};
 
 	handleNetworkClick = (event) => {
@@ -87,14 +75,16 @@ class ButtonAppBar extends React.Component {
 		const {
 			classes,
 			networkController: { networkProps },
-			factomCliController: { blockHeight },
+			factomCliController: { isConnected, error, blockHeight },
+			disabled,
+			greenConnection,
 		} = this.props;
-		const { voteAnchorEl, networkAnchorEl } = this.state;
+		const { networkAnchorEl } = this.state;
 
 		const testnetActive = networkProps.network === 'testnet';
 
 		return (
-			<AppBar position="static" className={classes.root}>
+			<AppBar position="static" className={classes.root} data-cy="appBarHeader">
 				<Toolbar className={classes.toolbar}>
 					<IconButton
 						className={classes.menuButton}
@@ -110,90 +100,66 @@ class ButtonAppBar extends React.Component {
 						<Link className={classes.menuText} to="/">
 							MyFactomWallet
 							{testnetActive && (
-								<span className={classes.testnetHeader}>
+								<span className={classes.testnetHeader} data-cy="testnetHeader">
 									&nbsp;&nbsp;TESTNET
 								</span>
 							)}
 						</Link>
 					</Typography>
-					<Button
-						href="#/"
-						onClick={this.handleWallet}
-						className={classes.menuText}
-					>
-						Wallet
-					</Button>
-					<React.Fragment>
+					<Link to="/">
 						<Button
-							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
-							aria-haspopup="true"
-							onClick={this.handleVoteClick}
+							onClick={() => {
+								if (!disabled) this.handleWallet();
+							}}
 							className={classes.menuText}
 						>
-							Vote
-							<ExpandMore />
+							Wallet
 						</Button>
-						<Menu
-							id="simple-vote-menu"
-							anchorEl={voteAnchorEl}
-							open={Boolean(voteAnchorEl)}
-							onClose={this.handleVoteClose}
-						>
-							<MenuItem
-								onClick={this.handleVoteClose}
-								component={Link}
-								to={'/vote'}
-							>
-								View Polls
-							</MenuItem>
-							<MenuItem
-								component={Link}
-								to={'/createVote'}
-								onClick={this.handleVoteClose}
-								replace={true}
-							>
-								Create Poll
-							</MenuItem>
-							<MenuItem
-								component={Link}
-								to={'/ledgerId'}
-								onClick={this.handleVoteClose}
-								replace={true}
-							>
-								Ledger Identity
-							</MenuItem>
-						</Menu>
-					</React.Fragment>
+					</Link>
 
 					<HelpModal />
-					<div className={classes.network}>
-						<Button
-							aria-owns={voteAnchorEl ? 'simple-vote-menu' : null}
-							aria-haspopup="true"
-							onClick={this.handleNetworkClick}
-							className={classes.menuText}
-						>
-							{networkProps.network}: {blockHeight}
-							&nbsp;
-							<CloudDone
+					<Button
+						aria-owns={networkAnchorEl ? 'simple-anchor-menu' : null}
+						aria-haspopup="true"
+						onClick={(e) => {
+							if (!disabled) this.handleNetworkClick(e);
+						}}
+						className={testnetActive ? classes.testnetHeader : classes.menuText}
+					>
+						{blockHeight ? (
+							<span data-cy="blockHeight">{blockHeight}</span>
+						) : (
+							<div style={{ width: 48 }} />
+						)}
+						&nbsp;
+						{(isConnected && !error) || greenConnection ? (
+							<FiberManualRecord
 								titleAccess="Network Operational"
-								style={{ color: 'green' }}
+								className={classes.connected}
 							/>
-							<ExpandMore />
-						</Button>
-						<Menu
-							id="simple-vote-menu"
-							anchorEl={networkAnchorEl}
-							open={Boolean(networkAnchorEl)}
-							onClose={this.handleNetworkClose}
-						>
-							<MenuItem onClick={this.handleMainnet} disabled={!testnetActive}>
-								Mainnet&nbsp;&nbsp; <CloudDone style={{ color: 'green' }} />
-							</MenuItem>
-							<MenuItem onClick={this.handleTestnet} disabled={testnetActive}>
-								Testnet&nbsp;&nbsp; <CloudDone style={{ color: 'green' }} />
-							</MenuItem>
-							{/* <MenuItem
+						) : (
+							<>
+								?&nbsp;
+								<FiberManualRecord
+									titleAccess="Network Unavailable"
+									className={classes.notConnected}
+								/>
+							</>
+						)}
+					</Button>
+					<Menu
+						id="simple-anchor-menu"
+						anchorEl={networkAnchorEl}
+						open={Boolean(networkAnchorEl)}
+						onClose={this.handleNetworkClose}
+					>
+						<MenuItem onClick={this.handleMainnet} disabled={!testnetActive}>
+							Connect to Mainnet
+						</MenuItem>
+						<MenuItem onClick={this.handleTestnet} disabled={testnetActive}>
+							Connect to Testnet
+						</MenuItem>
+						{/* <MenuItem
 								onClick={() => {
 									this.handleNetworkClose();
 									this.handleOpenCustomNodeForm();
@@ -201,24 +167,23 @@ class ButtonAppBar extends React.Component {
 							>
 								Custom Node
 							</MenuItem> */}
-						</Menu>
-						<Modal
-							aria-labelledby="simple-modal-title"
-							aria-describedby="simple-modal-description"
-							open={this.state.openCustomNodeForm}
-							onClose={this.handleCloseCustomNodeForm}
-						>
-							<div className={classes.modalContent}>
-								<CustomNodeForm handleCustomNode={this.handleCustomNode} />
-							</div>
-						</Modal>
-					</div>
+					</Menu>
+					<Modal
+						aria-labelledby="simple-modal-title"
+						aria-describedby="simple-modal-description"
+						open={this.state.openCustomNodeForm}
+						onClose={this.handleCloseCustomNodeForm}
+					>
+						<div className={classes.modalContent}>
+							<CustomNodeForm handleCustomNode={this.handleCustomNode} />
+						</div>
+					</Modal>
 				</Toolbar>
 			</AppBar>
 		);
 	}
 }
-ButtonAppBar.propTypes = {
+Header.propTypes = {
 	classes: PropTypes.object.isRequired,
 };
 
@@ -244,25 +209,23 @@ const styles = (theme) => ({
 	menuText: {
 		color: 'white',
 	},
-	network: {
-		borderStyle: 'solid',
-		borderWidth: '1px',
-		color: 'green',
-	},
+
 	subMenuText: {
 		color: 'black',
 	},
 	modalContent: {
 		position: 'absolute',
-		width: theme.spacing.unit * 50,
+		width: theme.spacing(50),
 		backgroundColor: theme.palette.background.paper,
 		boxShadow: theme.shadows[5],
-		padding: theme.spacing.unit * 4,
+		padding: theme.spacing(4),
 		top: `50%`,
 		left: `50%`,
 		transform: `translate(-50%, -50%)`,
 	},
 	testnetHeader: { color: '#ffa000' },
+	connected: { color: '#0ec30e' },
+	notConnected: { color: 'red' },
 });
 
 const enhancer = _flowRight(
@@ -271,4 +234,4 @@ const enhancer = _flowRight(
 	withWalletContext,
 	withStyles(styles)
 );
-export default enhancer(ButtonAppBar);
+export default enhancer(Header);

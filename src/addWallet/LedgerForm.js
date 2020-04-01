@@ -128,26 +128,24 @@ class LedgerForm extends React.Component {
 				}) => (
 					<Form>
 						{values.ledgerConnected ? (
-							<React.Fragment>
-								<GenerateAddressTable
-									title={getTitle(networkProps)[type]}
-									type={type}
-									generatedAddressList={this.state.generatedAddressList}
-									userAddressList={userAddressList}
-									getNextFive={this.getNextFive}
-									newAddress={newLedgerAddress}
-									values={values}
-									errors={errors}
-									touched={touched}
-									setFieldValue={setFieldValue}
-									handleChange={handleChange}
-								/>
-							</React.Fragment>
+							<GenerateAddressTable
+								title={getTitle(networkProps)[type]}
+								type={type}
+								generatedAddressList={this.state.generatedAddressList}
+								userAddressList={userAddressList}
+								getNextFive={this.getNextFive}
+								newAddress={newLedgerAddress}
+								values={values}
+								errors={errors}
+								touched={touched}
+								setFieldValue={setFieldValue}
+								handleChange={handleChange}
+							/>
 						) : (
-							<React.Fragment>
+							<>
 								<br />
 								{!_isNil(values.ledgerStatus) ? (
-									<React.Fragment>
+									<>
 										<Typography>{values.ledgerStatus}</Typography>
 										<ul>
 											<li>
@@ -220,16 +218,16 @@ class LedgerForm extends React.Component {
 										>
 											Retry
 										</Button>
-									</React.Fragment>
+									</>
 								) : (
-									<React.Fragment>
+									<>
 										<Typography>
 											<b>Connecting to Ledger Nano X/S</b>
 										</Typography>
 										<CircularProgress thickness={7} />
-									</React.Fragment>
+									</>
 								)}
-								<React.Fragment>
+								<>
 									<br />
 									<br />
 									<Typography>
@@ -258,10 +256,9 @@ class LedgerForm extends React.Component {
 											</Typography>
 										</li>
 									</ul>
-								</React.Fragment>
-							</React.Fragment>
+								</>
+							</>
 						)}
-						<br />
 						<br />
 						<div>
 							<Button onClick={this.props.handleBack}>Back</Button>

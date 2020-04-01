@@ -5,15 +5,17 @@ import _isEmpty from 'lodash/isEmpty';
 import _noop from 'lodash/noop';
 import _isNil from 'lodash/isNil';
 import _pick from 'lodash/pick';
+import { Transaction, getPublicAddress } from 'factom/dist/factom';
+
+import { BURN_ADDR } from '../constants/PEGNET_CONSTANTS';
 import { WalletContext } from './WalletContext';
 import { withFactomCli } from './FactomCliContext';
 import { withNetwork } from './NetworkContext';
-import { Transaction, getPublicAddress } from 'factom/dist/factom';
+import { toFactoids } from '../utils';
 
 /**
  * Constants
  */
-const FACTOSHI_MULTIPLIER = 0.00000001;
 const LOCAL_STORAGE_KEY = 'storageAddresses';
 const LOCAL_STORAGE_PROPERTY_WHITELIST = [
 	'importType',
@@ -64,6 +66,7 @@ class WalletController extends React.Component {
 			newStandardAddress: this.newStandardAddress,
 			newSeedAddress: this.newSeedAddress,
 			newLedgerAddress: this.newLedgerAddress,
+			signConvertToPFCT: this.signConvertToPFCT,
 		};
 	}
 
@@ -376,8 +379,15 @@ class WalletController extends React.Component {
 	getFactoidFee = async () => {
 		const factoshiFee = await this.getFactoshiFee();
 
-		//fix floating point decimal
-		return factoshiFee * FACTOSHI_MULTIPLIER;
+		return toFactoids(factoshiFee);
+	};
+
+	signConvertToPFCT = ({ key, amount }) => {
+		return Transaction.builder()
+			.timestamp(Date.now())
+			.input(key, amount) // amount in factoshis
+			.output(BURN_ADDR, 0)
+			.build();
 	};
 
 	newStandardAddress = (address, nickname) => ({

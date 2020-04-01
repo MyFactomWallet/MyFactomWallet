@@ -1,8 +1,10 @@
 import React from 'react';
 import _flowRight from 'lodash/flowRight';
-import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
+
+import { addBig } from '../utils';
 
 const ConvertTransactionPreview = (props) => {
 	const {
@@ -14,7 +16,7 @@ const ConvertTransactionPreview = (props) => {
 	} = props;
 
 	// total send amount
-	const totalFactoidAmount = factoidAmount + sendFactoidFee;
+	const totalFactoidAmount = addBig(factoidAmount, sendFactoidFee);
 
 	// format output
 	const convertECAmountText = ecAmount.toLocaleString(undefined, {
@@ -38,21 +40,25 @@ const ConvertTransactionPreview = (props) => {
 	return (
 		<Paper className={classes.root} elevation={2}>
 			<div>Transaction Preview</div>
-			<br />
-			<span className={classes.convertECAmountText}>{convertECAmountText}</span>
+			<span data-cy="ecPreviewAmount" className={classes.convertECAmountText}>
+				{convertECAmountText}
+			</span>
 			<span className={classes.ecUnitText}>
 				{' ' + networkProps.ecAbbreviation}
 			</span>
 			<hr className={classes.divider} />
 			<div className={classes.detail}>
 				<div>Total Cost:</div>
-				<div className={classes.factoidCostSmallText}>
+				<div
+					data-cy="ecPreviewTotalAmount"
+					className={classes.factoidCostSmallText}
+				>
 					{totalFactoidCostText}
 				</div>
 			</div>
 			<div className={classes.detail}>
 				<div>Network Fee:</div>
-				<div className={classes.factoidCostSmallText}>
+				<div data-cy="networkFee" className={classes.factoidCostSmallText}>
 					{feeFactoidAmountText}
 				</div>
 			</div>
@@ -67,8 +73,8 @@ const styles = {
 		width: '75%',
 		margin: '0 auto',
 		paddingTop: '26px',
+		paddingBottom: '16px',
 		marginTop: '39px',
-		height: '194px',
 		borderRadius: '10px',
 		backgroundColor: '#eef1f4',
 		textAlign: 'center',
