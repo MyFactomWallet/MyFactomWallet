@@ -32,3 +32,10 @@ export const minusBig = (x, y) => {
 
 	return parseFloat(diff);
 };
+
+export const divideBig = (x, y) => {
+	const bigX = new Big(x);
+	const div = bigX.div(y);
+
+	return parseFloat(div);
+};

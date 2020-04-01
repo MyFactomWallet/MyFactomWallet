@@ -1,8 +1,10 @@
 import React from 'react';
 import _flowRight from 'lodash/flowRight';
-import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
+
+import { addBig } from '../utils';
 
 const ConvertTransactionPreview = (props) => {
 	const {
@@ -14,7 +16,7 @@ const ConvertTransactionPreview = (props) => {
 	} = props;
 
 	// total send amount
-	const totalFactoidAmount = factoidAmount + sendFactoidFee;
+	const totalFactoidAmount = addBig(factoidAmount, sendFactoidFee);
 
 	// format output
 	const convertECAmountText = ecAmount.toLocaleString(undefined, {
