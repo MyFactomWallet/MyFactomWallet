@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changed mainnet explorer links to use Factom Realtime Explorer
 - Improved Factom node connection reliability
+- Updated dependencies
 
 ## [2.0.0] - 2020-04-01
 
