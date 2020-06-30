@@ -24,6 +24,14 @@ function TransactionList(props) {
 				<>
 					<Typography variant="h6">Recent Transactions</Typography>
 					{activeAddress_o.transactions.map(function(transaction, index) {
+						let url = networkProps.explorerURL;
+
+						if (networkProps.network === 'mainnet') {
+							url += '/transactions/' + transaction;
+						} else if (networkProps.network === 'testnet') {
+							url += '/transaction?txid=' + transaction;
+						}
+
 						return (
 							<Typography
 								key={index}
@@ -32,15 +40,7 @@ function TransactionList(props) {
 							>
 								<b>Tx ID:</b> {transaction}{' '}
 								<Tooltip title="Open Factom Explorer">
-									<a
-										target="_blank"
-										rel="noopener noreferrer"
-										href={
-											networkProps.explorerURL +
-											'/transaction?txid=' +
-											transaction
-										}
-									>
+									<a target="_blank" rel="noopener noreferrer" href={url}>
 										<OpenInNew color="primary" style={{ fontSize: 15 }} />
 									</a>
 								</Tooltip>

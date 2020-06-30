@@ -24,7 +24,7 @@ class NetworkController extends React.Component {
 			ecAbbreviationFull: 'Entry Credit',
 			apiPort: 443,
 			apiHost: 'api.factomd.net',
-			explorerURL: 'https://explorer.factoid.org',
+			explorerURL: 'https://explorer.factom.pro',
 			pegnetApiUrl: 'https://pegapi.myfactomwallet.com/v2',
 		},
 		testnet: {
