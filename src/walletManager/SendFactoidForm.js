@@ -15,10 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import CheckCircle from '@material-ui/icons/CheckCircleOutlined';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import OpenInNew from '@material-ui/icons/OpenInNew';
-import Tooltip from '@material-ui/core/Tooltip';
 import { isValidPublicFctAddress } from 'factom/dist/factom';
-
 import { withFactomCli } from '../context/FactomCliContext';
 import { withWalletContext } from '../context/WalletContext';
 import { withSeed } from '../context/SeedContext';
@@ -26,6 +23,7 @@ import { withNetwork } from '../context/NetworkContext';
 import { withLedger } from '../context/LedgerContext';
 import SendTransactionPreview from './SendTransactionPreview';
 import AddressInfoHeader from './shared/AddressInfoHeader';
+import TransactionMessage from './shared/TransactionMessage';
 import { ADDRESS_LENGTH, FACTOID_REGEX } from '../constants/WALLET_CONSTANTS';
 import { toFactoshis, toFactoids, minusBig } from '../utils';
 
@@ -463,30 +461,10 @@ class SendFactoidForm extends Component {
 											</Typography>
 											<br />
 											<br />
-											<Typography>
-												This transaction will be visible{' '}
-												<Tooltip title="Open Factom Explorer">
-													<a
-														target="_blank"
-														rel="noopener noreferrer"
-														href={
-															networkProps.explorerURL +
-															'/transaction?txid=' +
-															values.transactionID
-														}
-													>
-														here{' '}
-														<OpenInNew
-															color="primary"
-															style={{ fontSize: 15 }}
-														/>
-													</a>
-												</Tooltip>{' '}
-												in 10-15 minutes, after being included in the next
-												Factom block currently being processed by the
-												blockchain. Funds are available for use immediately.
-												<br />
-											</Typography>
+											<TransactionMessage
+												transactionID={values.transactionID}
+											/>
+											<br />
 										</Paper>
 										<br />
 										<Button

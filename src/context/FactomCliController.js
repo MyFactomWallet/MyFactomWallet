@@ -11,6 +11,8 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Header from '../header/Header';
 
+const FACTOM_NODE_CONNECTION_TIMEOUT = 9000;
+
 class FactomCliController extends React.Component {
 	constructor(props) {
 		super(props);
@@ -90,7 +92,7 @@ class FactomCliController extends React.Component {
 			// test connection
 			if (
 				await factomCli.factomdApi('properties', null, {
-					timeout: 2000,
+					timeout: FACTOM_NODE_CONNECTION_TIMEOUT,
 					retry: { retries: 0 },
 				})
 			) {
@@ -134,16 +136,17 @@ class FactomCliController extends React.Component {
 						</Grid>
 						<Grid item xs={12} justify="center" container>
 							<Typography variant="h5">
-								Unable to connect to Factom node. Please go to the
-								#myfactomwallet channel on{' '}
+								Unable to connect to Factom node. Try to refresh the page.
+								<br />
+								<br />
+								Support is available in the #myfactomwallet channel on{' '}
 								<a
 									target="_blank"
 									rel="noopener noreferrer"
 									href={'https://discord.gg/79kH2pp'}
 								>
-									Discord
+									Discord.
 								</a>
-								&nbsp;for support.
 							</Typography>
 						</Grid>
 					</Grid>
