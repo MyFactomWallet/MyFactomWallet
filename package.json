@@ -14,7 +14,7 @@
 		"factom": "^1.2.3",
 		"factombip44": "0.2.2",
 		"formik": "1.5.1",
-		"lodash": "^4.17.15",
+		"lodash": "^4.17.19",
 		"prop-types": "^15.7.2",
 		"react": "^16.8.4",
 		"react-copy-to-clipboard": "^5.0.1",
