@@ -98,11 +98,14 @@ class FactomCliController extends React.Component {
 			) {
 				// successful connection
 				const factomEmitter = this.newFactomEmitter(factomCli);
-
 				await this.smartSetState({
 					factomCli,
 					factomEmitter,
 				});
+
+				// get latest block when app loads
+				const directoryBlockHead = await this.state.factomCli.getDirectoryBlockHead();
+				this.updateBlock(directoryBlockHead);
 
 				await this.state.factomEmitter.on(
 					'newDirectoryBlock',

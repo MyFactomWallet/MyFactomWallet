@@ -482,7 +482,7 @@ describe('Import Addresses from Mnemonic seed', function() {
 										networkProps[network].ecAbbreviation
 									}`
 								).click();
-								cy.wait(5000);
+								cy.wait(10000);
 								const newAddressOneFctBalance = minusBig(
 									newMaxFactoids,
 									totalFactoidAmount
