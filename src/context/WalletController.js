@@ -193,7 +193,7 @@ class WalletController extends React.Component {
 				eventType: 'newPendingTransaction',
 				topic: addr_o.address,
 			}),
-			this.pendingTransactionListener()
+			addr_o.pendingAddressCallback
 		);
 	};
 
@@ -359,38 +359,18 @@ class WalletController extends React.Component {
 	addPendingTransactionEmitter = (addressList) => {
 		if (addressList) {
 			addressList.forEach((address_o) => {
-				const pendingTransactionCallback = (pendingTransaction) => {
-					this.pendingTransactionListener(
-						pendingTransaction,
-						address_o.address
-					);
-				};
-
-				address_o.pendingTransactionCallback = pendingTransactionCallback;
-				const { network } = this.props.networkController.networkProps;
-				this.smartSetState((prevState) => ({
-					addresses: {
-						...prevState.addresses,
-						[network]: {
-							...prevState.addresses[network],
-							fct: factoidWallet,
-						},
-					},
-				}));
-
 				this.props.factomCliController.factomEmitter.on(
 					FactomEventEmitter.getSubscriptionToken({
 						eventType: 'newPendingTransaction',
 						topic: address_o.address,
 					}),
-					pendingTransactionCallback
+					address_o.pendingAddressCallback
 				);
 			});
 		}
 	};
 
 	pendingTransactionListener = async (pendingTransaction, pendingAddress) => {
-		console.log('pending transaction listener called!');
 		const { network } = this.props.networkController.networkProps;
 		const factoidWallet = this.state.addresses[network].fct;
 

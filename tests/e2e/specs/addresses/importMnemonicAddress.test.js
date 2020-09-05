@@ -4,81 +4,26 @@ import {
 	getMaxFactoshis,
 	addBig,
 	minusBig,
+	newOpenApiPayload,
 } from '../../../utils';
 import { networkProps, convertEcAmount } from '../../../constants';
 
 const YAML = require('yamljs');
-
-const openApiPayload = {
-	jsonrpc: '2.0',
-	id: 0,
-	method: '',
-};
 const network = Cypress.env('network');
 
-describe('Import Addresses from Mnemonic seed', function() {
-	it('Can import addresses and make transactions', function() {
+describe('Test Import Addresses from Mnemonic seed', function() {
+	it('Should import addresses and make transactions', function() {
 		cy.readFile('./tests/e2e/config.yaml').then((data) => {
 			const config = YAML.parse(data);
 			const addressOne = config.addresses.mainnet.mnemonic[0];
 			const addressTwo = config.addresses.mainnet.mnemonic[1];
 
 			// Import first seed address
-			cy.contains('Import addresses from mnemonic seed phrase').click();
-			cy.get('[data-cy="next"]')
-				.contains('Next')
-				.click();
-			cy.get('[name="mnemonic"]').type(addressOne.seed);
-			cy.contains('Next').click();
-			cy.get(`[name="address_${addressOne.index}"]`)
-				.invoke('text')
-				.then((text) => {
-					expect(text).equal(addressOne.fctAddress);
-				});
-			cy.get(`[name="checkbox_${addressOne.index}"]`).click();
-			cy.get(`[name="nickname_${addressOne.index}"]`).type(addressOne.fctName);
-			cy.get('[type="submit"]')
-				.contains('Add and Continue')
-				.click();
-			cy.get(`[name="address_${addressOne.index}"]`)
-				.invoke('text')
-				.then((text) => {
-					expect(text).equal(addressOne.ecAddress);
-				});
-			cy.get(`[name="checkbox_${addressOne.index}"]`).click();
-			cy.get(`[name="nickname_${addressOne.index}"]`).type(addressOne.ecName);
-			cy.get('[type="submit"]')
-				.contains('Add and Continue')
-				.click();
+			cy.importSeedAddress(addressOne);
 			cy.contains('Add Another').click();
 
-			// Import second seed
-			cy.contains('Import addresses from mnemonic seed phrase').click();
-			cy.get('[data-cy="next"]')
-				.contains('Next')
-				.click();
-			cy.get('[name="mnemonic"]').type(addressTwo.seed);
-			cy.contains('Next').click();
-			cy.get(`[name="address_${addressTwo.index}"]`)
-				.invoke('text')
-				.then((text) => {
-					expect(text).equal(addressTwo.fctAddress);
-				});
-			cy.get(`[name="checkbox_${addressTwo.index}"]`).click();
-			cy.get(`[name="nickname_${addressTwo.index}"]`).type(addressTwo.fctName);
-			cy.get('[type="submit"]')
-				.contains('Add and Continue')
-				.click();
-			cy.get(`[name="address_${addressTwo.index}"]`)
-				.invoke('text')
-				.then((text) => {
-					expect(text).equal(addressTwo.ecAddress);
-				});
-			cy.get(`[name="checkbox_${addressTwo.index}"]`).click();
-			cy.get(`[name="nickname_${addressTwo.index}"]`).type(addressTwo.ecName);
-			cy.get('[type="submit"]')
-				.contains('Add and Continue')
-				.click();
+			// Import second seed address
+			cy.importSeedAddress(addressTwo);
 			cy.contains('Manage Wallet').click();
 
 			// O V E R V I E W  T A B
@@ -87,13 +32,13 @@ describe('Import Addresses from Mnemonic seed', function() {
 				addressOne.fctName
 			);
 			cy.get('[data-cy="address"]').should('have.text', addressOne.fctAddress);
-			let factoidBalancePayload = openApiPayload;
-			factoidBalancePayload['method'] = 'factoid-balance';
-			factoidBalancePayload['params'] = { address: addressOne.fctAddress };
+			const addressOneBalancePayload = newOpenApiPayload('factoid-balance', {
+				address: addressOne.fctAddress,
+			});
 			cy.request({
 				method: 'POST',
 				url: networkProps[network].apiUrl,
-				body: JSON.stringify(factoidBalancePayload),
+				body: JSON.stringify(addressOneBalancePayload),
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -110,7 +55,7 @@ describe('Import Addresses from Mnemonic seed', function() {
 						);
 					});
 
-				// Sidebar
+				// S I D E B A R
 				//fct addresses
 				cy.get('[data-cy="sidebarFctIndex_0"]').within(() => {
 					cy.get('[data-cy="sidebarFctNickname"]').should(
@@ -140,13 +85,16 @@ describe('Import Addresses from Mnemonic seed', function() {
 							);
 						});
 				});
-				let ecBalancePayload = openApiPayload;
-				ecBalancePayload['method'] = 'entry-credit-balance';
-				ecBalancePayload['params'] = { address: addressOne.ecAddress };
+				const addressOneEcBalancePayload = newOpenApiPayload(
+					'entry-credit-balance',
+					{
+						address: addressOne.ecAddress,
+					}
+				);
 				cy.request({
 					method: 'POST',
 					url: networkProps[network].apiUrl,
-					body: JSON.stringify(factoidBalancePayload),
+					body: JSON.stringify(addressOneEcBalancePayload),
 					headers: {
 						'Content-Type': 'application/json',
 					},
@@ -170,11 +118,16 @@ describe('Import Addresses from Mnemonic seed', function() {
 							});
 					});
 
-					ecBalancePayload['params'] = { address: addressTwo.ecAddress };
+					const addressTwoEcBalancePayload = newOpenApiPayload(
+						'entry-credit-balance',
+						{
+							address: addressTwo.ecAddress,
+						}
+					);
 					cy.request({
 						method: 'POST',
 						url: networkProps[network].apiUrl,
-						body: JSON.stringify(factoidBalancePayload),
+						body: JSON.stringify(addressTwoEcBalancePayload),
 						headers: {
 							'Content-Type': 'application/json',
 						},
@@ -208,8 +161,7 @@ describe('Import Addresses from Mnemonic seed', function() {
 						addressTwo.fctAddress
 					);
 					cy.contains('Use Max').click();
-					let entryRatePayload = openApiPayload;
-					entryRatePayload['method'] = 'entry-credit-rate';
+					const entryRatePayload = newOpenApiPayload('entry-credit-rate');
 					cy.request({
 						method: 'POST',
 						url: networkProps[network].apiUrl,
@@ -273,12 +225,14 @@ describe('Import Addresses from Mnemonic seed', function() {
 						'have.text',
 						addressTwo.fctAddress
 					);
-					factoidBalancePayload['method'] = 'factoid-balance';
-					factoidBalancePayload['params'] = { address: addressTwo.fctAddress };
+					const addressTwoBalancePayload = newOpenApiPayload(
+						'factoid-balance',
+						{ address: addressTwo.fctAddress }
+					);
 					cy.request({
 						method: 'POST',
 						url: networkProps[network].apiUrl,
-						body: JSON.stringify(factoidBalancePayload),
+						body: JSON.stringify(addressTwoBalancePayload),
 						headers: {
 							'Content-Type': 'application/json',
 						},
@@ -336,12 +290,11 @@ describe('Import Addresses from Mnemonic seed', function() {
 							addressOne.fctAddress
 						);
 						cy.contains('Use Max').click();
-						let entryRatePayload = openApiPayload;
-						entryRatePayload['method'] = 'entry-credit-rate';
+						const newEntryRatePayload = newOpenApiPayload('entry-credit-rate');
 						cy.request({
 							method: 'POST',
 							url: networkProps[network].apiUrl,
-							body: JSON.stringify(entryRatePayload),
+							body: JSON.stringify(newEntryRatePayload),
 							headers: {
 								'Content-Type': 'application/json',
 							},
@@ -453,7 +406,7 @@ describe('Import Addresses from Mnemonic seed', function() {
 							cy.request({
 								method: 'POST',
 								url: networkProps[network].apiUrl,
-								body: JSON.stringify(entryRatePayload),
+								body: JSON.stringify(newEntryRatePayload),
 								headers: {
 									'Content-Type': 'application/json',
 								},

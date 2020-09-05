@@ -1,29 +1,26 @@
 import { networkProps } from '../../../constants';
+import { newOpenApiPayload } from '../../../utils';
 
-const openApiPayload = {
-	jsonrpc: '2.0',
-	id: 0,
-	method: 'directory-block-head',
-};
+const directoryBlockHeadPayload = newOpenApiPayload('directory-block-head');
 const network = Cypress.env('network');
 
 describe('Test the header', function() {
-	it('Has the correct Block Height', function() {
+	it('Should have the correct Block Height', function() {
 		cy.request({
 			method: 'POST',
 			url: networkProps[network].apiUrl,
-			body: JSON.stringify(openApiPayload),
+			body: JSON.stringify(directoryBlockHeadPayload),
 			headers: {
 				'Content-Type': 'application/json',
 			},
 		}).then((response) => {
-			let directoryBlockPayload = openApiPayload;
-			directoryBlockPayload['params'] = { keymr: response.body.result.keymr };
-			directoryBlockPayload['method'] = 'directory-block';
+			const directoryBlockPayload = newOpenApiPayload('directory-block', {
+				keymr: response.body.result.keymr,
+			});
 			cy.request({
 				method: 'POST',
 				url: networkProps[network].apiUrl,
-				body: JSON.stringify(openApiPayload),
+				body: JSON.stringify(directoryBlockPayload),
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -37,7 +34,7 @@ describe('Test the header', function() {
 		});
 	});
 
-	it('Has the correct text', function() {
+	it('Should have the correct app bar headers', function() {
 		cy.get('[data-cy=appBarHeader]').contains('Wallet');
 		cy.get('[data-cy=appBarHeader]').contains('Help');
 		cy.get('[data-cy=appBarHeader]').contains('MyFactomWallet');
