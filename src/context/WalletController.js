@@ -138,14 +138,29 @@ class WalletController extends React.Component {
 
 			await this.setDefaultIndex();
 			await this.updateBalances({ force: true });
-			factoidAddressList.length > 0 &&
-				this.addPendingTransactionEmitter(factoidAddressList);
 
-			testoidAddressList.length > 0 &&
-				this.addPendingTransactionEmitter(testoidAddressList);
+			this.addNetworkPendingTransactionListeners();
 		}
 		await this.smartSetState({ readyToManageWallet: !this.isWalletEmpty() });
 		await this.smartSetState({ isStateHydrated: true });
+	};
+
+	addNetworkPendingTransactionListeners = () => {
+		const { network } = this.props.networkController.networkProps;
+		const addressList = [...this.state.addresses[network]['fct']];
+
+		if (addressList.length > 0) {
+			this.addPendingTransactionEmitter(addressList);
+		}
+	};
+
+	removeNetworkPendingTransactionListeners = () => {
+		const { network } = this.props.networkController.networkProps;
+		const addressList = [...this.state.addresses[network]['fct']];
+
+		if (addressList.length > 0) {
+			this.removePendingTransactionEmitter(addressList);
+		}
 	};
 
 	setReadyToManageWallet = (value) => {
@@ -155,6 +170,7 @@ class WalletController extends React.Component {
 	};
 
 	handleNetworkChange = async (network) => {
+		this.removeNetworkPendingTransactionListeners();
 		await this.smartSetState({ isStateHydrated: false });
 		await this.props.networkController.changeNetwork(network);
 		await this.props.factomCliController.connectToServer();
@@ -188,13 +204,7 @@ class WalletController extends React.Component {
 
 		this.saveStateToLocalStorage();
 
-		this.props.factomCliController.factomEmitter.removeListener(
-			FactomEventEmitter.getSubscriptionToken({
-				eventType: 'newPendingTransaction',
-				topic: addr_o.address,
-			}),
-			addr_o.pendingAddressCallback
-		);
+		this.removePendingTransactionEmitter([addr_o]);
 	};
 
 	addAddressTransaction = (activeAddressIndex_o, transactionID) => {
@@ -360,6 +370,20 @@ class WalletController extends React.Component {
 		if (addressList) {
 			addressList.forEach((address_o) => {
 				this.props.factomCliController.factomEmitter.on(
+					FactomEventEmitter.getSubscriptionToken({
+						eventType: 'newPendingTransaction',
+						topic: address_o.address,
+					}),
+					address_o.pendingAddressCallback
+				);
+			});
+		}
+	};
+
+	removePendingTransactionEmitter = (addressList) => {
+		if (addressList) {
+			addressList.forEach((address_o) => {
+				this.props.factomCliController.factomEmitter.removeListener(
 					FactomEventEmitter.getSubscriptionToken({
 						eventType: 'newPendingTransaction',
 						topic: address_o.address,
