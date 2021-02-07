@@ -15,8 +15,7 @@ Run MyFactomWallet locally:
 git clone https://github.com/MyFactomWallet/MyFactomWallet.git
 cd MyFactomWallet
 npm ci
-HTTPS=true npm start #Linux, macOS (Bash)
-set HTTPS=true&&npm start #Windows (cmd.exe)
+npm start
 ```
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
