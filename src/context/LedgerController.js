@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _flowRight from 'lodash/flowRight';
 import { LedgerContext } from './LedgerContext';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import TransportU2F from '@ledgerhq/hw-transport-webusb';
 import Fct from '@factoid.org/hw-app-fct';
 import { withNetwork } from '../context/NetworkContext';
 import { withWalletContext } from '../context/WalletContext';
@@ -133,6 +133,7 @@ class LedgerController extends React.Component {
 	};
 
 	isLedgerConnected = async () => {
+		return true;
 		let result = false;
 		try {
 			let transport = await TransportU2F.create();
