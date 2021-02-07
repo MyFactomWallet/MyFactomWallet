@@ -1,25 +1,28 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+Cypress.Commands.add('importSeedAddress', (address_o) => {
+	cy.contains('Import addresses from mnemonic seed phrase').click();
+	cy.get('[data-cy="next"]')
+		.contains('Next')
+		.click();
+	cy.get('[name="mnemonic"]').type(address_o.seed);
+	cy.contains('Next').click();
+	cy.get(`[name="address_${address_o.index}"]`)
+		.invoke('text')
+		.then((text) => {
+			expect(text).equal(address_o.fctAddress);
+		});
+	cy.get(`[name="checkbox_${address_o.index}"]`).click();
+	cy.get(`[name="nickname_${address_o.index}"]`).type(address_o.fctName);
+	cy.get('[type="submit"]')
+		.contains('Add and Continue')
+		.click();
+	cy.get(`[name="address_${address_o.index}"]`)
+		.invoke('text')
+		.then((text) => {
+			expect(text).equal(address_o.ecAddress);
+		});
+	cy.get(`[name="checkbox_${address_o.index}"]`).click();
+	cy.get(`[name="nickname_${address_o.index}"]`).type(address_o.ecName);
+	cy.get('[type="submit"]')
+		.contains('Add and Continue')
+		.click();
+});

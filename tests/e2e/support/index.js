@@ -21,7 +21,7 @@ import './commands';
 
 beforeEach(function() {
 	const network = Cypress.env('network');
-	cy.visit('https://dev.myfactomwallet.com:3000/');
+	cy.visit('http://dev.myfactomwallet.com:3000/');
 	cy.get('[data-cy="disclaimer-accept"]').click();
 	if (network === 'testnet') {
 		cy.get('[data-cy="blockHeight"]').click();
