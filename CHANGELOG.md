@@ -7,10 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## [2.2.0] - 2021-02-13
+
 ### Added
 
-- Added feature to update wallet balances on pending transacitons using the [FactomEventEmitter](https://github.com/PaulBernier/factomjs)
-- Updated factomjs dependency to v1.4.0
+- Added support to update balances automatically
+- Improved overall Ledger experience
+- Updated dependencies
+
+### Fixed
+
+- Fixed [Ledger](https://www.ledger.com/) transactions on Windows
+- Fixed broken testnet explorer links to use the [Testnet Factom Realtime Explorer](https://testnet.explorer.factom.pro/)
+
+### Changed
+
+- Changed Ledger transport library from `@ledgerhq/lhw-transport-u2f` to `@ledgerhq/hw-transport-webusb` to support Windows transactions
 
 ## [2.1.0] - 2020-06-30
 
