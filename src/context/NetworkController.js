@@ -26,7 +26,6 @@ class NetworkController extends React.Component {
 			apiHost: 'api.factomd.net',
 			explorerURL: 'https://explorer.factom.pro',
 			transactionUrlSuffix: '/transactions/',
-			pegnetApiUrl: 'https://pegapi.myfactomwallet.com/v2',
 		},
 		testnet: {
 			network: 'testnet',
@@ -37,9 +36,8 @@ class NetworkController extends React.Component {
 			ecAbbreviationFull: 'Test Credit',
 			apiPort: 8288,
 			apiHost: 'api.myfactomwallet.com',
-			explorerURL: 'https://testnet.factoid.org',
-			transactionUrlSuffix: '/transaction?txid=',
-			pegnetApiUrl: '',
+			explorerURL: 'https://testnet.explorer.factom.pro',
+			transactionUrlSuffix: '/transactions/',
 		},
 	};
 

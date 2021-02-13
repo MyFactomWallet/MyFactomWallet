@@ -149,22 +149,8 @@ class ConvertECForm extends Component {
 						} else if (importType === 'ledger') {
 							actions.setFieldValue(
 								'ledgerStatus',
-								'Connecting to Ledger Nano S'
+								'Please open the Factom app on your Ledger device and confirm the transaction.'
 							);
-							const ledgerConnected = await this.props.ledgerController.isLedgerConnected();
-
-							if (ledgerConnected) {
-								actions.setFieldValue(
-									'ledgerStatus',
-									'Waiting 30s for Confirmation'
-								);
-							} else {
-								actions.resetForm();
-								actions.setFieldValue(
-									'transactionError',
-									'Ledger Nano S Not Found. Please connect your Ledger Nano S and try again.'
-								);
-							}
 
 							const fromAddr = activeAddress_o.address;
 							const toAddr = recipientAddress;
@@ -190,10 +176,17 @@ class ConvertECForm extends Component {
 						console.log(err);
 						actions.resetForm();
 
-						actions.setFieldValue(
-							'transactionError',
-							'An error occured. Please try again.'
-						);
+						if (importType === 'ledger') {
+							actions.setFieldValue(
+								'transactionError',
+								'An error occured. Please open the Factom app on your Ledger device and try again.'
+							);
+						} else {
+							actions.setFieldValue(
+								'transactionError',
+								'An error occured. Please try again.'
+							);
+						}
 					}
 				}}
 				validationSchema={Yup.object().shape({
@@ -437,12 +430,6 @@ class ConvertECForm extends Component {
 							</Typography>
 						)}
 						<br />
-						{_get(values, walletImportTypePath) === 'ledger' && (
-							<Typography gutterBottom>
-								<b>Note</b>: Windows 10 is not supported at this time due to an
-								issue out of our control.
-							</Typography>
-						)}
 						{isSubmitting ? (
 							<>
 								{values.transactionID !== null ? (

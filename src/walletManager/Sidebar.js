@@ -27,7 +27,6 @@ function Sidebar(props) {
 			getFactoidAddresses,
 			activeAddressIndex_o,
 			selectAddress,
-			updateBalances,
 		},
 		networkController: { networkProps },
 	} = props;
@@ -49,7 +48,6 @@ function Sidebar(props) {
 				expanded={expanded}
 				onClick={async () => {
 					await selectAddress(index, 'fct');
-					updateBalances();
 				}}
 				className={expanded ? classes.expanded : ''}
 				data-cy={`sidebarFctIndex_${index}`}
@@ -95,7 +93,6 @@ function Sidebar(props) {
 				expanded={expanded}
 				onClick={async () => {
 					await selectAddress(index, 'ec');
-					updateBalances();
 				}}
 				className={expanded ? classes.expanded : ''}
 				data-cy={`sidebarEcIndex_${index}`}

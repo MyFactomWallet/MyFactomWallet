@@ -2,12 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _flowRight from 'lodash/flowRight';
 import { LedgerContext } from './LedgerContext';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import Fct from '@factoid.org/hw-app-fct';
 import { withNetwork } from '../context/NetworkContext';
 import { withWalletContext } from '../context/WalletContext';
 import { Transaction } from 'factom/dist/factom';
-import { BURN_ADDR } from '../constants/PEGNET_CONSTANTS';
 /**
  * Constants
  */
@@ -18,10 +17,8 @@ class LedgerController extends React.Component {
 		super(props);
 
 		this.state = {
-			isLedgerConnected: this.isLedgerConnected,
 			getLedgerAddresses: this.getLedgerAddresses,
 			signTransaction: this.signTransaction,
-			signConvertToPFCT: this.signConvertToPFCT,
 			checkAddress: this.checkAddress,
 		};
 	}
@@ -32,7 +29,7 @@ class LedgerController extends React.Component {
 		const bip32Account = this.props.networkController.networkProps.bip32Account;
 		const coinType = BIP_32_COIN_TYPES[type];
 
-		const transport = await TransportU2F.create();
+		const transport = await TransportWebUSB.create();
 		const ledger = new Fct(transport);
 
 		for (let index = startIndex; index < startIndex + amount; index++) {
@@ -49,7 +46,7 @@ class LedgerController extends React.Component {
 
 	signTransaction = async ({ fromAddr, toAddr, amount, index }) => {
 		let signedTX = {};
-		let transport = await TransportU2F.create();
+		let transport = await TransportWebUSB.create();
 
 		const bip32Account = this.props.networkController.networkProps.bip32Account;
 		const path = "44'/131'/" + bip32Account + "'/0/" + index;
@@ -81,37 +78,6 @@ class LedgerController extends React.Component {
 		return signedTX;
 	};
 
-	signConvertToPFCT = async ({ fromAddr, amount, index }) => {
-		let signedTX = {};
-		let transport = await TransportU2F.create();
-
-		const bip32Account = this.props.networkController.networkProps.bip32Account;
-		const path = "44'/131'/" + bip32Account + "'/0/" + index;
-
-		const ledger = new Fct(transport);
-
-		const unsignedTX = Transaction.builder()
-			.input(fromAddr, amount) // amount in factoshis
-			.output(BURN_ADDR, 0)
-			.build();
-
-		const result = await ledger.signTransaction(
-			path,
-			unsignedTX.marshalBinarySig.toString('hex')
-		);
-
-		if (result) {
-			signedTX = Transaction.builder(unsignedTX)
-				.rcdSignature(
-					Buffer.from(result['r'], 'hex'),
-					Buffer.from(result['s'], 'hex')
-				)
-				.build();
-		}
-		transport.close();
-		return signedTX;
-	};
-
 	checkAddress = async (activeFctWallet, type) => {
 		const bip32Account = this.props.networkController.networkProps.bip32Account;
 		const coinType = BIP_32_COIN_TYPES[type];
@@ -120,7 +86,7 @@ class LedgerController extends React.Component {
 			"44'/" + coinType + "'/" + bip32Account + "'/0/" + activeFctWallet.index;
 
 		try {
-			var transport = await TransportU2F.create();
+			var transport = await TransportWebUSB.create();
 
 			const ledger = new Fct(transport);
 
@@ -130,22 +96,6 @@ class LedgerController extends React.Component {
 		} catch (err) {
 			console.error('Failed getFctAddr from Ledger Nano X/S :', err);
 		}
-	};
-
-	isLedgerConnected = async () => {
-		let result = false;
-		try {
-			let transport = await TransportU2F.create();
-			const ledger = new Fct(transport);
-			await ledger.getAppConfiguration();
-
-			result = true;
-
-			transport.close();
-		} catch (err) {
-			console.log('Transport Err:' + err);
-		}
-		return result;
 	};
 
 	render() {

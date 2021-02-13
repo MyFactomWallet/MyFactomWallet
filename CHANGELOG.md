@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED]
+
+## [2.2.0] - 2021-02-13
+
+### Added
+
+- Added support to update balances automatically
+- Improved overall Ledger experience
+- Updated dependencies
+
+### Fixed
+
+- Fixed [Ledger](https://www.ledger.com/) transactions on Windows
+- Fixed broken testnet explorer links to use the [Testnet Factom Realtime Explorer](https://testnet.explorer.factom.pro/)
+
+### Changed
+
+- Changed Ledger transport library from `@ledgerhq/lhw-transport-u2f` to `@ledgerhq/hw-transport-webusb` to support Windows transactions
+
 ## [2.1.0] - 2020-06-30
 
 ### Added

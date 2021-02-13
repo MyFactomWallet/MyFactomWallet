@@ -5,9 +5,12 @@ import _isEmpty from 'lodash/isEmpty';
 import _noop from 'lodash/noop';
 import _isNil from 'lodash/isNil';
 import _pick from 'lodash/pick';
-import { Transaction, getPublicAddress } from 'factom/dist/factom';
+import {
+	Transaction,
+	getPublicAddress,
+	FactomEventEmitter,
+} from 'factom/dist/factom';
 
-import { BURN_ADDR } from '../constants/PEGNET_CONSTANTS';
 import { WalletContext } from './WalletContext';
 import { withFactomCli } from './FactomCliContext';
 import { withNetwork } from './NetworkContext';
@@ -66,7 +69,6 @@ class WalletController extends React.Component {
 			newStandardAddress: this.newStandardAddress,
 			newSeedAddress: this.newSeedAddress,
 			newLedgerAddress: this.newLedgerAddress,
-			signConvertToPFCT: this.signConvertToPFCT,
 		};
 	}
 
@@ -103,23 +105,28 @@ class WalletController extends React.Component {
 		);
 
 		if (!_isNil(localStorageAddresses)) {
-			const prepareArray = (addressArray) =>
+			const localStorageToWalletAddresses = (addressArray) =>
 				addressArray.map((addr_o) => ({
 					...addr_o,
 					balance: null,
 					transactions: [],
+					pendingAddressCallback: (pendingTransaction) => {
+						this.pendingTransactionListener(pendingTransaction, addr_o.address);
+					},
 				}));
 
 			const { mainnet, testnet } = localStorageAddresses;
+			const factoidAddressList = localStorageToWalletAddresses(mainnet.fct);
+			const testoidAddressList = localStorageToWalletAddresses(testnet.fct);
 
 			const storageAddresses = {
 				mainnet: {
-					fct: prepareArray(mainnet.fct),
-					ec: prepareArray(mainnet.ec),
+					fct: factoidAddressList,
+					ec: localStorageToWalletAddresses(mainnet.ec),
 				},
 				testnet: {
-					fct: prepareArray(testnet.fct),
-					ec: prepareArray(testnet.ec),
+					fct: testoidAddressList,
+					ec: localStorageToWalletAddresses(testnet.ec),
 				},
 			};
 
@@ -129,9 +136,29 @@ class WalletController extends React.Component {
 
 			await this.setDefaultIndex();
 			await this.updateBalances({ force: true });
+
+			this.addNetworkPendingTransactionListeners();
 		}
 		await this.smartSetState({ readyToManageWallet: !this.isWalletEmpty() });
 		await this.smartSetState({ isStateHydrated: true });
+	};
+
+	addNetworkPendingTransactionListeners = () => {
+		const { network } = this.props.networkController.networkProps;
+		const addressList = [...this.state.addresses[network]['fct']];
+
+		if (addressList.length > 0) {
+			this.addPendingTransactionEmitter(addressList);
+		}
+	};
+
+	removeNetworkPendingTransactionListeners = () => {
+		const { network } = this.props.networkController.networkProps;
+		const addressList = [...this.state.addresses[network]['fct']];
+
+		if (addressList.length > 0) {
+			this.removePendingTransactionEmitter(addressList);
+		}
 	};
 
 	setReadyToManageWallet = (value) => {
@@ -141,6 +168,7 @@ class WalletController extends React.Component {
 	};
 
 	handleNetworkChange = async (network) => {
+		this.removeNetworkPendingTransactionListeners();
 		await this.smartSetState({ isStateHydrated: false });
 		await this.props.networkController.changeNetwork(network);
 		await this.props.factomCliController.connectToServer();
@@ -149,10 +177,12 @@ class WalletController extends React.Component {
 
 	deleteAddress = async (activeAddressIndex_o) => {
 		const type = activeAddressIndex_o.type;
+		const index = activeAddressIndex_o.index;
 		const { network } = this.props.networkController.networkProps;
 
 		// create copy of current addressList
 		const addressList = [...this.state.addresses[network][type]];
+		const addr_o = addressList[index];
 
 		//remove address
 		addressList.splice(activeAddressIndex_o.index, 1);
@@ -171,6 +201,8 @@ class WalletController extends React.Component {
 		await this.setDefaultIndex();
 
 		this.saveStateToLocalStorage();
+
+		this.removePendingTransactionEmitter([addr_o]);
 	};
 
 	addAddressTransaction = (activeAddressIndex_o, transactionID) => {
@@ -279,6 +311,7 @@ class WalletController extends React.Component {
 		}));
 		await this.setDefaultIndex();
 		await this.updateBalances();
+		this.addPendingTransactionEmitter(addressList);
 	};
 
 	getNextIndex = (type) => {
@@ -329,6 +362,56 @@ class WalletController extends React.Component {
 		);
 
 		return { ...wallet, balance };
+	};
+
+	addPendingTransactionEmitter = (addressList) => {
+		if (addressList) {
+			addressList.forEach((address_o) => {
+				this.props.factomCliController.factomEmitter.on(
+					FactomEventEmitter.getSubscriptionToken({
+						eventType: 'newPendingTransaction',
+						topic: address_o.address,
+					}),
+					address_o.pendingAddressCallback
+				);
+			});
+		}
+	};
+
+	removePendingTransactionEmitter = (addressList) => {
+		if (addressList) {
+			addressList.forEach((address_o) => {
+				this.props.factomCliController.factomEmitter.removeListener(
+					FactomEventEmitter.getSubscriptionToken({
+						eventType: 'newPendingTransaction',
+						topic: address_o.address,
+					}),
+					address_o.pendingAddressCallback
+				);
+			});
+		}
+	};
+
+	pendingTransactionListener = async (pendingTransaction, pendingAddress) => {
+		const { network } = this.props.networkController.networkProps;
+		const factoidWallet = this.state.addresses[network].fct;
+
+		for (const [index, address_o] of factoidWallet.entries()) {
+			// update wallet address if it has a pending transaction
+			if (address_o.address === pendingAddress) {
+				const updatedAddress = await this.updateWalletBalance(address_o);
+				factoidWallet[index] = updatedAddress;
+			}
+			this.smartSetState((prevState) => ({
+				addresses: {
+					...prevState.addresses,
+					[network]: {
+						...prevState.addresses[network],
+						fct: factoidWallet,
+					},
+				},
+			}));
+		}
 	};
 
 	updateBalances = async ({ force = false } = {}) => {
@@ -382,19 +465,14 @@ class WalletController extends React.Component {
 		return toFactoids(factoshiFee);
 	};
 
-	signConvertToPFCT = ({ key, amount }) => {
-		return Transaction.builder()
-			.timestamp(Date.now())
-			.input(key, amount) // amount in factoshis
-			.output(BURN_ADDR, 0)
-			.build();
-	};
-
 	newStandardAddress = (address, nickname) => ({
 		importType: 'standard',
 		address,
-		nickname,
 		balance: null,
+		nickname,
+		pendingAddressCallback: (pendingTransaction) => {
+			this.pendingTransactionListener(pendingTransaction, address);
+		},
 		transactions: [],
 		saveLocally: false,
 	});
@@ -402,20 +480,26 @@ class WalletController extends React.Component {
 	newSeedAddress = (address, nickname, index) => ({
 		importType: 'seed',
 		address,
-		nickname,
 		balance: null,
+		nickname,
 		transactions: [],
 		index,
+		pendingAddressCallback: (pendingTransaction) => {
+			this.pendingTransactionListener(pendingTransaction, address);
+		},
 		saveLocally: false,
 	});
 
 	newLedgerAddress = (address, nickname, index) => ({
 		importType: 'ledger',
 		address,
-		nickname,
 		balance: null,
+		nickname,
 		transactions: [],
 		index,
+		pendingAddressCallback: (pendingTransaction) => {
+			this.pendingTransactionListener(pendingTransaction, address);
+		},
 		saveLocally: false,
 	});
 
