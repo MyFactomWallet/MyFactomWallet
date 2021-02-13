@@ -149,22 +149,8 @@ class SendFactoidForm extends Component {
 						} else if (importType === 'ledger') {
 							actions.setFieldValue(
 								'ledgerStatus',
-								'Connecting to Ledger Nano S'
+								'Please open the Factom app on your Ledger device and confirm the transaction.'
 							);
-							const ledgerConnected = await this.props.ledgerController.isLedgerConnected();
-
-							if (ledgerConnected) {
-								actions.setFieldValue(
-									'ledgerStatus',
-									'Waiting 30s for Confirmation'
-								);
-							} else {
-								actions.resetForm();
-								actions.setFieldValue(
-									'transactionError',
-									'Ledger Nano S Not Found. Please connect your Ledger Nano S and try again.'
-								);
-							}
 
 							const fromAddr = activeAddress_o.address;
 							const index = activeAddress_o.index;
@@ -188,10 +174,17 @@ class SendFactoidForm extends Component {
 						console.log(err);
 						actions.resetForm();
 
-						actions.setFieldValue(
-							'transactionError',
-							'An error occured. Please try again.'
-						);
+						if (importType === 'ledger') {
+							actions.setFieldValue(
+								'transactionError',
+								'An error occured. Please open the Factom app on your Ledger device and try again.'
+							);
+						} else {
+							actions.setFieldValue(
+								'transactionError',
+								'An error occured. Please try again.'
+							);
+						}
 					}
 				}}
 				validationSchema={Yup.object().shape({
