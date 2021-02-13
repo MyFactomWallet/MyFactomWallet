@@ -19,7 +19,6 @@ const AddressInfoHeader = (props) => {
 		classes,
 		walletController: { getActiveAddress, activeAddressIndex_o },
 		ledgerController: { checkAddress },
-		pFCTBalance,
 	} = props;
 
 	const activeAddress_o = getActiveAddress();
@@ -41,11 +40,6 @@ const AddressInfoHeader = (props) => {
 								balance={activeAddress_o.balance}
 								type={activeAddressIndex_o.type}
 							/>
-						</Typography>
-					)}
-					{!_isNil(pFCTBalance) && (
-						<Typography>
-							<FormatBalance balance={pFCTBalance} type="pFCT" />
 						</Typography>
 					)}
 					<Typography data-cy="address">

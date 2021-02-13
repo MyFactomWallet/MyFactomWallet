@@ -55,7 +55,6 @@ function WalletTabContent(props) {
 						<Tab label="Overview" />
 						<Tab label={'Send ' + networkProps.factoidAbbreviationFull} />
 						<Tab label={'Convert to ' + networkProps.ecAbbreviation} />
-						{/* <Tab label={'Convert to ' + PFCT_LBL} /> */}
 						{activeAddress.importType === 'seed' && (
 							<Tab label="View Private Key" />
 						)}

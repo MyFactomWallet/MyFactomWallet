@@ -7,7 +7,6 @@ import Fct from '@factoid.org/hw-app-fct';
 import { withNetwork } from '../context/NetworkContext';
 import { withWalletContext } from '../context/WalletContext';
 import { Transaction } from 'factom/dist/factom';
-import { BURN_ADDR } from '../constants/PEGNET_CONSTANTS';
 /**
  * Constants
  */
@@ -20,7 +19,6 @@ class LedgerController extends React.Component {
 		this.state = {
 			getLedgerAddresses: this.getLedgerAddresses,
 			signTransaction: this.signTransaction,
-			signConvertToPFCT: this.signConvertToPFCT,
 			checkAddress: this.checkAddress,
 		};
 	}
@@ -61,37 +59,6 @@ class LedgerController extends React.Component {
 				amount + (await this.props.walletController.getFactoshiFee())
 			)
 			.output(toAddr, amount)
-			.build();
-
-		const result = await ledger.signTransaction(
-			path,
-			unsignedTX.marshalBinarySig.toString('hex')
-		);
-
-		if (result) {
-			signedTX = Transaction.builder(unsignedTX)
-				.rcdSignature(
-					Buffer.from(result['r'], 'hex'),
-					Buffer.from(result['s'], 'hex')
-				)
-				.build();
-		}
-		transport.close();
-		return signedTX;
-	};
-
-	signConvertToPFCT = async ({ fromAddr, amount, index }) => {
-		let signedTX = {};
-		let transport = await TransportWebUSB.create();
-
-		const bip32Account = this.props.networkController.networkProps.bip32Account;
-		const path = "44'/131'/" + bip32Account + "'/0/" + index;
-
-		const ledger = new Fct(transport);
-
-		const unsignedTX = Transaction.builder()
-			.input(fromAddr, amount) // amount in factoshis
-			.output(BURN_ADDR, 0)
 			.build();
 
 		const result = await ledger.signTransaction(

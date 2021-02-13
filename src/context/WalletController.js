@@ -11,7 +11,6 @@ import {
 	FactomEventEmitter,
 } from 'factom/dist/factom';
 
-import { BURN_ADDR } from '../constants/PEGNET_CONSTANTS';
 import { WalletContext } from './WalletContext';
 import { withFactomCli } from './FactomCliContext';
 import { withNetwork } from './NetworkContext';
@@ -70,7 +69,6 @@ class WalletController extends React.Component {
 			newStandardAddress: this.newStandardAddress,
 			newSeedAddress: this.newSeedAddress,
 			newLedgerAddress: this.newLedgerAddress,
-			signConvertToPFCT: this.signConvertToPFCT,
 		};
 	}
 
@@ -465,14 +463,6 @@ class WalletController extends React.Component {
 		const factoshiFee = await this.getFactoshiFee();
 
 		return toFactoids(factoshiFee);
-	};
-
-	signConvertToPFCT = ({ key, amount }) => {
-		return Transaction.builder()
-			.timestamp(Date.now())
-			.input(key, amount) // amount in factoshis
-			.output(BURN_ADDR, 0)
-			.build();
 	};
 
 	newStandardAddress = (address, nickname) => ({
