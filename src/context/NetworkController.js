@@ -37,8 +37,8 @@ class NetworkController extends React.Component {
 			ecAbbreviationFull: 'Test Credit',
 			apiPort: 8288,
 			apiHost: 'api.myfactomwallet.com',
-			explorerURL: 'https://testnet.factoid.org',
-			transactionUrlSuffix: '/transaction?txid=',
+			explorerURL: 'https://testnet.explorer.factom.pro',
+			transactionUrlSuffix: '/transactions/',
 			pegnetApiUrl: '',
 		},
 	};
