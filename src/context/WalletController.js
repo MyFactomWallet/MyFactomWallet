@@ -357,9 +357,9 @@ class WalletController extends React.Component {
 	};
 
 	updateWalletBalance = async (wallet) => {
-		const balance = await this.props.factomCliController.factomCli.getBalance(
+		const balance = 0; /*await this.props.factomCliController.factomCli.getBalance(
 			wallet.address
-		);
+		);*/
 
 		return { ...wallet, balance };
 	};

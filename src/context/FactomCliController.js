@@ -130,7 +130,7 @@ class FactomCliController extends React.Component {
 		);
 
 	render() {
-		if (this.state.error) {
+		/*if (this.state.error) {
 			return (
 				<FactomCliContext.Provider value={this.state}>
 					<Grid container>
@@ -155,13 +155,13 @@ class FactomCliController extends React.Component {
 					</Grid>
 				</FactomCliContext.Provider>
 			);
-		} else if (!this.state.isConnected) {
+		} else  if (!this.state.isConnected) {
 			return (
 				<FactomCliContext.Provider value={this.state}>
 					<Header disabled greenConnection />
 				</FactomCliContext.Provider>
 			);
-		} else {
+		} else */ {
 			return (
 				<FactomCliContext.Provider value={this.state}>
 					{this.props.children}

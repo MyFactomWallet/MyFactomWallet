@@ -28,6 +28,14 @@ function ConfirmationDialogRaw(props) {
 				</Typography>
 				<br />
 				<Typography>
+					The Factom Protocol has been upgraded to The Accumulate Network. This
+					website currently has not been upgraded to support the new protocol.
+					You may still use this site to extract your keys from your mnemonic
+					phrase, however you cannot currently perform any transactions or query
+					balances. You may manually enter your FA address into
+					https://explorer.accumulatenetwork.io to see your converted FCT to
+					ACME balance.
+					<br />
 					MyFactomWallet.com is a client-side interface wallet. We provide the
 					user with access to the Factom blockchain, but we do not store,
 					control or have access to ANY user wallet or blockchain information
